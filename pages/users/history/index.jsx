@@ -167,7 +167,7 @@ function index() {
                         </div>
 
                         <div className="w-full my-5 mx-5 px-5 py-5">
-                            <div className="">
+                            <div className=" md:overflow-x-scroll">
                             <table className="w-full mx-auto">
                                 <tbody >
                                     <tr className="border-b-2">
