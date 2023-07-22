@@ -1,0 +1,7 @@
+.btnsection{
+ @apply mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg
+}
+
+.section{
+    @apply flex
+}
