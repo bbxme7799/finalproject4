@@ -143,8 +143,8 @@ function index() {
         <div className="ml-[255px] mt-[65px] h-auto">
             <div className="bg-white my-[2px] ">
                 <div className="flex mx-2 py-2 ">
-                    <h1 className="font-bold text-lg"> New order :</h1>
-                    <p className="text-lg pl-2"> คำสั่งซื้อใหม่</p>
+                    <h1 className="font-bold text-lg"> Order :</h1>
+                    <p className="text-lg pl-2"> ประวัติออเดอร์</p>
                 </div>
             </div>
             <div className="mx-[50px] my-6 shadow-md h-full">
@@ -167,33 +167,36 @@ function index() {
                         </div>
 
                         <div className="w-full my-5 mx-5 px-5 py-5">
-                            <table className="w-[98%]">
-                                <tbody>
+                            <div className="">
+                            <table className="w-full mx-auto">
+                                <tbody >
                                     <tr className="border-b-2">
-                                        <th className="w-[5%] text-left p-4">ID</th>
-                                        <th className="w-[25%] text-left">บริการ</th>
-                                        <th className="w-[40%] text-left">ลิงก์</th>
-                                        <th className="w-[5%] text-center">ค่าใช้จ่าย</th>
-                                        <th className="w-[5%] text-center">เริ่ม</th>
-                                        <th className="w-[5%] text-center">ปริมาณ</th>
-                                        <th className="w-[10%] text-center">Status</th>
-                                        <th className="w-[5%] text-center">เพิ่มเติม</th>
+                                        <th className="text-left p-4  ">ID</th>
+                                        <th className="text-left   ">บริการ</th>
+                                        <th className="text-left  ">ลิงก์</th>
+                                        <th className="text-center  ">ค่าใช้จ่าย</th>
+                                        <th className="text-center  ">เริ่ม</th>
+                                        <th className="text-center ">ปริมาณ</th>
+                                        <th className="text-center ">Status</th>
+                                        <th className="text-center ">เพิ่มเติม</th>
                                     </tr>
                                     {records.filter((user) => user.status.toLowerCase().includes(query || btn)).map((item) => (
                                         <tr key={item.id} className="border-b-2"  >
-                                            <td className="text-left"><p className="mx-2 my-3">{item.id}</p></td>
-                                            <td className="text-left"><p className="my-3">{item.service}</p></td>
-                                            <td className="text-left"><p className="my-3">{item.src}</p></td>
-                                            <td className="text-center"><p className="my-3">{item.cost}</p></td>
-                                            <td className="text-center"><p className="my-3">{item.start}</p></td>
-                                            <td className="text-center"><p className="my-3">{item.count}</p></td>
+                                            <td className="text-left "><p className="mx-2 my-3">{item.id}</p></td>
+                                            <td className="text-left "><p className="my-3 ">{item.service}</p></td>
+                                            <td className="text-left "><p className="my-3 ">{item.src}</p></td>
+                                            <td className="text-center "><p className="my-3">{item.cost}</p></td>
+                                            <td className="text-center "><p className="my-3">{item.start}</p></td>
+                                            <td className="text-center "><p className="my-3">{item.count}</p></td>
                                             <td className="text-center"><p className="my-3 w-24 mx-auto rounded-md py-1 text-white " style={{ backgroundColor: getStatusColor(item.status)  }}>{item.status}</p></td>
-                                            <td className="text-center"><p className="my-3">{item.more}</p></td>
+                                            <td className="text-center "><p className="my-3">{item.more}</p></td>
 
                                         </tr>
                                     ))}
                                 </tbody>
                             </table>
+                            </div>
+                           
 
                             <div className="flex justify-between mx-3 my-5 ">
                                 <div className="my-auto flex items-center">
@@ -239,7 +242,7 @@ function index() {
     );
 
     // Style button color
-    
+
     function getStatusColor(status) {
         switch (status) {
           case "โปรดรอ..":
