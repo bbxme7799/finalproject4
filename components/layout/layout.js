@@ -1,6 +1,6 @@
 import { Fragment } from "react";
 import MainHeader from "./main-header";
-import Sidebar from "../../components/layout/sidebar";
+import Sidebar from "./sidebar";
 import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Navbar from "./navbar";

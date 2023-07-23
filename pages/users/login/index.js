@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import googleIcon from "../../../components/icons/google-iconlogin.png";
 import MetamaskIcon from "../../../components/icons/Metamaskiconlogin.png";
 import Image from "next/image";
@@ -8,27 +8,13 @@ import { useSession } from "next-auth/react";
 
 export default function LoginPage() {
   const session = useSession();
-  console.log("🚀 ~ file: index.js:11 ~ LoginPage ~ session:", session);
   const router = useRouter();
-  const { query } = router;
-  const [error, setError] = useState("");
-  const [success, setSuccess] = useState("");
-
-  // useEffect(() => {
-  //   setError(query.error || "");
-  //   setSuccess(query.success || "");
-  // }, [query]);
 
   if (session.status === "loading") {
     return <p>Loading...</p>;
   }
-  console.log("🚀 ~ file: index.js:11 ~ LoginPage ~ session:", session.status);
 
   if (session.status === "authenticated") {
-    console.log(
-      "🚀 ~ file: index.js:11 ~ LoginPage ~ session:",
-      session.status
-    );
     router?.push("/users");
   }
 

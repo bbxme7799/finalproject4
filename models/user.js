@@ -1,19 +1,24 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
-const userSchema = new mongoose.Schema({
-    googleId: {
-      type: String,
-      required: true,
-      unique: true
-    },
-    name: {
-      type: String,
-      required: true
-    },
-    email: {
-      type: String,
-      required: true,
-      unique: true
-    },
-  });
-  
+const { Schema } = mongoose;
+
+mongoose.set("strictQuery", false);
+const userSchema = new Schema({
+  name: {
+    type: String,
+  },
+  password: {
+    type: String,
+  },
+  email: {
+    type: String,
+  },
+  wallet_addr: {
+    type: String,
+  },
+  credit: {
+    type: Number,
+  },
+});
+
+export default mongoose.models.User || mongoose.model("User", userSchema);
