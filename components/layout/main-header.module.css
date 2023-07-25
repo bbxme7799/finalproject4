@@ -42,10 +42,19 @@
   gap: 20px;
 }
 
-.logout {
+.login {
   padding: 5px;
   border: none;
   background-color: #53c28b;
+  color: white;
+  cursor: pointer;
+  border-radius: 3px;
+}
+
+.logout {
+  padding: 5px;
+  border: none;
+  background-color: #ff0000;
   color: white;
   cursor: pointer;
   border-radius: 3px;

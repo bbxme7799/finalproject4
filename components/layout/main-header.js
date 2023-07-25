@@ -1,6 +1,7 @@
 import Link from "next/link";
 import styles from "./main-header.module.css";
-
+import React, { memo } from "react";
+import { signOut } from "next-auth/react";
 const links = [
   {
     id: 1,
@@ -23,7 +24,14 @@ const links = [
     url: "/faq",
   },
 ];
-function MainHeader() {
+const MainHeader = (props) => {
+  const { session } = props;
+  const userEmail = session?.user.email;
+
+  const handleSignOut = () => {
+    signOut({ callbackUrl: "/" }); // เรียกใช้ signOut เมื่อมีการคลิกปุ่ม "ออกจากระบบ"
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.area}></div>
@@ -38,12 +46,20 @@ function MainHeader() {
             </Link>
           ))}
         </div>
-        <Link href="/users/login" passHref>
-          <button className={styles.logout}>เข้าสู่ระบบ</button>
-        </Link>
+        {userEmail ? (
+          // If userEmail exists (user is logged in), show "ออกจากระบบ" button
+          <button className={styles.logout} onClick={handleSignOut}>
+            ออกจากระบบ
+          </button>
+        ) : (
+          // If userEmail is missing (user is not logged in), show "เข้าสู่ระบบ" button
+          <Link href="/users/login" passHref>
+            <button className={styles.login}>เข้าสู่ระบบ</button>
+          </Link>
+        )}
       </div>
     </div>
   );
-}
+};
 
-export default MainHeader;
+export default memo(MainHeader);

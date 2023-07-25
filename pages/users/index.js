@@ -1,14 +1,49 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
+//import { getSession, signOut } from "next-auth/react";
 
-export default function orderPage() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [message, setMessage] = useState("");
+export default function User() {
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [services, setServices] = useState([]);
+  console.log("🚀 ~ file: index.js:10 ~ User ~ services:", services);
+  const { data: session, status } = useSession();
+  const router = useRouter();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    // ดำเนินการอื่น ๆ เมื่อส่งแบบฟอร์ม
-    console.log("ส่งแบบฟอร์ม");
+  useEffect(() => {
+    if (selectedCategory) {
+      setIsLoading(true);
+      async function fetchServices() {
+        try {
+          const res = await fetch(
+            `/api/service?category=${encodeURIComponent(selectedCategory)}`
+          );
+          const data = await res.json();
+          setServices(data.services);
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error fetching services:", error.message);
+          setIsLoading(false);
+        }
+      }
+      fetchServices();
+    }
+  }, [selectedCategory]);
+
+  // Check if the session is loading
+  if (status === "loading") {
+    return <div>Loading...</div>;
+  }
+
+  // If there is no active session, redirect to the login page
+  if (!session) {
+    router.push("/users/login"); // Replace "/login" with the path to your login page
+    return null;
+  }
+
+  const handleCategoryChange = (category) => {
+    setSelectedCategory(category);
   };
 
   return (
@@ -19,7 +54,6 @@ export default function orderPage() {
           <p className="text-lg pl-2"> คำสั่งซื้อใหม่</p>
         </div>
       </div>
-
       <div className="mx-[50px] my-6  shadow-md">
         <div className="bg-yellow-300 h-auto rounded-lg px-8 py-8">
           <h1>ประกาศสำคัญ</h1>
@@ -33,13 +67,44 @@ export default function orderPage() {
             <div className="w-full flex flex-wrap gap-4 content-start">
               <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
                 <div className="flex items-center">
+                  <button></button>
                   <img
                     src="google.png"
                     width={50}
                     height={50}
                     className="mx-3 my-3 "
                   />
-                  <h2 className="mx-4"> Google </h2>
+                  <h2 className="mx-4"> Youtube </h2>
+                </div>
+              </div>
+              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
+                <button
+                  onClick={() =>
+                    handleCategoryChange(
+                      "Website Traffic - เพิ่มทราฟฟิคเข้าเว็บ Session < ~60 วินาที #🅸🅿🆅🆂"
+                    )
+                  }
+                >
+                  <div className="flex items-center">
+                    <img
+                      src="google.png"
+                      width={50}
+                      height={50}
+                      className="mx-3 my-3 "
+                    />
+                    <h2 className="mx-4"> Facebook </h2>
+                  </div>
+                </button>
+              </div>
+              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
+                <div className="flex items-center">
+                  <img
+                    src="google.png"
+                    width={50}
+                    height={50}
+                    className="mx-3 my-3 "
+                  />
+                  <h2 className="mx-4"> Instagram </h2>
                 </div>
               </div>
               <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
@@ -50,7 +115,7 @@ export default function orderPage() {
                     height={50}
                     className="mx-3 my-3 "
                   />
-                  <h2 className="mx-4"> Google </h2>
+                  <h2 className="mx-4"> Tiktok </h2>
                 </div>
               </div>
               <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
@@ -61,7 +126,7 @@ export default function orderPage() {
                     height={50}
                     className="mx-3 my-3 "
                   />
-                  <h2 className="mx-4"> Google </h2>
+                  <h2 className="mx-4"> Twitter </h2>
                 </div>
               </div>
               <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
@@ -72,29 +137,7 @@ export default function orderPage() {
                     height={50}
                     className="mx-3 my-3 "
                   />
-                  <h2 className="mx-4"> Google </h2>
-                </div>
-              </div>
-              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-                <div className="flex items-center">
-                  <img
-                    src="google.png"
-                    width={50}
-                    height={50}
-                    className="mx-3 my-3 "
-                  />
-                  <h2 className="mx-4"> Google </h2>
-                </div>
-              </div>
-              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-                <div className="flex items-center">
-                  <img
-                    src="google.png"
-                    width={50}
-                    height={50}
-                    className="mx-3 my-3 "
-                  />
-                  <h2 className="mx-4"> Google </h2>
+                  <h2 className="mx-4"> Traffic / SEO </h2>
                 </div>
               </div>
             </div>
@@ -115,7 +158,14 @@ export default function orderPage() {
                   height={30}
                   className="mx-3 my-3 "
                 />
-                <h2>Telegram Member</h2>
+                {/* {services.map((service) => (
+                  <datalist id="categories">
+                    <option
+                      key={service._id}
+                      value={service.name + " - " + service.description}
+                    />
+                  </datalist>
+                ))} */}
               </div>
             </div>
           </div>
@@ -193,3 +243,20 @@ export default function orderPage() {
     </div>
   );
 }
+
+// export async function getServerSideProps(context) {
+//   const session = await getSession(context);
+
+//   if (!session) {
+//     return {
+//       redirect: {
+//         destination: "/users/login",
+//         permanent: false,
+//       },
+//     };
+//   }
+
+//   return {
+//     props: { user: session.user },
+//   };
+// }

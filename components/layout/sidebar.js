@@ -1,7 +1,7 @@
 import { signOut } from "next-auth/react";
 import Link from "next/link";
-
-export default function Sidebar() {
+import React, { memo } from "react";
+const Sidebar = () => {
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" }); // เรียกใช้ signOut เมื่อมีการคลิกปุ่ม "ออกจากระบบ"
   };
@@ -287,4 +287,5 @@ export default function Sidebar() {
       </div>
     </div>
   );
-}
+};
+export default memo(Sidebar);

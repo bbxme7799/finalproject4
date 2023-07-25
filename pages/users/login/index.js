@@ -5,10 +5,59 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
+// import { useAccount, useConnect, useSignMessage, useDisconnect } from "wagmi";
+// import { MetaMaskConnector } from "wagmi/connectors/metaMask";
+// import { useAuthRequestChallengeEvm } from "@moralisweb3/next";
+// const { EvmChain } = require("@moralisweb3/common-evm-utils");
 
 export default function LoginPage() {
   const session = useSession();
   const router = useRouter();
+
+  // const { connectAsync } = useConnect();
+  // const { disconnectAsync } = useDisconnect();
+  // const { isConnected } = useAccount();
+  // const { signMessageAsync } = useSignMessage();
+  // const { requestChallengeAsync } = useAuthRequestChallengeEvm();
+  // const { push } = useRouter();
+
+  // const MetamaskLoginHandler = async () => {
+  //   if (isConnected) {
+  //     await disconnectAsync();
+  //   }
+
+  //   const chains = EvmChain.BSC;
+
+  //   const { account, chain } = await connectAsync({
+  //     connector: new MetaMaskConnector(),
+  //   });
+
+  //   const { message } = await requestChallengeAsync({
+  //     address: account,
+  //     chainId: chains,
+  //   });
+
+  //   const signature = await signMessageAsync({ message });
+
+  //   // redirect user after success authentication to '/user' page
+  //   const { url } = await signIn("moralis-auth", {
+  //     message,
+  //     signature,
+  //     redirect: false,
+  //     callbackUrl: "/users",
+  //   });
+  //   /**
+  //    * instead of using signIn(..., redirect: "/user")
+  //    * we get the url from callback and push it to the router to avoid page refreshing
+  //    */
+  //   // if (url) {
+  //   //   push(url);
+  //   // }
+  // };
+
+  const GoogleLoginHandler = () => {
+    signIn("google");
+  };
 
   if (session.status === "loading") {
     return <p>Loading...</p>;
@@ -27,7 +76,7 @@ export default function LoginPage() {
               Sign in to your account
             </h1>
             <button
-              onClick={() => signIn("google")}
+              onClick={GoogleLoginHandler}
               type="button"
               className="w-full text-white bg-[#53c28b] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             >
@@ -41,10 +90,7 @@ export default function LoginPage() {
               </span>
             </button>
             <button
-              onClick={() => {
-                console.log("Metamask Login clicked");
-                // ดำเนินการล็อกอิน Metamask ที่นี่
-              }}
+              // onClick={MetamaskLoginHandler}
               type="button"
               className="w-full text-white bg-[#53c28b] hover:bg-primary-700 focus:ring-4 focus:outline-none focus:ring-primary-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-primary-600 dark:hover:bg-primary-700 dark:focus:ring-primary-800"
             >

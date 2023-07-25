@@ -1,5 +1,7 @@
 import { User } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/router";
 
 const Users = [
   {
@@ -104,6 +106,13 @@ function index() {
   const records = Users.slice(firstIndex, lastIndex);
   const npage = Math.ceil(Users.length / recordsPerPage);
   const number = [...Array(npage + 1).keys()].slice(1);
+
+  const session = useSession();
+  const router = useRouter();
+
+  if (session.status === "loading") {
+    return <p>Loading...</p>;
+  }
 
   // Acive Button
 

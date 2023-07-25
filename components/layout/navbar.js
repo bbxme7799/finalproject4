@@ -1,5 +1,6 @@
-import Image from "next/image";
-export default function Navbar() {
+import { memo } from "react";
+
+const Navbar = () => {
   return (
     <nav className="shadow bg-white fixed w-full z-10">
       <div className="mx-auto px-4 sm:px-6 lg:px-8 ">
@@ -54,4 +55,6 @@ export default function Navbar() {
       </div>
     </nav>
   );
-}
+};
+
+export default memo(Navbar);
