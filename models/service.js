@@ -12,10 +12,7 @@ const serviceSchema = new Schema({
     type: String,
     required: true,
   },
-  category: {
-    type: String,
-    required: true,
-  },
+  category: { type: Schema.Types.ObjectId, ref: "category", required: true },
   description: {
     type: String,
     required: true,

@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-//import { getSession, signOut } from "next-auth/react";
+
+// Constants
+const categories = [
+  { name: "Youtube", image: "google.png" },
+  { name: "Facebook", image: "google.png" },
+  { name: "Instagram", image: "google.png" },
+  { name: "Tiktok", image: "google.png" },
+  { name: "Twitter", image: "google.png" },
+  { name: "Website Traffic", image: "google.png" },
+  // { name: "All Service", image: "google.png" },
+];
 
 export default function User() {
   const [selectedCategory, setSelectedCategory] = useState("");
+  const [categoriesFromServices, setCategoriesFromServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [services, setServices] = useState([]);
-  console.log("🚀 ~ file: index.js:10 ~ User ~ services:", services);
+  const [services, setServices] = useState();
+  console.log("🚀 ~ file: index.js:20 ~ User ~ services:", services);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -21,6 +32,14 @@ export default function User() {
           );
           const data = await res.json();
           setServices(data.services);
+          // Extract the categories from the services data
+          const categoriesFromServices = Array.from(
+            new Set(data.services.map((service) => service.category))
+          );
+
+          // // Set the categories in the state
+          // setCategoriesFromServices(categoriesFromServices);
+
           setIsLoading(false);
         } catch (error) {
           console.error("Error fetching services:", error.message);
@@ -38,7 +57,7 @@ export default function User() {
 
   // If there is no active session, redirect to the login page
   if (!session) {
-    router.push("/users/login"); // Replace "/login" with the path to your login page
+    router.push("/users/login");
     return null;
   }
 
@@ -65,81 +84,14 @@ export default function User() {
         <div className="bg-white h-auto rounded-lg px-8 py-8">
           <div className="flex relative">
             <div className="w-full flex flex-wrap gap-4 content-start">
-              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-                <div className="flex items-center">
-                  <button></button>
-                  <img
-                    src="google.png"
-                    width={50}
-                    height={50}
-                    className="mx-3 my-3 "
-                  />
-                  <h2 className="mx-4"> Youtube </h2>
-                </div>
-              </div>
-              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-                <button
-                  onClick={() =>
-                    handleCategoryChange(
-                      "Website Traffic - เพิ่มทราฟฟิคเข้าเว็บ Session < ~60 วินาที #🅸🅿🆅🆂"
-                    )
-                  }
-                >
-                  <div className="flex items-center">
-                    <img
-                      src="google.png"
-                      width={50}
-                      height={50}
-                      className="mx-3 my-3 "
-                    />
-                    <h2 className="mx-4"> Facebook </h2>
-                  </div>
-                </button>
-              </div>
-              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-                <div className="flex items-center">
-                  <img
-                    src="google.png"
-                    width={50}
-                    height={50}
-                    className="mx-3 my-3 "
-                  />
-                  <h2 className="mx-4"> Instagram </h2>
-                </div>
-              </div>
-              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-                <div className="flex items-center">
-                  <img
-                    src="google.png"
-                    width={50}
-                    height={50}
-                    className="mx-3 my-3 "
-                  />
-                  <h2 className="mx-4"> Tiktok </h2>
-                </div>
-              </div>
-              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-                <div className="flex items-center">
-                  <img
-                    src="google.png"
-                    width={50}
-                    height={50}
-                    className="mx-3 my-3 "
-                  />
-                  <h2 className="mx-4"> Twitter </h2>
-                </div>
-              </div>
-              <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-                <div className="flex items-center">
-                  <img
-                    src="google.png"
-                    width={50}
-                    height={50}
-                    className="mx-3 my-3 "
-                  />
-                  <h2 className="mx-4"> Traffic / SEO </h2>
-                </div>
-              </div>
+              {categories.map((category) => (
+                <CategoryButton
+                  key={category.name}
+                  onClick={() => handleCategoryChange(category.name)}
+                  name={category.name}
+                  image={category.image}
+                />
+              ))}
             </div>
           </div>
         </div>
@@ -158,16 +110,24 @@ export default function User() {
                   height={30}
                   className="mx-3 my-3 "
                 />
-                {/* {services.map((service) => (
-                  <datalist id="categories">
-                    <option
-                      key={service._id}
-                      value={service.name + " - " + service.description}
-                    />
-                  </datalist>
-                ))} */}
+                {/* <select
+                  value={selectedCategory}
+                  onChange={handleCategoryChange}
+                >
+                  <option value="">Select Category</option>
+                  {categoriesFromServices?.map(
+                    (
+                      category // Change the variable name here
+                    ) => (
+                      <option key={category} value={category}>
+                        {category}
+                      </option>
+                    )
+                  )}
+                </select> */}
               </div>
             </div>
+            {/* Loading state */}
           </div>
           <div>
             <div className="my-3">
@@ -175,7 +135,16 @@ export default function User() {
             </div>
             <div className="border-gray-300 border-[2px] bg-white rounded-md">
               <div className="flex items-center">
-                <h2 className="mx-3 my-3">Telegram Member</h2>
+                {/* {selectedCategory && !isLoading && (
+                  <div>
+                    <h2>Services in {selectedCategory}:</h2>
+                    <ul>
+                      {services?.map((service) => (
+                        <li key={service.id}>{service.name}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )} */}
               </div>
             </div>
             <h2 className="text-sm text-gray-500 my-[2px]">10 คำสั่งซื้อ</h2>
@@ -244,19 +213,13 @@ export default function User() {
   );
 }
 
-// export async function getServerSideProps(context) {
-//   const session = await getSession(context);
-
-//   if (!session) {
-//     return {
-//       redirect: {
-//         destination: "/users/login",
-//         permanent: false,
-//       },
-//     };
-//   }
-
-//   return {
-//     props: { user: session.user },
-//   };
-// }
+const CategoryButton = ({ name, image, onClick }) => (
+  <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
+    <button onClick={onClick}>
+      <div className="flex items-center">
+        <img src={image} width={50} height={50} className="mx-3 my-3 " />
+        <h2 className="mx-4">{name}</h2>
+      </div>
+    </button>
+  </div>
+);
