@@ -3,7 +3,7 @@ import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
 // Constants
-const categories = [
+const categoriess = [
   { name: "Youtube", image: "google.png" },
   { name: "Facebook", image: "google.png" },
   { name: "Instagram", image: "google.png" },
@@ -13,42 +13,59 @@ const categories = [
   // { name: "All Service", image: "google.png" },
 ];
 
+const CategoryButton = ({ name, image, onClick }) => (
+  <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
+    <button onClick={onClick}>
+      <div className="flex items-center">
+        <img src={image} width={50} height={50} className="mx-3 my-3 " />
+        <h2 className="mx-4">{name}</h2>
+      </div>
+    </button>
+  </div>
+);
+
 export default function User() {
   const [selectedCategory, setSelectedCategory] = useState("");
-  const [categoriesFromServices, setCategoriesFromServices] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
-  const [services, setServices] = useState();
-  console.log("🚀 ~ file: index.js:20 ~ User ~ services:", services);
+  const [categories, setCategories] = useState([]);
   const { data: session, status } = useSession();
   const router = useRouter();
 
   useEffect(() => {
-    if (selectedCategory) {
-      setIsLoading(true);
-      async function fetchServices() {
-        try {
-          const res = await fetch(
-            `/api/service?category=${encodeURIComponent(selectedCategory)}`
-          );
-          const data = await res.json();
-          setServices(data.services);
-          // Extract the categories from the services data
-          const categoriesFromServices = Array.from(
-            new Set(data.services.map((service) => service.category))
-          );
-
-          // // Set the categories in the state
-          // setCategoriesFromServices(categoriesFromServices);
-
-          setIsLoading(false);
-        } catch (error) {
-          console.error("Error fetching services:", error.message);
-          setIsLoading(false);
-        }
+    setIsLoading(true);
+    async function fetchCategories() {
+      try {
+        const res = await fetch("/api/category");
+        const data = await res.json();
+        setCategories(data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching categories:", error.message);
+        setIsLoading(false);
       }
-      fetchServices();
     }
-  }, [selectedCategory]);
+    fetchCategories();
+  }, []);
+
+  // useEffect(() => {
+  //   if (selectedCategory) {
+  //     setIsLoading(true);
+  //     async function fetchServices() {
+  //       try {
+  //         const res = await fetch(
+  //           `/api/service?category=${encodeURIComponent(selectedCategory)}`
+  //         );
+  //         const data = await res.json();
+  //         // อัปเดต state ของ services ด้วยข้อมูลใหม่
+  //         setIsLoading(false);
+  //       } catch (error) {
+  //         console.error("Error fetching services:", error.message);
+  //         setIsLoading(false);
+  //       }
+  //     }
+  //     fetchServices();
+  //   }
+  // }, [selectedCategory]);
 
   // Check if the session is loading
   if (status === "loading") {
@@ -64,6 +81,14 @@ export default function User() {
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
   };
+
+  const filteredCategories = categories.filter((category) =>
+    category.name.includes(selectedCategory)
+  );
+  // console.log(
+  //   "🚀 ~ file: index.js:88 ~ User ~ filteredCategories:",
+  //   filteredCategories
+  // );
 
   return (
     <div className="ml-[255px] mt-[65px] h-auto">
@@ -84,7 +109,7 @@ export default function User() {
         <div className="bg-white h-auto rounded-lg px-8 py-8">
           <div className="flex relative">
             <div className="w-full flex flex-wrap gap-4 content-start">
-              {categories.map((category) => (
+              {categoriess.map((category) => (
                 <CategoryButton
                   key={category.name}
                   onClick={() => handleCategoryChange(category.name)}
@@ -110,21 +135,14 @@ export default function User() {
                   height={30}
                   className="mx-3 my-3 "
                 />
-                {/* <select
-                  value={selectedCategory}
-                  onChange={handleCategoryChange}
-                >
-                  <option value="">Select Category</option>
-                  {categoriesFromServices?.map(
-                    (
-                      category // Change the variable name here
-                    ) => (
-                      <option key={category} value={category}>
-                        {category}
-                      </option>
-                    )
-                  )}
-                </select> */}
+                <select onChange={(e) => handleCategoryChange(e.target.value)}>
+                  {/* ใช้ filteredCategories แทน categories เพื่อแสดงเฉพาะหมวดหมู่ที่ผ่านการกรอง */}
+                  {filteredCategories.map((category) => (
+                    <option key={category._id} value={category.name}>
+                      {category.name}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             {/* Loading state */}
@@ -135,16 +153,7 @@ export default function User() {
             </div>
             <div className="border-gray-300 border-[2px] bg-white rounded-md">
               <div className="flex items-center">
-                {/* {selectedCategory && !isLoading && (
-                  <div>
-                    <h2>Services in {selectedCategory}:</h2>
-                    <ul>
-                      {services?.map((service) => (
-                        <li key={service.id}>{service.name}</li>
-                      ))}
-                    </ul>
-                  </div>
-                )} */}
+                <h2 className="mx-3 my-3"></h2>
               </div>
             </div>
             <h2 className="text-sm text-gray-500 my-[2px]">10 คำสั่งซื้อ</h2>
@@ -212,14 +221,3 @@ export default function User() {
     </div>
   );
 }
-
-const CategoryButton = ({ name, image, onClick }) => (
-  <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-    <button onClick={onClick}>
-      <div className="flex items-center">
-        <img src={image} width={50} height={50} className="mx-3 my-3 " />
-        <h2 className="mx-4">{name}</h2>
-      </div>
-    </button>
-  </div>
-);

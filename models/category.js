@@ -1,4 +1,3 @@
-// models/category.js
 import mongoose from "mongoose";
 
 const categorySchema = new mongoose.Schema({
@@ -8,7 +7,6 @@ const categorySchema = new mongoose.Schema({
   },
 });
 
-// สร้าง model "Category" โดยให้เชื่อมต่อกับ collection "category" จาก schema
-const Category = mongoose.model("Category", categorySchema, "category");
-
+const Category =
+  mongoose.models.Category || mongoose.model("Category", categorySchema);
 export default Category;
