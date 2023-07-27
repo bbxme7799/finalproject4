@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 
-// Constants
 const categoriess = [
   { name: "Youtube", image: "google.png" },
   { name: "Facebook", image: "google.png" },
@@ -30,6 +29,45 @@ export default function User() {
   const [categories, setCategories] = useState([]);
   const { data: session, status } = useSession();
   const router = useRouter();
+  const [serviceData, setServiceData] = useState([]);
+  // console.log(Array.isArray(serviceData)); // เช็คว่า serviceData เป็น array หรือไม่
+  // console.log(typeof serviceData === "object"); // เช็คว่า serviceData เป็น object หรือไม่
+  const arr = Object.keys(serviceData).map((key) => serviceData[key]);
+  console.log("🚀 ~ file: index.js:36 ~ User ~ arr:", arr);
+
+  const findSimilarCategory = (searchTerm) => {
+    if (!searchTerm) return null;
+
+    const searchTermLowerCase = searchTerm.toLowerCase();
+    return categories.find(
+      (category) =>
+        category.name.toLowerCase().includes(searchTermLowerCase) ||
+        searchTermLowerCase.includes(category.name.toLowerCase())
+    );
+  };
+
+  useEffect(() => {
+    if (selectedCategory) {
+      setIsLoading(true);
+      async function fetchData() {
+        try {
+          const encodedCategory = encodeURIComponent(selectedCategory);
+          const response = await fetch(
+            `/api/service?category=${encodedCategory}`
+          );
+          const data = await response.json();
+          setServiceData(data);
+          setIsLoading(false);
+        } catch (error) {
+          console.error("Error fetching service data:", error);
+          setIsLoading(false);
+        }
+      }
+      fetchData();
+    } else {
+      // ...
+    }
+  }, [selectedCategory]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -47,27 +85,12 @@ export default function User() {
     fetchCategories();
   }, []);
 
-  // useEffect(() => {
-  //   if (selectedCategory) {
-  //     setIsLoading(true);
-  //     async function fetchServices() {
-  //       try {
-  //         const res = await fetch(
-  //           `/api/service?category=${encodeURIComponent(selectedCategory)}`
-  //         );
-  //         const data = await res.json();
-  //         // อัปเดต state ของ services ด้วยข้อมูลใหม่
-  //         setIsLoading(false);
-  //       } catch (error) {
-  //         console.error("Error fetching services:", error.message);
-  //         setIsLoading(false);
-  //       }
-  //     }
-  //     fetchServices();
-  //   }
-  // }, [selectedCategory]);
+  useEffect(() => {
+    if (categories.length > 0) {
+      setSelectedCategory(categories[0].name);
+    }
+  }, [categories]);
 
-  // Check if the session is loading
   if (status === "loading") {
     return <div>Loading...</div>;
   }
@@ -78,17 +101,16 @@ export default function User() {
     return null;
   }
 
-  const handleCategoryChange = (category) => {
-    setSelectedCategory(category);
+  const handleCategoryChange = (categoryName) => {
+    const similarCategory = findSimilarCategory(categoryName);
+    if (similarCategory) {
+      setSelectedCategory(similarCategory.name);
+    } else {
+      // If no similar category is found, you can decide what to do here.
+      // For example, you might clear the selected category or show an error message.
+      console.log("No similar category found.");
+    }
   };
-
-  const filteredCategories = categories.filter((category) =>
-    category.name.includes(selectedCategory)
-  );
-  // console.log(
-  //   "🚀 ~ file: index.js:88 ~ User ~ filteredCategories:",
-  //   filteredCategories
-  // );
 
   return (
     <div className="ml-[255px] mt-[65px] h-auto">
@@ -135,13 +157,19 @@ export default function User() {
                   height={30}
                   className="mx-3 my-3 "
                 />
-                <select onChange={(e) => handleCategoryChange(e.target.value)}>
-                  {/* ใช้ filteredCategories แทน categories เพื่อแสดงเฉพาะหมวดหมู่ที่ผ่านการกรอง */}
-                  {filteredCategories.map((category) => (
-                    <option key={category._id} value={category.name}>
-                      {category.name}
-                    </option>
-                  ))}
+                <select
+                  onChange={(e) => handleCategoryChange(e.target.value)}
+                  value={selectedCategory || ""}
+                >
+                  <option value="">All Categories</option>
+                  {categories
+                    .map((category) => category.name)
+                    .sort()
+                    .map((categoryName) => (
+                      <option key={categoryName} value={categoryName}>
+                        {categoryName}
+                      </option>
+                    ))}
                 </select>
               </div>
             </div>
@@ -153,7 +181,16 @@ export default function User() {
             </div>
             <div className="border-gray-300 border-[2px] bg-white rounded-md">
               <div className="flex items-center">
-                <h2 className="mx-3 my-3"></h2>
+                <h2 className="mx-3 my-3">
+                  <select>
+                    <option value="">All Categories</option>
+                    {arr[0].map((item) => (
+                      <option key={item._id} value={item.name}>
+                        {item.name}
+                      </option>
+                    ))}
+                  </select>
+                </h2>
               </div>
             </div>
             <h2 className="text-sm text-gray-500 my-[2px]">10 คำสั่งซื้อ</h2>

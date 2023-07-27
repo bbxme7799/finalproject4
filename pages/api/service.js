@@ -12,18 +12,19 @@ export default async function handler(req, res) {
 
     // ดึงค่า query parameter "category" จาก request
     const { category } = req.query;
-    console.log("🚀 ~ file: service.js:15 ~ handler ~ category:", category);
+    // console.log("🚀 ~ file: service.js:15 ~ handler ~ category:", category);
 
     // ตรวจสอบว่ามีการส่ง category มาหรือไม่
     if (category) {
       // ค้นหาคำที่ใกล้เคียงกันด้วย regex
       const regex = new RegExp(category, "i"); // "i" ใน RegExp คือไม่แยกแยะตัวพิมพ์ใหญ่เล็ก
       const services = await Service.find({ category: regex });
+      // console.log("services:", services);
       return res.status(200).json({ services });
     } else {
       // ถ้าไม่ระบุ category จะดึงข้อมูลรายการบริการทั้งหมด
       const services = await Service.find({});
-      console.log("🚀 ~ file: service.js:26 ~ handler ~ services:", services);
+      // console.log("🚀 ~ file: service.js:27 ~ handler ~ services:", services);
       return res.status(200).json({ services });
     }
   } catch (error) {
