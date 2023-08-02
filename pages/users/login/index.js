@@ -5,10 +5,8 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-// import { useAccount, useConnect, useSignMessage, useDisconnect } from "wagmi";
-// import { MetaMaskConnector } from "wagmi/connectors/metaMask";
-// import { useAuthRequestChallengeEvm } from "@moralisweb3/next";
-// const { EvmChain } = require("@moralisweb3/common-evm-utils");
+import StatusButton from "@/components/history/StatusButton";
+import { UserTableRow } from "./UserTableRow";
 
 export default function LoginPage() {
   const session = useSession();

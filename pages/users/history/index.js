@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import styles from "./index.module.css";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import $ from "jquery";
+
 const Users = [
   {
     id: 1,
@@ -117,18 +117,10 @@ const Users = [
 ];
 
 function index() {
-  // ส่วน Search
-  const [query, setquery] = useState("");
-  const [btn, setbtn] = useState("");
-  // ส่วน pagination
-  const [currentPage, setcurrentPage] = useState(1);
-  const [recordsPerPage, setrecordsPerPage] = useState(10);
-  const lastIndex = currentPage * recordsPerPage;
-  const firstIndex = lastIndex - recordsPerPage;
-  const records = Users.slice(firstIndex, lastIndex);
-  const npage = Math.ceil(Users.length / recordsPerPage);
-  const number = [...Array(npage + 1).keys()].slice(1);
-
+  const [query, setQuery] = useState("");
+  const [btn, setBtn] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
   const session = useSession();
   const router = useRouter();
 
@@ -136,14 +128,66 @@ function index() {
     return <p>Loading...</p>;
   }
 
-  // Acive Button
-  useEffect(() => {
-    $(document).on("click", ".sectionli", function () {
-      $(this).addClass("active").siblings().removeClass("active");
-    });
-  }, []);
+  function getStatusColor(status) {
+    switch (status) {
+      case "โปรดรอ..":
+        return "#008CBA";
+      case "ดำเนินการ":
+        return "#F4D03F";
+      case "เสร็จสิ้น":
+        return "#4CAF50";
+      case "คืนบางส่วน":
+      case "ประมวลผล":
+        return "#E67E22";
+      case "ยกเลิก":
+        return "#f44336";
+      default:
+        return "black";
+    }
+  }
 
-  // console.log(Users.filter(user => user.first_name.toLocaleLowerCase.includes("Em")))
+  // Function to go to the next page
+  function nextPage() {
+    if (currentPage < totalPages) {
+      setCurrentPage((prevPage) => prevPage + 1);
+    }
+  }
+
+  // Function to go to the previous page
+  function prePage() {
+    if (currentPage > 1) {
+      setCurrentPage((prevPage) => prevPage - 1);
+    }
+  }
+
+  // Function to change the current page
+  function changeCPage(id) {
+    setCurrentPage(id);
+  }
+
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  //ค้นหาเฉพาะ status
+  // const filteredUsers = Users.filter(
+  //   (user) =>
+  //     user.status.toLowerCase().includes(query.toLowerCase()) ||
+  //     user.status.toLowerCase().includes(btn.toLowerCase())
+  // );
+  const filteredUsers = Users.filter((user) =>
+    Object.values(user).some((value) => {
+      if (typeof value === "string") {
+        return value.toLowerCase().includes(query.toLowerCase());
+      }
+      return false;
+    })
+  );
+
+  console.log("🚀 ~ file: index.js:181 ~ index ~ Users:", Users);
+
+  const records = filteredUsers.slice(firstIndex, lastIndex);
+  const totalPages = Math.ceil(filteredUsers.length / recordsPerPage);
+  const number = Array.from({ length: totalPages }, (_, i) => i + 1);
+
   return (
     <div className="ml-[255px] mt-[65px] h-auto">
       <div className="bg-white my-[2px] ">
@@ -159,20 +203,20 @@ function index() {
               <ul className={styles.section}>
                 <li
                   className="sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg  active"
-                  onClick={(e) => setbtn(e.target.value)}
+                  onClick={(e) => setBtn(e.target.value)}
                   value=""
                 >
-                  <button onClick={(e) => setbtn(e.target.value)} value="">
+                  <button onClick={(e) => setBtn(e.target.value)} value="">
                     All
                   </button>
                 </li>
                 <li
                   className="sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg "
-                  onClick={(e) => setbtn(e.target.value)}
+                  onClick={(e) => setBtn(e.target.value)}
                   value="โปรดรอ.."
                 >
                   <button
-                    onClick={(e) => setbtn(e.target.value)}
+                    onClick={(e) => setBtn(e.target.value)}
                     value="โปรดรอ.."
                   >
                     โปรดรอ..
@@ -180,11 +224,11 @@ function index() {
                 </li>
                 <li
                   className="sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg  "
-                  onClick={(e) => setbtn(e.target.value)}
+                  onClick={(e) => setBtn(e.target.value)}
                   value="ดำเนินการ"
                 >
                   <button
-                    onClick={(e) => setbtn(e.target.value)}
+                    onClick={(e) => setBtn(e.target.value)}
                     value="ดำเนินการ"
                   >
                     ดำเนินการ
@@ -192,11 +236,11 @@ function index() {
                 </li>
                 <li
                   className="sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg "
-                  onClick={(e) => setbtn(e.target.value)}
+                  onClick={(e) => setBtn(e.target.value)}
                   value="เสร็จสิ้น"
                 >
                   <button
-                    onClick={(e) => setbtn(e.target.value)}
+                    onClick={(e) => setBtn(e.target.value)}
                     value="เสร็จสิ้น"
                   >
                     เสร็จสิ้น
@@ -204,11 +248,11 @@ function index() {
                 </li>
                 <li
                   className="sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg "
-                  onClick={(e) => setbtn(e.target.value)}
+                  onClick={(e) => setBtn(e.target.value)}
                   value="คืนบางส่วน"
                 >
                   <button
-                    onClick={(e) => setbtn(e.target.value)}
+                    onClick={(e) => setBtn(e.target.value)}
                     value="คืนบางส่วน"
                   >
                     คืนบางส่วน
@@ -216,11 +260,11 @@ function index() {
                 </li>
                 <li
                   className="sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg "
-                  onClick={(e) => setbtn(e.target.value)}
+                  onClick={(e) => setBtn(e.target.value)}
                   value="ประมาลผล"
                 >
                   <button
-                    onClick={(e) => setbtn(e.target.value)}
+                    onClick={(e) => setBtn(e.target.value)}
                     value="ประมาลผล"
                   >
                     ประมาลผล
@@ -228,11 +272,11 @@ function index() {
                 </li>
                 <li
                   className="sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg "
-                  onClick={(e) => setbtn(e.target.value)}
+                  onClick={(e) => setBtn(e.target.value)}
                   value="ยกเลิก"
                 >
                   <button
-                    onClick={(e) => setbtn(e.target.value)}
+                    onClick={(e) => setBtn(e.target.value)}
                     value="ยกเลิก"
                   >
                     ยกเลิก
@@ -245,7 +289,7 @@ function index() {
                 type="text"
                 placeholder="Seach..."
                 className=" border-2 rounded-md px-3 py-2 "
-                onChange={(e) => setquery(e.target.value)}
+                onChange={(e) => setQuery(e.target.value)}
               />
             </div>
 
@@ -263,45 +307,41 @@ function index() {
                       <th className="text-center ">Status</th>
                       <th className="text-center ">เพิ่มเติม</th>
                     </tr>
-                    {records
-                      .filter((user) =>
-                        user.status.toLowerCase().includes(query || btn)
-                      )
-                      .map((item) => (
-                        <tr key={item.id} className="border-b-2">
-                          <td className="text-left ">
-                            <p className="mx-2 my-3">{item.id}</p>
-                          </td>
-                          <td className="text-left ">
-                            <p className="my-3 ">{item.service}</p>
-                          </td>
-                          <td className="text-left ">
-                            <p className="my-3 ">{item.src}</p>
-                          </td>
-                          <td className="text-center ">
-                            <p className="my-3">{item.cost}</p>
-                          </td>
-                          <td className="text-center ">
-                            <p className="my-3">{item.start}</p>
-                          </td>
-                          <td className="text-center ">
-                            <p className="my-3">{item.count}</p>
-                          </td>
-                          <td className="text-center">
-                            <p
-                              className="my-3 w-24 mx-auto rounded-md py-1 text-white "
-                              style={{
-                                backgroundColor: getStatusColor(item.status),
-                              }}
-                            >
-                              {item.status}
-                            </p>
-                          </td>
-                          <td className="text-center ">
-                            <p className="my-3">{item.more}</p>
-                          </td>
-                        </tr>
-                      ))}
+                    {filteredUsers.slice(firstIndex, lastIndex).map((item) => (
+                      <tr key={item.id} className="border-b-2">
+                        <td className="text-left ">
+                          <p className="mx-2 my-3">{item.id}</p>
+                        </td>
+                        <td className="text-left ">
+                          <p className="my-3 ">{item.service}</p>
+                        </td>
+                        <td className="text-left ">
+                          <p className="my-3 ">{item.src}</p>
+                        </td>
+                        <td className="text-center ">
+                          <p className="my-3">{item.cost}</p>
+                        </td>
+                        <td className="text-center ">
+                          <p className="my-3">{item.start}</p>
+                        </td>
+                        <td className="text-center ">
+                          <p className="my-3">{item.count}</p>
+                        </td>
+                        <td className="text-center">
+                          <p
+                            className="my-3 w-24 mx-auto rounded-md py-1 text-white "
+                            style={{
+                              backgroundColor: getStatusColor(item.status),
+                            }}
+                          >
+                            {item.status}
+                          </p>
+                        </td>
+                        <td className="text-center ">
+                          <p className="my-3">{item.more}</p>
+                        </td>
+                      </tr>
+                    ))}
                   </tbody>
                 </table>
               </div>
@@ -315,7 +355,7 @@ function index() {
                     id="dropdownMenu"
                     name="dropdownMenu"
                     className="mt-[0.2rem]  border-2 rounded-md py-2 px-3"
-                    onClick={(e) => setrecordsPerPage(e.target.value)}
+                    onClick={(e) => setRecordsPerPage(e.target.value)}
                   >
                     <option value="10">10</option>
                     <option value="25">25</option>
@@ -369,36 +409,36 @@ function index() {
 
   // Style button color
 
-  function getStatusColor(status) {
-    switch (status) {
-      case "โปรดรอ..":
-        return "#008CBA";
-      case "ดำเนินการ":
-        return "#F4D03F";
-      case "เสร็จสิ้น":
-        return "#4CAF50";
-      case "คืนบางส่วน":
-        return "#E67E22";
-      case "ประมวลผล":
-        return "#E67E22";
-      case "ยกเลิก":
-        return "#f44336";
-      default:
-        return "black";
-    }
-  }
+  //   function getStatusColor(status) {
+  //     switch (status) {
+  //       case "โปรดรอ..":
+  //         return "#008CBA";
+  //       case "ดำเนินการ":
+  //         return "#F4D03F";
+  //       case "เสร็จสิ้น":
+  //         return "#4CAF50";
+  //       case "คืนบางส่วน":
+  //         return "#E67E22";
+  //       case "ประมวลผล":
+  //         return "#E67E22";
+  //       case "ยกเลิก":
+  //         return "#f44336";
+  //       default:
+  //         return "black";
+  //     }
+  //   }
 
-  function nextPage() {
-    if (currentPage !== lastIndex) {
-      setcurrentPage(currentPage + 1);
-    }
-  }
-  function prePage() {
-    if (currentPage !== firstIndex) {
-      setcurrentPage(currentPage - 1);
-    }
-  }
-  function changeCPage(id) {}
+  //   function nextPage() {
+  //     if (currentPage !== lastIndex) {
+  //       setcurrentPage(currentPage + 1);
+  //     }
+  //   }
+  //   function prePage() {
+  //     if (currentPage !== firstIndex) {
+  //       setcurrentPage(currentPage - 1);
+  //     }
+  //   }
+  //   function changeCPage(id) {}
 }
 
 export default index;

@@ -1,27 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
+import CategoryButton from "@/components/CategoryButton"; // นำ Component CategoryButton เข้ามาใช้งาน
 
 const categoriess = [
   { name: "Youtube", image: "google.png" },
   { name: "Facebook", image: "google.png" },
   { name: "Instagram", image: "google.png" },
-  { name: "Tiktok", image: "google.png" },
   { name: "Twitter", image: "google.png" },
   { name: "Website Traffic", image: "google.png" },
+  { name: "TikTok", image: "google.png" },
   // { name: "All Service", image: "google.png" },
 ];
-
-const CategoryButton = ({ name, image, onClick }) => (
-  <div className="bg-gray-400 flex-grow-0 overflow-hidden lg:flex-[calc((96.5%-12px)/5)] md:flex-[calc((96.5%-12px)/4)] sm:flex-[calc((96.5%-12px)/2)] rounded-md">
-    <button onClick={onClick}>
-      <div className="flex items-center">
-        <img src={image} width={50} height={50} className="mx-3 my-3 " />
-        <h2 className="mx-4">{name}</h2>
-      </div>
-    </button>
-  </div>
-);
 
 export default function User() {
   const [selectedCategory, setSelectedCategory] = useState("");
@@ -30,8 +20,6 @@ export default function User() {
   const { data: session, status } = useSession();
   const router = useRouter();
   const [serviceData, setServiceData] = useState([]);
-  // console.log(Array.isArray(serviceData)); // เช็คว่า serviceData เป็น array หรือไม่
-  // console.log(typeof serviceData === "object"); // เช็คว่า serviceData เป็น object หรือไม่
   const arr = Object.keys(serviceData).map((key) => serviceData[key]);
   console.log("🚀 ~ file: index.js:36 ~ User ~ arr:", arr);
 
@@ -184,7 +172,7 @@ export default function User() {
                 <h2 className="mx-3 my-3">
                   <select>
                     <option value="">All Categories</option>
-                    {arr[0].map((item) => (
+                    {arr[0]?.map((item) => (
                       <option key={item._id} value={item.name}>
                         {item.name}
                       </option>
