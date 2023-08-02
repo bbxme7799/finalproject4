@@ -33,7 +33,7 @@ export default function CreditPage() {
       <div className="mx-[200px] my-8 shadow-md h-full">
         <div className="bg-white h-auto rounded-lg px-8 py-8">
           <div className="relative">
-            <form onSubmit={handleSubmit} className="my-3">
+            <form rm onSubmit={handleSubmit} className="my-3">
               <div className="mb-4">
                 <input
                   type="number"

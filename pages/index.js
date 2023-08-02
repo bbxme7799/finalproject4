@@ -69,7 +69,7 @@ const HomePage = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-row gap-8 mt-32 w-[60%] mx-auto items-center text-center">
+      <div className="flex flex-row gap-8 mt-32 w-[70%] mx-auto items-center text-center">
         {serviceCards.map((card, index) => (
           <div className={classes.card} key={index}>
             <div className={classes.bodycard}>
@@ -83,7 +83,7 @@ const HomePage = () => {
       <div className="w-[50%] bg-white h-[100px] mx-auto mt-16 shadow-lg rounded-2xl border-[3px] border-gray-50 flex items-center justify-center">
         <h1 className="font-bold text-4xl">TOP Rated Services</h1>
       </div>
-      <div className="w-[50%] bg-white h-[500px] mx-auto mt-16 shadow-lg border-[3px] border-gray-50 flex items-center justify-center mb-10">
+      <div className="w-[60%] bg-white h-[500px] mx-auto mt-16 shadow-lg border-[3px] border-gray-50 flex items-center justify-center mb-10">
         <ServiceList />
       </div>
       <Footer />

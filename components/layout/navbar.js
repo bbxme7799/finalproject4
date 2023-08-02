@@ -1,4 +1,6 @@
 import { memo } from "react";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { FaShoppingCart } from "react-icons/fa";
 
 const Navbar = () => {
   return (
@@ -16,27 +18,23 @@ const Navbar = () => {
             <div className="ml-3 relative">
               <div>
                 <button
-                  className="max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none"
-                  id="user-menu"
+                  className="max-w-xs flex items-center text-sm rounded-full focus:outline-none"
+                  id="cart-menu"
                   aria-haspopup="true"
                 >
-                  <span className="sr-only">User Menu</span>
-                  {/* <Image
-                    className="h-8 w-8 rounded-full"
-                    src="/user-avatar.jpg"
-                    alt="User Avatar"
-                  /> */}
+                  <span className="sr-only">Cart Menu</span>
+                  <FaShoppingCart className="h-5 w-5 text-gray-600" />
                 </button>
               </div>
             </div>
             <div className="ml-3 relative">
               <div>
                 <button
-                  className="max-w-xs flex items-center text-sm rounded-full text-white focus:outline-none"
+                  className="max-w-xs flex items-center text-sm rounded-full  focus:outline-none"
                   id="balance-menu"
                   aria-haspopup="true"
                 >
-                  <span className="sr-only">Balance Menu</span>
+                  {/* <span className="sr-only">Balance Menu</span> */}
                   <span className="font-semibold">$1,234.56</span>
                 </button>
               </div>

@@ -5,9 +5,6 @@ import Image from "next/image";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
-import StatusButton from "@/components/history/StatusButton";
-import { UserTableRow } from "./UserTableRow";
-
 export default function LoginPage() {
   const session = useSession();
   const router = useRouter();

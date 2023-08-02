@@ -2,15 +2,22 @@ import React, { useState, useEffect } from "react";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import CategoryButton from "@/components/CategoryButton"; // นำ Component CategoryButton เข้ามาใช้งาน
+//import FacebookIcon from "@/components/icons/facebook.png";
+import InstragramIcon from "@/components/icons/Instagram.png";
+import FacebookIcon from "@/components/icons/facebook.png";
+import YtIcon from "@/components/icons/youtube.png";
+import TwitterIcon from "@/components/icons/twitter.png";
+import TrafficIcon from "@/components/icons/traffic.png";
+import TiktokIcon from "@/components/icons/tiktok.png";
 
 const categoriess = [
-  { name: "Youtube", image: "google.png" },
-  { name: "Facebook", image: "google.png" },
-  { name: "Instagram", image: "google.png" },
-  { name: "Twitter", image: "google.png" },
-  { name: "Website Traffic", image: "google.png" },
-  { name: "TikTok", image: "google.png" },
-  // { name: "All Service", image: "google.png" },
+  { name: "Youtube", image: YtIcon },
+  { name: "Facebook", image: FacebookIcon },
+  { name: "Instagram", image: InstragramIcon }, // Replace "google.png" with Googleicon
+  { name: "Twitter", image: TwitterIcon }, // Replace "google.png" with Googleicon
+  { name: "Website Traffic", image: TrafficIcon }, // Replace "google.png" with Googleicon
+  { name: "TikTok", image: TiktokIcon }, // Replace "google.png" with Googleicon
+  // { name: "All Service", image: "google.png" }, // Make sure to provide the correct image path
 ];
 
 export default function User() {
@@ -89,13 +96,11 @@ export default function User() {
     return null;
   }
 
-  const handleCategoryChange = (categoryName) => {
+  const handleCategoryChange = (categoryName, categoryImage) => {
     const similarCategory = findSimilarCategory(categoryName);
     if (similarCategory) {
       setSelectedCategory(similarCategory.name);
     } else {
-      // If no similar category is found, you can decide what to do here.
-      // For example, you might clear the selected category or show an error message.
       console.log("No similar category found.");
     }
   };
@@ -138,13 +143,13 @@ export default function User() {
               <h2>หมวดหมู่</h2>
             </div>
             <div className="border-gray-300 border-[2px] bg-white rounded-md">
-              <div className="flex items-center">
-                <img
+              <div className="flex items-center mx-3 my-3">
+                {/* <img
                   src="google.png"
                   width={30}
                   height={30}
                   className="mx-3 my-3 "
-                />
+                /> */}
                 <select
                   onChange={(e) => handleCategoryChange(e.target.value)}
                   value={selectedCategory || ""}
