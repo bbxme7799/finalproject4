@@ -22,14 +22,14 @@ export default function CartPage() {
     setCreditAmount("");
   };
   return (
-    <div className="ml-[255px] mt-[65px] h-auto">
+    <div className="ml-[255px] mt-[65px] h-auto ">
       <div className="bg-white my-[2px] ">
         <div className="flex mx-2 py-2">
           <h1 className="font-bold text-lg">Add credit:</h1>
           <p className="text-lg pl-2">เติมเครดิต</p>
         </div>
       </div>
-      <div className="mx-[100px] my-8 h-full">
+      <div className="mx-auto my-8 h-full ">
         <div className="h-auto rounded-lg px-8 py-8">
           <div className="relative">
             <div className="flex flex-col max-w-3xl p-6 space-y-4 sm:p-10 dark:bg-gray-100">
