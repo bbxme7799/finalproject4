@@ -8,19 +8,5 @@ export default function ServiceList(props) {
     // more data...
   ];
 
-  return (
-    <ul>
-      {/* {items.map((event) => (
-        <ServiceItem
-          key={event.id}
-          id={event.id}
-          title={event.title}
-          location={event.location}
-          date={event.date}
-          image={event.image}
-        />
-      ))} */}
-      <ServiceItem data={data} />
-    </ul>
-  );
+  return <ServiceItem data={data} />;
 }

@@ -1,6 +1,6 @@
-import { memo } from "react";
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import React, { useState, useEffect, useRef } from "react";
 import { FaShoppingCart } from "react-icons/fa";
+import Link from "next/link";
 
 const Navbar = () => {
   return (
@@ -8,6 +8,7 @@ const Navbar = () => {
       <div className="mx-auto px-4 sm:px-6 lg:px-8 ">
         <div className="flex justify-between h-[63px]">
           <div className="flex-shrink-0 flex items-center">
+            {/* Your logo image */}
             {/* <Image
               className="hidden lg:block h-8 w-auto"
               src="/logo.svg"
@@ -17,36 +18,42 @@ const Navbar = () => {
           <div className="flex items-center">
             <div className="ml-3 relative">
               <div>
-                <button
-                  className="max-w-xs flex items-center text-sm rounded-full focus:outline-none"
-                  id="cart-menu"
-                  aria-haspopup="true"
-                >
-                  <span className="sr-only">Cart Menu</span>
-                  <FaShoppingCart className="h-5 w-5 text-gray-600" />
-                </button>
+                <Link href="/users/cart">
+                  <button
+                    className="max-w-xs flex items-center text-sm rounded-full focus:outline-none"
+                    id="cart-menu"
+                    aria-haspopup="true"
+                  >
+                    <span className="sr-only">Cart Menu</span>
+                    <FaShoppingCart className="h-5 w-5 text-gray-600" />
+                  </button>
+                </Link>
               </div>
             </div>
             <div className="ml-3 relative">
               <div>
                 <button
-                  className="max-w-xs flex items-center text-sm rounded-full  focus:outline-none"
+                  className="max-w-xs flex items-center text-sm rounded-full focus:outline-none"
                   id="balance-menu"
                   aria-haspopup="true"
                 >
-                  {/* <span className="sr-only">Balance Menu</span> */}
+                  {/* Your balance content */}
                   <span className="font-semibold">$1,234.56</span>
                 </button>
               </div>
             </div>
             <div className="ml-3 relative">
-              <div>
-                {/* <Image
-                  className="block lg:hidden h-8 w-auto"
-                  src="/logo.svg"
-                  alt="Logo"
-                /> */}
-              </div>
+              {/* Your logo image for small screens */}
+              {/* <Image
+                className="block lg:hidden h-8 w-auto"
+                src="/logo.svg"
+                alt="Logo"
+              /> */}
+              <img
+                class="object-cover w-10 h-10 rounded-md"
+                src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/images/avatar-square/avatar-square.png"
+                alt=""
+              />
             </div>
           </div>
         </div>
@@ -55,4 +62,4 @@ const Navbar = () => {
   );
 };
 
-export default memo(Navbar);
+export default Navbar;

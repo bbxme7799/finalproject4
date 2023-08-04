@@ -12,6 +12,7 @@ import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
 import "primereact/resources/primereact.css"; // core css
 import Footer from "@/components/layout/footer";
 import PageMetadata from "@/components/PageMetadata";
+import { motion } from "framer-motion";
 
 const HomePage = () => {
   const [serviceCards] = useState([
@@ -65,7 +66,12 @@ const HomePage = () => {
               <div className="col-span-1 w-[30%] text-center items-center">
                 <div className={classes.banner}>
                   <div className={classes.item}>
-                    <Image src={bg} alt="Card Icon" className={classes.img} />
+                    <motion.div
+                      animate={{ x: 100 }} // ตัวแปร x คือการเลื่อนตำแหน่ง X ของ Element ไปทางขวา 100px
+                      transition={{ duration: 1 }} // ระยะเวลาในการเคลื่อนไหว 1 วินาที
+                    >
+                      <Image src={bg} alt="Card Icon" className={classes.img} />
+                    </motion.div>
                   </div>
                 </div>
               </div>
