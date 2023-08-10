@@ -7,7 +7,7 @@ const Footer = () => {
       <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
         <div className="md:flex md:items-center md:justify-between">
           <h5 className="max-w-xl text-3xl font-bold text-white sm:text-4xl xl:text-5xl font-pj">
-            Build beautiful landing pages fast using Rareblocks Kit.
+            MyService
           </h5>
 
           <div className="max-w-sm mt-8 md:mt-0">
@@ -35,7 +35,7 @@ const Footer = () => {
                 </svg>
                 <span className="ml-5 text-xl font-normal text-white font-pj">
                   {" "}
-                  8502 Preston Rd. Inglewood, Maine 98380, USA{" "}
+                  WinWinPlace 633/174{" "}
                 </span>
               </li>
 
@@ -56,7 +56,7 @@ const Footer = () => {
                 </svg>
                 <span className="ml-5 text-xl font-normal text-white font-pj">
                   {" "}
-                  support@rareblocks.xyz{" "}
+                  mysupport@gmail.com{" "}
                 </span>
               </li>
             </ul>
@@ -66,7 +66,7 @@ const Footer = () => {
         <hr className="mt-12 border-gray-600 md:mt-20" />
 
         <div className="mt-10 lg:flex lg:items-center lg:justify-between md:mt-16">
-          <ul className="flex items-center space-x-6 sm:space-x-12">
+          {/* <ul className="flex items-center space-x-6 sm:space-x-12">
             <li>
               <a
                 href="#"
@@ -110,7 +110,7 @@ const Footer = () => {
                 Support{" "}
               </a>
             </li>
-          </ul>
+          </ul> */}
 
           <p className="mt-8 text-lg font-normal text-white lg:mt-0 font-pj">
             © Copyright 2021, All Rights Reserved

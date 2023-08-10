@@ -6,7 +6,8 @@ import Servericon from "@/components/icons/server.png";
 import Walleticon from "@/components/icons/wallet.png";
 import helpdeskicon from "@/components/icons/help-desk.png";
 import Socialicon from "@/components/icons/social-media.png";
-import ServiceList from "@/components/serviceTable/serivce-list";
+import StarIcon from "@/components/icons/star.png";
+import Table from "@/components/serviceTable/Table";
 import bg from "@/public/images/marketinglogo.png";
 import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
 import "primereact/resources/primereact.css"; // core css
@@ -144,11 +145,16 @@ const HomePage = ({ me }) => {
             </div>
           ))}
         </div>
-        <div className="w-full md:w-1/2 xl:w-1/3 bg-white h-[100px] mx-auto mt-16 shadow-lg rounded-2xl border-[3px] border-gray-50 flex items-center justify-center">
-          <h1 className="font-bold text-2xl md:text-4xl">TOP Rated Services</h1>
+        <div className="w-full md:w-1/2 xl:w-1/3 bg-white h-[100px] mx-auto mt-16 shadow-lg rounded-2xl  border-gray-50 flex items-center justify-center">
+          <div className="flex items-center">
+            <Image src={StarIcon} alt="StarIcon" width={64} height={32} />
+            <h1 className="font-bold text-2xl md:text-4xl ml-2">
+              TOP Rated Services
+            </h1>
+          </div>
         </div>
-        <div className="w-full md:w-2/3 bg-white h-[500px] mx-auto mt-16 shadow-lg border-[3px] border-gray-50 flex items-center justify-center mb-10">
-          <ServiceList />
+        <div className="w-full md:w-2/3  h-[500px] mx-auto border-[3px] border-gray-50 flex items-center justify-center mb-10">
+          <Table />
         </div>
         <Footer />
       </div>

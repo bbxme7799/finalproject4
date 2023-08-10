@@ -14,24 +14,23 @@ export const getServerSideProps = async (context) => {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
-    .then((response) => response.data);
+    .then((response) => response.data)
+    .catch(() => null);
 
   console.log("user/me info => ", me);
 
   if (!me) {
     return {
       redirect: {
-        destination: "/signin",
+        destination: "/admin/signin",
         permanent: false,
       },
     };
-  }
-
-  if (me.role !== 1) {
-    // ตรวจสอบ Role ที่คุณต้องการ
+  } else if (me.role !== 1) {
+    // เพิ่มเงื่อนไขตรวจสอบ role ที่ต้องการ
     return {
       redirect: {
-        destination: "/", // หน้าที่ไม่ได้รับสิทธิ์
+        destination: "/users", // หน้าที่ต้องการ redirect ไป
         permanent: false,
       },
     };

@@ -1,9 +1,14 @@
-import Table from "@/components/serviceTable/Table";
-import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
-import "primereact/resources/primereact.css"; // core css
-import PageMetadata from "@/components/PageMetadata";
-import MainHeader from "@/components/layout/main-header";
+import React from "react";
+import googleIcon from "../../components/icons/google-iconlogin.png";
+import MetamaskIcon from "../../components/icons/Metamaskiconlogin.png";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import SignInAdmin from "../../components/admin/SignInAdmin";
+import Layout from "@/components/layout/layout";
 import axios from "axios";
+import MainHeader from "@/components/layout/main-header";
+
 export const getServerSideProps = async (context) => {
   try {
     let me = null;
@@ -19,7 +24,7 @@ export const getServerSideProps = async (context) => {
       if (me) {
         return {
           redirect: {
-            destination: "/users",
+            destination: "/admin",
             permanent: false,
           },
         };
@@ -43,14 +48,10 @@ export const getServerSideProps = async (context) => {
   }
 };
 
-export default function SerivceUserPage({ me }) {
+export default function LoginPage({ me }) {
   return (
     <>
-      <PageMetadata title="Service" />
-      <MainHeader />
-      <div className="mt-5 w-full md:w-2/3  h-[500px] mx-auto  border-[3px] border-gray-50 flex items-center justify-center mb-10">
-        <Table />
-      </div>
+      <SignInAdmin />
     </>
   );
 }

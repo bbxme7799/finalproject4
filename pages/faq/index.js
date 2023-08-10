@@ -61,23 +61,24 @@ const FAQPage = ({ me }) => {
           <div className="max-w-4xl mx-auto mt-8 sm:mt-14">
             <div className="space-y-4">
               <Question
-                title="How this UI Kit is different from others in market?"
-                content="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet."
+                title="MyService คืออะไร?"
+                content="สโตว์นี้ เป็นเว็บไซต์การตลาดออนไลน์เกี่ยวกับโซเชียลมีเดียซึ่งให้บริการโปรโมทโปรไฟล์ของคุณ โปรโมทธุรกิจของคุณ ในราคาเพียงไม่กี่บาท ทำให้โปรไฟล์และธุรกิจของคุณมีคุณภาพสูงด้วยการถูกใจและผู้ติดตามเพิ่มมากขึ้น"
               />
 
               <Question
-                title="How long do you provide support?"
-                content="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet."
+                title="เติมเงินยังไง ?"
+                content="กดที่เมนู เติมเงินลูกค้าจะต้องมีบัญชี Metamask เพื่อทำการโอนเงิน"
               />
 
               <Question
-                title="Do I need any experience to work with Rareblocks?"
-                content="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet."
+                title="สั่งซื้ออย่างไร ?"
+                content="หลังจาก ล็อกอินเข้ามา ที่หน้า คำสั่งซื้อใหม่ ให้เลือกหมวดหมู่ที่คุณต้องการทำ >>> เลือกบริการของหมวดหมู่นั้นๆ >>> อ่านรายละเอียดให้ครบถ้วน >>> กรอกปริมาณที่ต้องการ (ระบบจะกรอกปริมาณเริ่มต้นไว้ให้) >>> กรอกลิงก์ของงานนั้นๆ >>> หากมีส่วนลดคุณสามารถกรอกเข้ามาได้ >>> กดยืนยันคำสั่งซื้อ
+                โปรดจำไว้ว่า หากคุณยืนยันคำสั่งซื้อแล้ว 99.9% คุณจะไม่สามารถยกเลิกมันได้"
               />
 
               <Question
-                title="What kind of files are included?"
-                content="Amet minim mollit non deserunt ullamco est sit aliqua dolor do amet sint. Velit officia consequat duis enim velit mollit. Exercitation veniam consequat sunt nostrud amet."
+                title="ยกเลิกคำสั่งซื้อได้ไหม?"
+                content="เป็นเรื่องที่น่าเสียใจ ทุกคำสั่งซื้อเราไม่สามารถยกเลิกคำสั่งซื้อของคุณได้ เมื่ออยู่ในสถานะ กำลังดำเนินการ หรือ เสร็จสิ้น ผู้ใช้ต้องอดทนรอสถานะจากฝั่งเซิพเวอร์เท่านั้น บางครั้งช้า บางครั้งไว เป็นเรื่องปกติของระบบเซิพเวอร์ที่มีการใช้งานสูง"
               />
             </div>
           </div>

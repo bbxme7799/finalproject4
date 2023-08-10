@@ -1,32 +1,17 @@
 import React from "react";
-import styles from "./style.module.css";
+import stylesCategory from "./stylesCategory.module.css";
 
-const ProductList = ({ products }) => {
+const CategoryList = ({ categorys }) => {
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm text-left text-gray-500">
         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
           <tr>
             <th scope="col" className="px-4 py-4">
-              Service id
+              Category id
             </th>
             <th scope="col" className="px-4 py-3">
-              Service Name
-            </th>
-            <th scope="col" className="px-4 py-3">
-              Category
-            </th>
-            <th scope="col" className="px-4 py-3">
-              Description
-            </th>
-            <th scope="col" className="px-4 py-3">
-              rate price
-            </th>
-            <th scope="col" className="px-4 py-3">
-              min
-            </th>
-            <th scope="col" className="px-4 py-3">
-              max
+              category Name
             </th>
             <th scope="col" className="px-4 py-3">
               <span className="sr-only">Actions</span>
@@ -35,28 +20,22 @@ const ProductList = ({ products }) => {
         </thead>
 
         <tbody>
-          {products.map((product, index) => (
+          {categorys.map((category, index) => (
             <tr className="border-b " key={index}>
               <th
                 scope="row"
                 className="px-4 py-3 font-medium text-gray-900 whitespace-nowrap"
               >
-                {product.service}
+                {category.id}
               </th>
-              <td className="px-4 py-3">{product.name}</td>
-              <td className="px-4 py-3">{product.category}</td>
-              <td className="px-4 py-3 max-w-[12rem] truncate">
-                {product.description}
-              </td>
-              <td className="px-4 py-3">{product.rate}</td>
-              <td className="px-4 py-3">{product.min}</td>
-              <td className="px-4 py-3">{product.max}</td>
+              <td className="px-4 py-3">{category.name}</td>
+              <td className="px-4 py-3">{category.category}</td>
               <td className="px-4 py-3 flex items-center justify-end">
                 <button
-                  id={`${product.name
+                  id={`${category.name
                     .toLowerCase()
                     .replace(/\s/g, "-")}-dropdown-button`}
-                  data-dropdown-toggle={`${product.name
+                  data-dropdown-toggle={`${category.name
                     .toLowerCase()
                     .replace(/\s/g, "-")}-dropdown`}
                   className="inline-flex items-center text-sm font-medium hover:bg-gray-100 text-center text-gray-500 hover:text-gray-800 rounded-lg focus:outline-none"
@@ -73,14 +52,14 @@ const ProductList = ({ products }) => {
                   </svg>
                 </button>
                 <div
-                  id={`${product.name
+                  id={`${category.name
                     .toLowerCase()
                     .replace(/\s/g, "-")}-dropdown`}
                   className="hidden z-10 w-44 bg-white rounded divide-y divide-gray-100 shadow"
                 >
                   <ul
                     className="py-1 text-sm"
-                    aria-labelledby={`${product.name
+                    aria-labelledby={`${category.name
                       .toLowerCase()
                       .replace(/\s/g, "-")}-dropdown-button`}
                   >
@@ -152,4 +131,4 @@ const ProductList = ({ products }) => {
   );
 };
 
-export default ProductList;
+export default CategoryList;

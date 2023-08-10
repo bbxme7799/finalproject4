@@ -103,7 +103,7 @@ const SignInSection = () => {
                         src={GoogleIcon}
                         alt="GoogleIcon"
                       />
-                      <span className="text-base">สมัครสมาชิกด้วย Google</span>
+                      <span className="text-base">สมัครสมาชิก Google</span>
                     </button>
                   </Link>
                 </div>
@@ -126,7 +126,7 @@ const SignInSection = () => {
                       src={MetamaskIcon}
                       alt="MetamaskIcon"
                     />
-                    <span className="text-base">สมัครสมาชิกด้วย Metamask</span>
+                    <span className="text-base">สมัครสมาชิก Metamask</span>
                   </div>
                 </Link>
 

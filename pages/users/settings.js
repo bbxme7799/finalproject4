@@ -34,8 +34,8 @@ export const getServerSideProps = async (context) => {
 export default function ({ me }) {
   const [formData, setFormData] = useState({
     name: "",
-    email: "",
-    creditAmount: "",
+    // email: "",
+    // creditAmount: "",
   });
 
   const handleInputChange = (event) => {
@@ -46,20 +46,17 @@ export default function ({ me }) {
   const handleSubmit = async (event) => {
     event.preventDefault();
     try {
-      const response = await fetch("/api/updateUserInfo", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await axios.post(
+        "http://localhost:8000/api/users/update-username", // เปลี่ยน URL ตามที่คุณต้องการ
+        formData // ส่งข้อมูลจาก state formData
+        // {
+        //   // headers: {
+        //   //   "Content-Type": "application/json",
+        //   // },
+        // }
+      );
 
-      if (response.ok) {
-        const data = await response.json();
-        console.log("Data updated successfully:", data);
-      } else {
-        console.error("Error updating data:", response.statusText);
-      }
+      console.log("Response data:", response.data);
     } catch (error) {
       console.error("Error updating data:", error);
     }
@@ -92,26 +89,26 @@ export default function ({ me }) {
                       <div class="border-b border-gray-200"></div>
                     </div>
 
-                    <div class="mt-6">
+                    {/* <div class="mt-6">
                       <p class="text-base font-bold text-gray-900">Profile</p>
                       <p class="mt-1 text-sm font-medium text-gray-500">
                         Lorem ipsum dolor sit amet, consectetur adipis.
                       </p>
-                    </div>
+                    </div> */}
 
-                    <form class="max-w-3xl mt-8">
+                    <form class="max-w-3xl mt-8" onSubmit={handleSubmit}>
                       <div class="space-y-8">
                         <div class="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
-                          <label
+                          {/* <label
                             for=""
                             class="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
                           >
                             {" "}
                             Profile Photo{" "}
-                          </label>
+                          </label> */}
                           <div class="mt-2 sm:mt-0 sm:col-span-2">
                             <div class="flex items-center space-x-6">
-                              <img
+                              {/* <img
                                 class="flex-shrink-0 object-cover w-12 h-12 rounded-lg"
                                 src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/previews/settings/4/avatar-male.png"
                                 alt=""
@@ -128,7 +125,7 @@ export default function ({ me }) {
                                 class="text-sm font-semibold text-indigo-600 transition-all duration-200 bg-white rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
                               >
                                 Update
-                              </button>
+                              </button> */}
                             </div>
                           </div>
                         </div>
@@ -149,7 +146,7 @@ export default function ({ me }) {
                                   name=""
                                   id=""
                                   placeholder=""
-                                  value="Martin"
+                                  value="Janiter"
                                   class="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
                                 />
                               </div>
@@ -224,17 +221,17 @@ export default function ({ me }) {
                           </div>
                           <div class="mt-2 sm:mt-0 sm:col-span-2">
                             <div class="relative flex">
-                              <div class="inline-flex items-center px-3 text-gray-900 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 sm:text-sm">
+                              {/* <div class="inline-flex items-center px-3 text-gray-900 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 sm:text-sm">
                                 rareblocks.co/user/
-                              </div>
+                              </div> */}
 
                               <input
                                 type="text"
-                                name=""
-                                id=""
+                                name="newUsername" // เปลี่ยน name เป็น newUsername
                                 placeholder=""
-                                value="martin.janiter"
-                                class="border flex-1 block w-full min-w-0 px-4 py-3 placeholder-gray-500 border-gray-300 rounded-none rounded-r-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
+                                value={formData.newUsername} // ใช้ค่าจาก state formData
+                                onChange={handleInputChange} // เรียกใช้ฟังก์ชัน handleInputChange
+                                class="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
                               />
                             </div>
                           </div>

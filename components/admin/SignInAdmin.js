@@ -13,9 +13,9 @@ import { useRouter } from "next/router";
 
 const SignInSection = () => {
   const router = useRouter();
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
-  const [email, setEmail] = useState("");
   const [emailError, setEmailError] = useState("");
 
   const validateEmail = (email) => {
@@ -35,6 +35,18 @@ const SignInSection = () => {
       setEmailError("");
     }
   };
+
+  const handleShowToast = () => {
+    toast.success("This is a success toast message!", {
+      position: "top-right", // Set the position of the toast
+      autoClose: 3000, // Auto close the toast after 3000ms (3 seconds)
+      hideProgressBar: false, // Display a progress bar
+      closeOnClick: true, // Close the toast when clicked
+      pauseOnHover: true, // Pause autoClose on hover
+      draggable: true, // Allow dragging the toast
+    });
+  };
+
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
@@ -47,6 +59,10 @@ const SignInSection = () => {
         {
           withCredentials: true,
         }
+      );
+      console.log(
+        "🚀 ~ file: SignInAdmin.js:43 ~ handleLogin ~ response:",
+        response
       );
 
       // Handle successful login
@@ -61,7 +77,7 @@ const SignInSection = () => {
           draggable: true,
         });
         setTimeout(() => {
-          router.push("/users");
+          router.push("/admin");
         }, 1000);
       }
     } catch (error) {
@@ -108,10 +124,10 @@ const SignInSection = () => {
             <div className="px-4 py-5 sm:px-6 sm:py-6">
               <div className="text-center">
                 <h1 className="text-3xl font-bold text-gray-900 font-pj sm:text-4xl xl:text-5xl">
-                  ยินดีต้อนรับกลับ!
+                  ยินดีต้อนรับ!
                 </h1>
                 <p className="mt-6 text-lg font-normal text-gray-600 font-pj">
-                  เข้าสู่ระบบเพื่อเลือกซื้อบริการในระบบ
+                  เข้าสู่ระบบแอดมิน
                 </p>
 
                 <div
@@ -137,7 +153,7 @@ const SignInSection = () => {
                   </Link>
                 </div>
 
-                <Link
+                {/* <Link
                   href="/signup"
                   title=""
                   className="
@@ -157,7 +173,7 @@ const SignInSection = () => {
                     />
                     <span className="text-base">เข้าสู่ระบบด้วย Metamask</span>
                   </div>
-                </Link>
+                </Link> */}
 
                 <p className="mt-8 text-sm font-normal text-center text-gray-600">
                   หรือ เข้าสู่ระบบด้วยอีเมล
@@ -178,7 +194,14 @@ const SignInSection = () => {
                         type="email"
                         placeholder="Email"
                         value={email}
-                        onChange={handleEmailChange}
+                        onChange={(e) => setEmail(e.target.value)}
+                        onBlur={(e) => {
+                          if (!validateEmail(e.target.value)) {
+                            setEmailError("กรุณากรอกอีเมลที่ถูกต้อง");
+                          } else {
+                            setEmailError("");
+                          }
+                        }}
                         className="block w-full px-6 py-3 text-gray-900 placeholder-gray-600 bg-white border border-gray-400 rounded-xl focus:border-gray-900 focus:ring-gray-900 caret-gray-900"
                       />
                       {emailError && (
@@ -239,7 +262,7 @@ const SignInSection = () => {
                 {/* Replace the SVG lines with the original SVG lines */}
               </svg>
 
-              <p className="mt-5 text-base font-normal text-center text-gray-900 font-pj">
+              {/* <p className="mt-5 text-base font-normal text-center text-gray-900 font-pj">
                 คุณยังไม่มีบัญชี?{" "}
                 <Link
                   href="/users/signup"
@@ -248,7 +271,7 @@ const SignInSection = () => {
                 >
                   สร้างบัญชีฟรี
                 </Link>
-              </p>
+              </p> */}
             </div>
           </div>
         </div>
