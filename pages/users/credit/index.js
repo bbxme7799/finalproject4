@@ -2,21 +2,60 @@ import React from "react";
 import { useSession } from "next-auth/react";
 import { useState } from "react";
 import PageMetadata from "@/components/PageMetadata";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import axios from "axios";
+import Layout from "@/components/layout/layout";
 
-export default function CreditPage() {
-  const session = useSession();
-  const [creditAmount, setCreditAmount] = useState("");
+export const getServerSideProps = async (context) => {
+  const me = await axios
+    .get("http://localhost:8000/api/users/me", {
+      headers: { cookie: context.req.headers.cookie },
+      withCredentials: true,
+    })
+    .then((response) => response.data)
+    .catch(() => null);
 
-  if (session.status === "loading") {
-    return <p>Loading...</p>;
+  console.log("user/me info => ", me);
+  if (!me) {
+    return {
+      redirect: {
+        destination: "/users/signin",
+        permanent: false,
+      },
+    };
   }
+  return {
+    props: {
+      me,
+    },
+  };
+};
+
+export default function CreditPage({ me }) {
+  const [creditAmount, setCreditAmount] = useState("");
 
   const handleCreditChange = (e) => {
     setCreditAmount(e.target.value);
   };
-
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const amountInput = e.target.elements.amount.value;
+
+    // Check if creditAmount is empty
+    if (!amountInput) {
+      toast.error("โปรดกรอกข้อมูล input ให้ครบถ้วนก่อนที่ชำระ", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return; // Stop execution if creditAmount is empty
+    }
+
     // Handle your submit logic here, e.g., send the credit amount to the server
     console.log("Credit Amount:", creditAmount);
     // Clear the input field after submission
@@ -26,6 +65,7 @@ export default function CreditPage() {
   return (
     <>
       <PageMetadata title="Add" />
+      <Layout me={me}></Layout>
       <div className="ml-[255px] mt-[65px] h-auto">
         <div className="bg-white my-[2px] ">
           <div className="flex mx-2 py-2">
@@ -58,27 +98,31 @@ export default function CreditPage() {
               <div className="p-8 border-gray-200">
                 <h1 className="font-medium text-3xl">Add Credit</h1>
                 <p className="text-gray-600 mt-6">
-                  Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Dignissimos dolorem vel cupiditate laudantium dicta.
+                  {/* Lorem ipsum dolor sit, amet consectetur adipisicing elit.
+                  Dignissimos dolorem vel cupiditate laudantium dicta. */}
                 </p>
-                <form>
+                <form onSubmit={handleSubmit}>
                   <div className="mt-8 space-y-6">
                     <div>
                       <label
                         htmlFor="name"
                         className="text-sm text-gray-700 block mb-1 font-medium"
                       >
-                        Name
+                        Send BUSD Payment
                       </label>
-                      <input
-                        type="text"
+                      <select
                         name="name"
                         id="name"
                         className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                        placeholder="Enter your name"
-                      />
+                      >
+                        <option>
+                          0x0c18aEe54A5e4bF95A1338BB6d1E8182491993D9
+                        </option>
+                        {/* Add more options as needed */}
+                      </select>
                     </div>
-                    <div>
+
+                    {/* <div>
                       <label
                         htmlFor="email"
                         className="text-sm text-gray-700 block mb-1 font-medium"
@@ -92,20 +136,20 @@ export default function CreditPage() {
                         className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
                         placeholder="yourmail@provider.com"
                       />
-                    </div>
+                    </div> */}
                     <div>
                       <label
                         htmlFor="job"
                         className="text-sm text-gray-700 block mb-1 font-medium"
                       >
-                        Job title
+                        Amount
                       </label>
                       <input
                         type="text"
-                        name="job"
-                        id="job"
+                        name="amount"
+                        id="amount"
                         className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                        placeholder="(ex. developer)"
+                        placeholder="15.23"
                       />
                     </div>
                   </div>
@@ -114,11 +158,7 @@ export default function CreditPage() {
                       type="submit"
                       className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
                     >
-                      Save
-                    </button>
-                    {/* Secondary */}
-                    <button className="py-2 px-4 bg-white border border-gray-200 text-gray-600 rounded hover:bg-gray-100 active:bg-gray-200 disabled:opacity-50">
-                      Cancel
+                      PAY NOW
                     </button>
                   </div>
                 </form>
@@ -127,6 +167,7 @@ export default function CreditPage() {
           </div>
         </div>
       </div>
+      <ToastContainer />
     </>
   );
 }

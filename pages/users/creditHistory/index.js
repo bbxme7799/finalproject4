@@ -1,9 +1,36 @@
 import { User } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
-import { useSession, getSession } from "next-auth/react";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import PageMetadata from "@/components/PageMetadata";
+import axios from "axios";
+import Layout from "@/components/layout/layout";
+
+export const getServerSideProps = async (context) => {
+  const me = await axios
+    .get("http://localhost:8000/api/users/me", {
+      headers: { cookie: context.req.headers.cookie },
+      withCredentials: true,
+    })
+    .then((response) => response.data)
+    .catch(() => null);
+
+  console.log("user/me info => ", me);
+  if (!me) {
+    return {
+      redirect: {
+        destination: "/users/signin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      me,
+    },
+  };
+};
 
 const Users = [
   {
@@ -96,24 +123,13 @@ const Users = [
   },
 ];
 
-function index() {
+function index({ me }) {
   const [query, setQuery] = useState("");
   const [btn, setBtn] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
 
-  const { data: session, status } = useSession();
   const router = useRouter();
-  useEffect(() => {
-    if (status === "loading") {
-      return; // Do not return JSX here as it's not rendered within the component.
-    }
-
-    // If the session is not authenticated, redirect to the login page.
-    if (!session?.status === "authenticated") {
-      router?.push("/users/login");
-    }
-  }, [status, session, router]);
 
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
@@ -147,6 +163,7 @@ function index() {
   return (
     <>
       <PageMetadata title="Credit history" />
+      <Layout me={me}></Layout>
       <div className="ml-[255px] mt-[65px] h-auto">
         <div className="bg-white my-[2px] ">
           <div className="flex mx-2 py-2 ">

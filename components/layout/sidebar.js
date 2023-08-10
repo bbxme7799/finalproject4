@@ -1,9 +1,28 @@
 import { signOut } from "next-auth/react";
 import Link from "next/link";
 import React, { memo } from "react";
+import axios from "axios";
+import { useRouter } from "next/router";
 const Sidebar = () => {
-  const handleSignOut = () => {
-    signOut({ callbackUrl: "/" }); // เรียกใช้ signOut เมื่อมีการคลิกปุ่ม "ออกจากระบบ"
+  const router = useRouter();
+  const handleSignOut = async () => {
+    console.log("Clicked");
+    try {
+      const test = await axios.post(
+        "http://localhost:8000/api/auth/signout",
+        {
+          headers: { Cookie: document.cookie }, // เปลี่ยน context.req.headers.cookie เป็น document.cookie
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("Sign out successful");
+      router.push("/");
+    } catch (error) {
+      console.error("Sign out failed:", error);
+      // จัดการเมื่อเกิดข้อผิดพลาดในการออกจากระบบ
+    }
   };
 
   return (
@@ -196,7 +215,7 @@ const Sidebar = () => {
                 </div>
               </div>
             </li> */}
-            <li>
+            {/* <li>
               <Link
                 href="#"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
@@ -219,7 +238,7 @@ const Sidebar = () => {
                   เงื่อนไขและข้อตกลง
                 </span>
               </Link>
-            </li>
+            </li> */}
             <li className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6">
               <span className="inline-flex justify-center items-center ml-4">
                 <svg

@@ -13,8 +13,52 @@ import "primereact/resources/primereact.css"; // core css
 import Footer from "@/components/layout/footer";
 import PageMetadata from "@/components/PageMetadata";
 import { motion } from "framer-motion";
+import { isLoggedIn } from "../utils/auth";
+import { useRouter } from "next/router";
+import MainHeader from "@/components/layout/main-header";
+import axios from "axios";
 
-const HomePage = () => {
+export const getServerSideProps = async (context) => {
+  try {
+    let me = null;
+
+    const response = await axios.get("http://localhost:8000/api/users/me", {
+      headers: { cookie: context.req.headers.cookie },
+      withCredentials: true,
+    });
+
+    if (response.status === 200) {
+      me = response.data;
+      console.log("user/me info => ", me);
+      if (me) {
+        return {
+          redirect: {
+            destination: "/users",
+            permanent: false,
+          },
+        };
+      }
+    }
+
+    return {
+      props: {
+        me,
+      },
+    };
+  } catch (error) {
+    // Handle errors (e.g., network error, server error)
+    // console.error("Error fetching user info: ", error);
+
+    return {
+      props: {
+        me: null,
+      },
+    };
+  }
+};
+
+const HomePage = ({ me }) => {
+  const router = useRouter();
   const [serviceCards] = useState([
     {
       icon: Servericon,
@@ -41,29 +85,36 @@ const HomePage = () => {
   return (
     <>
       <PageMetadata title="Home" />
+      <MainHeader />
       <div className={`${classes.container} overflow-hidden`}>
         <div className={classes.body}></div>
         <div className={classes.position}>
           <div className={classes.banner}>
-            <div className="grid-flow-row-dense grid-cols-2 text-white z-50 flex gap-[90px] my-auto">
-              <div className="col-span-2 w-[70%]">
+            <div className="grid grid-cols-1 md:grid-cols-2 text-white z-50 gap-4 md:gap-10 my-auto">
+              <div className="w-full md:w-3/4">
                 <div className={classes.item}>
-                  <h1 className={classes.title}>
+                  <h1
+                    className={`${classes.title} text-2xl md:text-4xl xl:text-5xl`}
+                  >
                     เว็บปั้มวิว ปั้มไลค์ ปั้มใจ ปั้มผู้ติดตาม โปรโมท โฆษณา
                     ทำการตลาดออนไลน์
                   </h1>
-                  <p className={classes.desc}>
+                  <p className={`${classes.desc} text-sm md:text-base`}>
                     #1 บริการด้านการตลาดออนไลน์ SEO โซเชียลมีเดีย อันดับหนึ่ง
                     ปั้มวิวฟรี ปั้มใจ tiktok ปั้มไลค์ฟรี ปั้มผู้ติดตาม ปั้มฟอลโล
                     ปั้มซับ ระบบสั่งซื้ออัตโนมัติ ใช้งานง่าย อยู่ที่ไหนก็ทำได้
                     24/7
                   </p>
                   <Link href="/users" passHref>
-                    <button className={classes.btnlogin}>สมัครสมาชิก</button>
+                    <button
+                      className={`${classes.btnlogin} md:w-40 md:h-10 hover:bg-gray-800 hover:text-white`}
+                    >
+                      สมัครสมาชิก
+                    </button>
                   </Link>
                 </div>
               </div>
-              <div className="col-span-1 w-[30%] text-center items-center">
+              <div className="hidden md:flex items-center justify-center">
                 <div className={classes.banner}>
                   <div className={classes.item}>
                     <motion.div
@@ -93,10 +144,10 @@ const HomePage = () => {
             </div>
           ))}
         </div>
-        <div className="w-[50%] bg-white h-[100px] mx-auto mt-16 shadow-lg rounded-2xl border-[3px] border-gray-50 flex items-center justify-center">
-          <h1 className="font-bold text-4xl">TOP Rated Services</h1>
+        <div className="w-full md:w-1/2 xl:w-1/3 bg-white h-[100px] mx-auto mt-16 shadow-lg rounded-2xl border-[3px] border-gray-50 flex items-center justify-center">
+          <h1 className="font-bold text-2xl md:text-4xl">TOP Rated Services</h1>
         </div>
-        <div className="w-[60%] bg-white h-[500px] mx-auto mt-16 shadow-lg border-[3px] border-gray-50 flex items-center justify-center mb-10">
+        <div className="w-full md:w-2/3 bg-white h-[500px] mx-auto mt-16 shadow-lg border-[3px] border-gray-50 flex items-center justify-center mb-10">
           <ServiceList />
         </div>
         <Footer />

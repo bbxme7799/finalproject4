@@ -1,7 +1,8 @@
 import Link from "next/link";
 import styles from "./main-header.module.css";
 import React, { memo } from "react";
-import { signOut } from "next-auth/react";
+import axios from "axios";
+import { useRouter } from "next/router";
 const links = [
   {
     id: 1,
@@ -13,23 +14,38 @@ const links = [
     title: "Service",
     url: "/service-user",
   },
-  {
-    id: 3,
-    title: "Blog",
-    url: "/blog",
-  },
+  // {
+  //   id: 3,
+  //   title: "Blog",
+  //   url: "/blog",
+  // },
   {
     id: 4,
     title: "FAQ",
     url: "/faq",
   },
 ];
-const MainHeader = (props) => {
-  const { session } = props;
-  const userEmail = session?.user.email;
-
-  const handleSignOut = () => {
-    signOut({ callbackUrl: "/" }); // เรียกใช้ signOut เมื่อมีการคลิกปุ่ม "ออกจากระบบ"
+const MainHeader = () => {
+  const router = useRouter();
+  const handleSignOut = async () => {
+    console.log("Clicked");
+    try {
+      const test = await axios.post(
+        "http://localhost:8000/api/auth/signout",
+        {
+          headers: { Cookie: document.cookie }, // เปลี่ยน context.req.headers.cookie เป็น document.cookie
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log("🚀 ~ file: main-header.js:39 ~ handleSignOut ~ test:", test);
+      console.log("Sign out successful");
+      router.push("/");
+    } catch (error) {
+      console.error("Sign out failed:", error);
+      // จัดการเมื่อเกิดข้อผิดพลาดในการออกจากระบบ
+    }
   };
 
   return (
@@ -46,17 +62,9 @@ const MainHeader = (props) => {
             </Link>
           ))}
         </div>
-        {userEmail ? (
-          // If userEmail exists (user is logged in), show "ออกจากระบบ" button
-          <button className={styles.logout} onClick={handleSignOut}>
-            ออกจากระบบ
-          </button>
-        ) : (
-          // If userEmail is missing (user is not logged in), show "เข้าสู่ระบบ" button
-          <Link href="/users/login" passHref>
-            <button className={styles.login}>เข้าสู่ระบบ</button>
-          </Link>
-        )}
+        <Link href="/users/signin" passHref>
+          <button className={styles.login}>เข้าสู่ระบบ</button>
+        </Link>
       </div>
     </div>
   );

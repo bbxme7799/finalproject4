@@ -1,43 +1,47 @@
 import { Fragment } from "react";
 import MainHeader from "./main-header";
 import Sidebar from "./sidebar";
-import { useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
 import Navbar from "./navbar";
-import { useRouter } from "next/router"; // เพิ่ม import นี้
+import { useRouter } from "next/router";
 
-export default function Layout(props) {
-  const { data: session, status } = useSession();
+export default function Layout({ children, me }) {
+  console.log("🚀 ~ file: layout.js:9 ~ Layout ~ me:", me);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const router = useRouter(); // สร้างตัวแปร router
+  const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated" && session) {
+    if (me) {
       setIsLoggedIn(true);
+    } else {
+      setIsLoggedIn(false);
+      console.log();
     }
-  }, [status, session]);
+  }, [me]);
 
-  // กำหนดหน้าที่ต้องการซ่อน Sidebar และ Navbar
   const hideSidebarNavbarPages = [
     "/",
     "/service-user",
     "/blog",
     "/faq",
-    "/users/login",
+    "/users/signin",
+    "/users/signup",
   ];
 
-  // ตรวจสอบว่าหน้าปัจจุบันอยู่ในหน้าที่ต้องการซ่อน Sidebar และ Navbar หรือไม่
   const shouldHideSidebarNavbar = hideSidebarNavbarPages.includes(
     router.pathname
   );
 
+  const isAdminRoute = router.pathname === "/admin"; // เพิ่มตรวจสอบเส้นทาง "/admin"
+
   return (
     <Fragment>
       {/* <div className="container"> */}
-      {!shouldHideSidebarNavbar && isLoggedIn && <Sidebar />}
-      {!shouldHideSidebarNavbar && isLoggedIn && <Navbar />}
-      {shouldHideSidebarNavbar && <MainHeader session={session} />}
-      <main>{props.children}</main>
+      {!isAdminRoute && !shouldHideSidebarNavbar && isLoggedIn && <Sidebar />}
+      {!isAdminRoute && !shouldHideSidebarNavbar && isLoggedIn && (
+        <Navbar me={me} />
+      )}
+      <main>{children}</main>
       {/* </div> */}
     </Fragment>
   );

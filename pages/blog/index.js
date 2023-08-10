@@ -1,4 +1,45 @@
 import PageMetadata from "@/components/PageMetadata";
+import axios from "axios";
+import MainHeader from "@/components/layout/main-header";
+
+export const getServerSideProps = async (context) => {
+  try {
+    let me = null;
+
+    const response = await axios.get("http://localhost:8000/api/users/me", {
+      headers: { cookie: context.req.headers.cookie },
+      withCredentials: true,
+    });
+
+    if (response.status === 200) {
+      me = response.data;
+      console.log("user/me info => ", me);
+      if (me) {
+        return {
+          redirect: {
+            destination: "/users",
+            permanent: false,
+          },
+        };
+      }
+    }
+
+    return {
+      props: {
+        me,
+      },
+    };
+  } catch (error) {
+    // Handle errors (e.g., network error, server error)
+    // console.error("Error fetching user info: ", error);
+
+    return {
+      props: {
+        me: null,
+      },
+    };
+  }
+};
 const posts = [
   {
     id: 1,
@@ -54,20 +95,21 @@ const posts = [
   // More posts...
 ];
 
-export default function BlogPage() {
+export default function BlogPage({ me }) {
   return (
     <>
       <PageMetadata title="ฺBlog" />
+      <MainHeader />
       <section class="py-12 mt-6 bg-gray-50 sm:py-16 lg:py-20">
         <div class="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
           <div class="text-center sm:flex sm:items-end sm:space-x-16 sm:text-left">
             <h2 class="max-w-xs text-3xl font-bold text-gray-900 sm:text-4xl shrink-0">
-              Latest articles on Photography
+              บทความล่าสุด
             </h2>
-            <p class="max-w-xs mt-5 text-sm font-normal leading-6 text-gray-500 sm:mt-0">
+            {/* <p class="max-w-xs mt-5 text-sm font-normal leading-6 text-gray-500 sm:mt-0">
               Create custom landing pages with Rareblocks that converts more
               visitors than any website.
-            </p>
+            </p> */}
           </div>
 
           <div class="grid grid-cols-1 gap-6 px-8 mt-12 sm:mt-16 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 sm:px-0">

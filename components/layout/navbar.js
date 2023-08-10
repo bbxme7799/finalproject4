@@ -2,7 +2,8 @@ import React, { useState, useEffect, useRef } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import Link from "next/link";
 
-const Navbar = () => {
+const Navbar = ({ me }) => {
+  console.log("🚀 ~ file: navbar.js:6 ~ Navbar ~ me:", me);
   return (
     <nav className="shadow bg-white fixed w-full z-10">
       <div className="mx-auto px-4 sm:px-6 lg:px-8 ">
@@ -49,11 +50,15 @@ const Navbar = () => {
                 src="/logo.svg"
                 alt="Logo"
               /> */}
-              <img
-                class="object-cover w-10 h-10 rounded-md"
+              <span className="hidden md:flex bg-black text-white text-sm px-3 py-4 rounded-xl mr-2 items-center w-[fit-content]">
+                <span className="flex-grow">{me.username || "Hi"}</span>
+              </span>
+
+              {/* <img
+                className="object-cover w-10 h-10 rounded-md"
                 src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/images/avatar-square/avatar-square.png"
                 alt=""
-              />
+              /> */}
             </div>
           </div>
         </div>

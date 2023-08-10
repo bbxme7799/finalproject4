@@ -1,9 +1,14 @@
-import ServiceList from "@/components/serviceTable/serivce-list";
-import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
-import "primereact/resources/primereact.css"; // core css
-import PageMetadata from "@/components/PageMetadata";
-import MainHeader from "@/components/layout/main-header";
+import React from "react";
+import googleIcon from "../../../components/icons/google-iconlogin.png";
+import MetamaskIcon from "../../../components/icons/Metamaskiconlogin.png";
+import Image from "next/image";
+import { useRouter } from "next/router";
+import { useSession } from "next-auth/react";
+import SignInSection from "../../../components/signin/SignInSection";
+import Layout from "@/components/layout/layout";
 import axios from "axios";
+import MainHeader from "@/components/layout/main-header";
+
 export const getServerSideProps = async (context) => {
   try {
     let me = null;
@@ -43,14 +48,11 @@ export const getServerSideProps = async (context) => {
   }
 };
 
-export default function SerivceUserPage({ me }) {
+export default function LoginPage({ me }) {
   return (
     <>
-      <PageMetadata title="Service" />
       <MainHeader />
-      <div className="container mx-auto px-32 mt-32 w-[60%] bg-white h-[500px] mx-auto mt-16 shadow-lg border-[3px] border-gray-50 flex items-center justify-center mb-10 overflow-hidden">
-        <ServiceList />
-      </div>
+      <SignInSection />
     </>
   );
 }

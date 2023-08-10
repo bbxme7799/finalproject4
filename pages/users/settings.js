@@ -3,9 +3,35 @@ import { useSession } from "next-auth/react";
 import { useState } from "react";
 import PageMetadata from "@/components/PageMetadata";
 
-export default function () {
-  const { data: session, status } = useSession();
+import axios from "axios";
+import Layout from "@/components/layout/layout";
 
+export const getServerSideProps = async (context) => {
+  const me = await axios
+    .get("http://localhost:8000/api/users/me", {
+      headers: { cookie: context.req.headers.cookie },
+      withCredentials: true,
+    })
+    .then((response) => response.data)
+    .catch(() => null);
+
+  console.log("user/me info => ", me);
+  if (!me) {
+    return {
+      redirect: {
+        destination: "/users/signin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      me,
+    },
+  };
+};
+
+export default function ({ me }) {
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -39,82 +65,31 @@ export default function () {
     }
   };
 
-  if (status === "loading") {
-    return <p>Loading...</p>;
-  }
-
   return (
     <>
+      <Layout me={me}></Layout>
       <PageMetadata title="Privacy Setting" />
-      <div className="ml-[255px] mt-[65px] h-auto">
-        <div className="bg-white my-[2px] ">
-          <div className="flex mx-2 py-2">
-            <h1 className="font-bold text-lg">Privacy settings:</h1>
-            <p className="text-lg pl-2">ตั้งค่าข้อมูลส่วนตัว</p>
+      <div class="ml-[255px] mt-[65px] h-auto">
+        <div class="bg-white my-[2px]">
+          <div class="flex mx-2 py-2">
+            <h1 class="font-bold text-lg">Privacy settings:</h1>
+            <p class="text-lg pl-2">ตั้งค่าข้อมูลส่วนตัว</p>
           </div>
         </div>
         <div className="mx-[200px] my-8 shadow-md h-full">
-          <div className="bg-white h-auto rounded-lg px-8 py-8">
+          <div className="bg-white rounded-lg px-8 py-8">
             <div className="relative">
               <main>
                 <div class="py-6">
                   <div class="px-4 mx-auto sm:px-6 md:px-8">
-                    <h1 class="text-2xl font-bold text-gray-900">Settings</h1>
+                    <h1 class="text-xl font-bold text-gray-900 mb-4">
+                      Settings
+                    </h1>
                   </div>
 
                   <div class="px-4 mx-auto mt-8 sm:px-6 md:px-8">
                     <div class="w-full pb-1 overflow-x-auto">
-                      <div class="border-b border-gray-200">
-                        <nav class="flex -mb-px space-x-10">
-                          <a
-                            href="#"
-                            class="py-4 text-sm font-medium text-indigo-600 transition-all duration-200 border-b-2 border-indigo-600 whitespace-nowrap"
-                          >
-                            {" "}
-                            Profile{" "}
-                          </a>
-
-                          <a
-                            href="#"
-                            class="py-4 text-sm font-medium text-gray-500 transition-all duration-200 border-b-2 border-transparent hover:border-gray-300 whitespace-nowrap"
-                          >
-                            {" "}
-                            Password{" "}
-                          </a>
-
-                          <a
-                            href="#"
-                            class="py-4 text-sm font-medium text-gray-500 transition-all duration-200 border-b-2 border-transparent hover:border-gray-300 whitespace-nowrap"
-                          >
-                            {" "}
-                            Team{" "}
-                          </a>
-
-                          <a
-                            href="#"
-                            class="py-4 text-sm font-medium text-gray-500 transition-all duration-200 border-b-2 border-transparent hover:border-gray-300 whitespace-nowrap"
-                          >
-                            {" "}
-                            Notification{" "}
-                          </a>
-
-                          <a
-                            href="#"
-                            class="py-4 text-sm font-medium text-gray-500 transition-all duration-200 border-b-2 border-transparent hover:border-gray-300 whitespace-nowrap"
-                          >
-                            {" "}
-                            Integrations{" "}
-                          </a>
-
-                          <a
-                            href="#"
-                            class="py-4 text-sm font-medium text-gray-500 transition-all duration-200 border-b-2 border-transparent hover:border-gray-300 whitespace-nowrap"
-                          >
-                            {" "}
-                            Licenses{" "}
-                          </a>
-                        </nav>
-                      </div>
+                      <div class="border-b border-gray-200"></div>
                     </div>
 
                     <div class="mt-6">
@@ -124,7 +99,7 @@ export default function () {
                       </p>
                     </div>
 
-                    <form action="#" method="POST" class="max-w-3xl mt-12">
+                    <form class="max-w-3xl mt-8">
                       <div class="space-y-8">
                         <div class="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                           <label
@@ -265,7 +240,7 @@ export default function () {
                           </div>
                         </div>
 
-                        <div class="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
+                        {/* <div class="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                           <label
                             for=""
                             class="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
@@ -289,9 +264,9 @@ export default function () {
                               />
                             </div>
                           </div>
-                        </div>
+                        </div> */}
 
-                        <div class="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
+                        {/* <div class="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                           <label
                             for=""
                             class="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
@@ -331,9 +306,9 @@ export default function () {
                               </div>
                             </div>
                           </div>
-                        </div>
+                        </div> */}
 
-                        <div class="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
+                        {/* <div class="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                           <label
                             for=""
                             class="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
@@ -346,7 +321,7 @@ export default function () {
                               <option>United States</option>
                             </select>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
 
                       <div class="mt-6 sm:mt-12">

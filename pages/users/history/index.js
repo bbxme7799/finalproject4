@@ -1,14 +1,39 @@
 import React, { useEffect, useState } from "react";
 import styles from "./index.module.css";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
 import PageMetadata from "@/components/PageMetadata";
+import axios from "axios";
+import Layout from "@/components/layout/layout";
 
+export const getServerSideProps = async (context) => {
+  const me = await axios
+    .get("http://localhost:8000/api/users/me", {
+      headers: { cookie: context.req.headers.cookie },
+      withCredentials: true,
+    })
+    .then((response) => response.data)
+    .catch(() => null);
+
+  console.log("user/me info => ", me);
+  if (!me) {
+    return {
+      redirect: {
+        destination: "/users/signin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      me,
+    },
+  };
+};
 const Users = [
   {
     id: 1,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -18,7 +43,7 @@ const Users = [
   {
     id: 2,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -28,7 +53,7 @@ const Users = [
   {
     id: 3,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -38,7 +63,7 @@ const Users = [
   {
     id: 4,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -48,7 +73,7 @@ const Users = [
   {
     id: 5,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -58,7 +83,7 @@ const Users = [
   {
     id: 6,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -68,7 +93,7 @@ const Users = [
   {
     id: 7,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -78,7 +103,7 @@ const Users = [
   {
     id: 8,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -88,7 +113,7 @@ const Users = [
   {
     id: 9,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -98,7 +123,7 @@ const Users = [
   {
     id: 10,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -108,7 +133,7 @@ const Users = [
   {
     id: 11,
     service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQ5ZJnrGQX57bgKi/Untitled",
+    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
     cost: "100",
     start: "410",
     count: "10",
@@ -117,7 +142,7 @@ const Users = [
   },
 ];
 
-function index() {
+function index({ me }) {
   const [query, setquery] = useState("");
   const [btn, setbtn] = useState("");
   const [currentPage, setcurrentPage] = useState(1);
@@ -128,12 +153,7 @@ function index() {
   const npage = Math.ceil(Users.length / recordsPerPage);
   const number = [...Array(npage + 1).keys()].slice(1);
 
-  const session = useSession();
   const router = useRouter();
-
-  if (session.status === "loading") {
-    return <p>Loading...</p>;
-  }
 
   function getStatusColor(status) {
     switch (status) {
@@ -175,20 +195,9 @@ function index() {
     handleButtonClick(""); // Clear the active button state when changing page
   }
 
-  // // Acive Button
-  // useEffect(() => {
-  //   $(document).on("click", ".sectionli", function () {
-  //     $(this).addClass("active").siblings().removeClass("active");
-  //   });
-  //   // Clean up event listener when the component unmounts
-  //   return () => {
-  //     $(document).off("click", ".sectionli");
-  //   };
-  // }, []);
-
-  // console.log(Users.filter(user => user.first_name.toLocaleLowerCase.includes("Em")))
   return (
     <>
+      <Layout me={me}></Layout>
       <PageMetadata title="Order History" />
       <div className="ml-[255px] mt-[65px] h-auto">
         <div className="bg-white my-[2px] ">
@@ -197,7 +206,7 @@ function index() {
             <p className="text-lg pl-2"> ประวัติออเดอร์</p>
           </div>
         </div>
-        <div className="mx-[50px] my-6 shadow-md h-full">
+        <div className="mx-[150px] my-6 shadow-md h-full">
           <div className="bg-white h-auto rounded-lg px-8 py-8 ">
             <div className="relative">
               <div className="border-b-2 border-gray-200">

@@ -1,35 +1,49 @@
-import React from "react";
+import React, { useState } from "react";
 
 const CartProduct = ({ product }) => {
+  const [editedUrl, setEditedUrl] = useState(product.url);
+
+  const handleUrlChange = (event) => {
+    setEditedUrl(event.target.value);
+  };
+
   return (
-    <li className="flex py-7">
-      <div className="flex-shrink-0">
+    <li className="flex py-5">
+      {/* <div className="flex-shrink-0">
         <img
-          className="object-cover w-24 h-24 rounded-lg"
+          className="object-cover w-16 h-16 rounded-lg"
           src={product.image}
           alt=""
         />
-      </div>
+      </div> */}
 
-      <div className="relative flex flex-col justify-between flex-1 ml-5">
-        <div className="sm:grid sm:grid-cols-2 sm:gap-x-5">
-          <div className="pr-9 sm:pr-5">
-            <p className="text-base font-bold text-gray-900">{product.name}</p>
-            <p className="mt-1.5 text-sm font-medium text-gray-500">
-              {product.color}
+      <div className="relative flex flex-col justify-between flex-1 ml-3">
+        <div className="sm:grid sm:grid-cols-2 sm:gap-x-3">
+          <div className="pr-5 sm:pr-3">
+            <p className="text-base font-bold text-gray-900 truncate">
+              {product.name}
             </p>
+            <p className="mt-1 text-sm font-medium text-gray-500 truncate">
+              {product.description}
+            </p>
+            <input
+              type="text"
+              className="mt-1 text-sm text-blue-500 border rounded-md px-2 py-1 w-full overflow-x-auto"
+              value={editedUrl}
+              onChange={handleUrlChange}
+            />
           </div>
 
-          <div className="flex items-end justify-between mt-4 sm:justify-end sm:items-start sm:mt-0">
-            <p className="flex-shrink-0 w-20 text-base font-bold text-left text-gray-900 sm:text-right sm:ml-8 sm:order-2">
-              ${product.price}
+          <div className="flex items-end justify-between mt-2 sm:mt-0 sm:items-start sm:mt-1">
+            <p className="flex-shrink-0 w-16 text-base font-bold text-left text-gray-900 sm:text-right sm:ml-4 sm:order-2">
+              ${product.rate}
             </p>
 
             <div className="sm:order-1">
               <select
                 name=""
                 id=""
-                className="block py-1 pl-3 pr-10 text-sm font-normal text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-md caret-gray-900 focus:ring-gray-900 focus:border-gray-900"
+                className="block py-1 pl-2 pr-8 text-sm font-normal text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-md caret-gray-900 focus:ring-gray-900 focus:border-gray-900"
               >
                 <option value="">1</option>
               </select>
@@ -37,9 +51,9 @@ const CartProduct = ({ product }) => {
           </div>
         </div>
 
-        <p className="flex mt-3 space-x-2 text-sm text-gray-500">
+        <p className="flex mt-2 space-x-2 text-xs text-gray-500">
           <svg
-            className="flex-shrink-0 w-5 h-5"
+            className="flex-shrink-0 w-4 h-4"
             xmlns="http://www.w3.org/2000/svg"
             fill="none"
             viewBox="0 0 24 24"
@@ -58,10 +72,10 @@ const CartProduct = ({ product }) => {
         <div className="absolute top-0 right-0 flex sm:bottom-0 sm:top-auto">
           <button
             type="button"
-            className="inline-flex p-2 -m-2 text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 hover:text-gray-900"
+            className="inline-flex p-1 -m-1 text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 hover:text-gray-900"
           >
             <svg
-              className="w-5 h-5"
+              className="w-4 h-4"
               xmlns="http://www.w3.org/2000/svg"
               fill="none"
               viewBox="0 0 24 24"

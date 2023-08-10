@@ -1,3 +1,4 @@
+/* Common styles */
 .container {
   position: absolute;
   width: 100%;
@@ -8,7 +9,7 @@
 .position {
   display: flex;
   align-items: center;
-  gap: 100px; /* ลดช่องว่างระหว่างรายการ */
+  gap: 100px;
   margin-left: auto;
   margin-right: auto;
   color: white;
@@ -31,7 +32,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 30px; /* ลดช่องว่างระหว่างรายการ */
+  gap: 30px;
   width: 100%;
 }
 
@@ -44,7 +45,7 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 20px; /* ลดช่องว่างระหว่างรายการ */
+  gap: 20px;
 }
 
 .img {
@@ -71,7 +72,7 @@
 }
 
 .cardimg {
-  @apply w-[4.5rem] pb-2; /* ลดช่องว่างระหว่างรายการ */
+  @apply w-[4.5rem] pb-2;
 }
 
 .cardtitle {
@@ -80,4 +81,56 @@
 
 .carddesc {
   @apply text-lg;
+}
+
+/* Media Queries */
+@media screen and (max-width: 1024px) {
+  .position {
+    width: 80%;
+  }
+  .img {
+    width: 250px;
+    height: 250px;
+  }
+  .title {
+    font-size: 32px;
+  }
+  .desc {
+    font-size: 16px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .position {
+    flex-direction: column;
+    gap: 50px;
+  }
+  .body {
+    height: 300px;
+  }
+  .img {
+    width: 200px;
+    height: 200px;
+  }
+  .title {
+    font-size: 24px;
+  }
+  .desc {
+    font-size: 14px;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  .position {
+    width: 90%;
+  }
+  .title {
+    font-size: 20px;
+  }
+  .desc {
+    font-size: 12px;
+  }
+  .card {
+    width: 90%;
+  }
 }
