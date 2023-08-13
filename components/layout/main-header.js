@@ -14,11 +14,11 @@ const links = [
     title: "Service",
     url: "/service-user",
   },
-  // {
-  //   id: 3,
-  //   title: "Blog",
-  //   url: "/blog",
-  // },
+  {
+    id: 3,
+    title: "Blog",
+    url: "/blog",
+  },
   {
     id: 4,
     title: "FAQ",
@@ -41,7 +41,7 @@ const MainHeader = () => {
       );
       console.log("🚀 ~ file: main-header.js:39 ~ handleSignOut ~ test:", test);
       console.log("Sign out successful");
-      router.push("/");
+      router.prefetch("/");
     } catch (error) {
       console.error("Sign out failed:", error);
       // จัดการเมื่อเกิดข้อผิดพลาดในการออกจากระบบ
@@ -52,12 +52,17 @@ const MainHeader = () => {
     <div className={styles.container}>
       <div className={styles.area}></div>
       <div className={styles.nav}>
-        <Link href="/" className={styles.logo}>
+        <Link href="/" className={styles.logo} prefetch>
           MyService
         </Link>
         <div className={styles.links}>
           {links.map((link) => (
-            <Link key={link.id} href={link.url} className={styles.link}>
+            <Link
+              key={link.id}
+              href={link.url}
+              className={styles.link}
+              prefetch
+            >
               {link.title}
             </Link>
           ))}

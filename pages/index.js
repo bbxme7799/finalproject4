@@ -7,30 +7,26 @@ import Walleticon from "@/components/icons/wallet.png";
 import helpdeskicon from "@/components/icons/help-desk.png";
 import Socialicon from "@/components/icons/social-media.png";
 import StarIcon from "@/components/icons/star.png";
-import Table from "@/components/serviceTable/Table";
+import Table from "@/components/serviceTable/TableBestService";
 import bg from "@/public/images/marketinglogo.png";
-import "primereact/resources/themes/lara-light-indigo/theme.css"; // theme
-import "primereact/resources/primereact.css"; // core css
 import Footer from "@/components/layout/footer";
 import PageMetadata from "@/components/PageMetadata";
 import { motion } from "framer-motion";
-import { isLoggedIn } from "../utils/auth";
-import { useRouter } from "next/router";
 import MainHeader from "@/components/layout/main-header";
 import axios from "axios";
 
 export const getServerSideProps = async (context) => {
   try {
-    let me = null;
-
     const response = await axios.get("http://localhost:8000/api/users/me", {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     });
 
     if (response.status === 200) {
-      me = response.data;
+      const me = response.data;
       console.log("user/me info => ", me);
+
+      // ถ้ามีข้อมูลผู้ใช้ (เข้าสู่ระบบอยู่) ให้เปลี่ยนเส้นทางไปยังหน้า /users
       if (me) {
         return {
           redirect: {
@@ -39,16 +35,19 @@ export const getServerSideProps = async (context) => {
           },
         };
       }
+
+      // ถ้าไม่มีข้อมูลผู้ใช้ (ยังไม่ได้เข้าสู่ระบบ) ให้ส่งข้อมูล me ไปแสดงผลในหน้า
+      return {
+        props: {
+          me,
+        },
+      };
     }
 
-    return {
-      props: {
-        me,
-      },
-    };
+    // กรณีที่เซิร์ฟเวอร์ส่งข้อมูลไม่ถูกต้องหรือมีปัญหา
+    throw new Error("Failed to fetch user data");
   } catch (error) {
-    // Handle errors (e.g., network error, server error)
-    // console.error("Error fetching user info: ", error);
+    console.error("Error fetching user info: ", error);
 
     return {
       props: {
@@ -59,7 +58,35 @@ export const getServerSideProps = async (context) => {
 };
 
 const HomePage = ({ me }) => {
-  const router = useRouter();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [apiData, setApiData] = useState([]);
+  const [totalPages, setTotalPages] = useState(0);
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `http://localhost:8000/api/products?keyword=${encodeURIComponent(
+            "Best Services"
+          )}&page=${currentPage}&per_page=10`
+        );
+
+        const newData = response.data.data;
+
+        // Set data from the current page
+        setApiData(newData);
+        setTotalPages(response.data.total_page);
+      } catch (error) {
+        console.error("Error fetching API data: ", error);
+      }
+    };
+
+    fetchData();
+  }, [currentPage]);
+
+  const handlePageChange = (newPage) => {
+    setCurrentPage(newPage);
+  };
   const [serviceCards] = useState([
     {
       icon: Servericon,
@@ -78,7 +105,7 @@ const HomePage = ({ me }) => {
     },
     {
       icon: Socialicon,
-      title: "3,xxx+ บริการในระบบ",
+      title: "ปลอดภัย 100%",
       desc: "เป็นความลับ ทุกบริการปลอดภัย และมีประสิทธิภาพ ให้คุณได้เลือกใช้ได้อย่างไม่จำกัด",
     },
   ]);
@@ -106,7 +133,7 @@ const HomePage = ({ me }) => {
                     ปั้มซับ ระบบสั่งซื้ออัตโนมัติ ใช้งานง่าย อยู่ที่ไหนก็ทำได้
                     24/7
                   </p>
-                  <Link href="/users" passHref>
+                  <Link href="/users/signin" prefetch>
                     <button
                       className={`${classes.btnlogin} md:w-40 md:h-10 hover:bg-gray-800 hover:text-white`}
                     >
@@ -149,12 +176,19 @@ const HomePage = ({ me }) => {
           <div className="flex items-center">
             <Image src={StarIcon} alt="StarIcon" width={64} height={32} />
             <h1 className="font-bold text-2xl md:text-4xl ml-2">
-              TOP Rated Services
+              TOP Best Services
             </h1>
           </div>
         </div>
-        <div className="w-full md:w-2/3  h-[500px] mx-auto border-[3px] border-gray-50 flex items-center justify-center mb-10">
-          <Table />
+        <div className="w-full md:w-2/3  h-[800px] mx-auto border-[3px] border-gray-50 flex items-center justify-center mb-10">
+          {apiData && (
+            <Table
+              products={apiData}
+              currentPage={currentPage}
+              totalPages={totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
         </div>
         <Footer />
       </div>

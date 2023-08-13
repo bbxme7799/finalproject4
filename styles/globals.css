@@ -12,7 +12,6 @@ body {
 @font-face {
   font-family: 'YourFontName';
   src: url('/fonts/NotoSansThai-Regular.ttf') format('truetype');
-  /* Add other font variants (bold, italic, etc.) if available */
 }
 
 /* .container {

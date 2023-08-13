@@ -29,7 +29,7 @@ const Sidebar = () => {
     <div className="flex flex-col flex-auto flex-shrink-0 antialiased  text-gray-800 ">
       <div className="fixed flex flex-col top-0 left-0 w-64 bg-white h-full border-r z-50">
         <div className="flex items-center justify-center h-16 border-b">
-          <Link href="/users">
+          <Link href="/users" prefetch>
             <div>MyService</div>
           </Link>
         </div>
@@ -46,6 +46,7 @@ const Sidebar = () => {
               <Link
                 href="/users"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
+                prefetch
               >
                 <span className="inline-flex justify-center items-center ml-4">
                   <svg
@@ -72,6 +73,7 @@ const Sidebar = () => {
               <Link
                 href="/users/history"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
+                prefetch
               >
                 <span className="inline-flex justify-center items-center ml-4">
                   <svg
@@ -104,6 +106,7 @@ const Sidebar = () => {
               <Link
                 href="/users/creditHistory"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
+                prefetch
               >
                 <span className="inline-flex justify-center items-center ml-4">
                   <svg
@@ -129,6 +132,7 @@ const Sidebar = () => {
               <Link
                 href="/users/credit"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
+                prefetch
               >
                 <span className="inline-flex justify-center items-center ml-4">
                   <svg
@@ -165,6 +169,7 @@ const Sidebar = () => {
               <Link
                 href="/users/settings"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
+                prefetch
               >
                 <span className="inline-flex justify-center items-center ml-4">
                   <svg
@@ -185,6 +190,7 @@ const Sidebar = () => {
               <Link
                 href="/users/contract"
                 className="relative flex flex-row items-center h-11 focus:outline-none hover:bg-gray-50 text-gray-600 hover:text-gray-800 border-l-4 border-transparent hover:border-indigo-500 pr-6"
+                prefetch
               >
                 <span className="inline-flex justify-center items-center ml-4">
                   <svg

@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from "react";
-// import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import CategoryButton from "@/components/CategoryButton"; // นำ Component CategoryButton เข้ามาใช้งาน
-//import FacebookIcon from "@/components/icons/facebook.png";
+import CategoryButton from "@/components/CategoryButton";
 import InstragramIcon from "@/components/icons/Instagram.png";
 import FacebookIcon from "@/components/icons/facebook.png";
 import YtIcon from "@/components/icons/youtube.png";
@@ -111,6 +109,11 @@ export default function User({ me }) {
           );
           const { data } = response.data;
           setProducts(data);
+
+          // Call handleProductChange immediately when new products are loaded
+          if (data.length > 0) {
+            handleProductChange(JSON.stringify(data[0]));
+          }
         }
       } catch (error) {
         console.error("Error fetching product data:", error);
@@ -172,12 +175,12 @@ export default function User({ me }) {
           <div className="bg-white h-auto rounded-lg px-8 py-8">
             <div className="flex relative">
               <div className="w-full flex flex-wrap gap-4 content-start">
-                {categoriess.map((category) => (
+                {categoriess.map(({ name, image }) => (
                   <CategoryButton
-                    key={category.name}
-                    onClick={() => handleCategoryChange(category.name)}
-                    name={category.name}
-                    image={category.image}
+                    key={name}
+                    onClick={() => handleCategoryChange(name)}
+                    name={name}
+                    image={image}
                   />
                 ))}
               </div>
