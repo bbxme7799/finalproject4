@@ -43,8 +43,12 @@ const ProductList = ({ products }) => {
               >
                 {product.service}
               </th>
-              <td className="px-4 py-3">{product.name}</td>
-              <td className="px-4 py-3">{product.category}</td>
+              <td className="px-4 py-3 max-w-[12rem] truncate">
+                {product.name}
+              </td>
+              <td className="px-4 py-3 max-w-[12rem] truncate">
+                {product.category}
+              </td>
               <td className="px-4 py-3 max-w-[12rem] truncate">
                 {product.description}
               </td>
@@ -97,9 +101,7 @@ const ProductList = ({ products }) => {
                           viewBox="0 0 20 20"
                           fill="currentColor"
                           aria-hidden="true"
-                        >
-                          {/* Edit icon */}
-                        </svg>
+                        ></svg>
                         Edit
                       </button>
                     </li>
@@ -130,13 +132,17 @@ const ProductList = ({ products }) => {
                         className="flex w-full items-center py-2 px-4 hover:bg-gray-100 text-red-500"
                       >
                         <svg
-                          className="w-4 h-4 mr-2"
-                          viewBox="0 0 14 15"
-                          fill="none"
-                          xmlns="http://www.w3.org/2000/svg"
+                          className="w-5 h-5"
                           aria-hidden="true"
+                          fill="currentColor"
+                          viewBox="0 0 20 20"
+                          xmlns="http://www.w3.org/2000/svg"
                         >
-                          {/* Delete icon */}
+                          <path
+                            fillRule="evenodd"
+                            d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z"
+                            clipRule="evenodd"
+                          />
                         </svg>
                         Delete
                       </button>

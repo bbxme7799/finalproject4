@@ -141,16 +141,17 @@ const SignInSection = () => {
   "
                   role="button"
                 >
-                  <Link href="http://localhost:8000/api/auth/google">
-                    <button className="flex items-center">
-                      <Image
-                        className="w-5 h-5 mr-4"
-                        src={GoogleIcon}
-                        alt="GoogleIcon"
-                      />
-                      <span className="text-base">เข้าสู่ระบบด้วย Google</span>
-                    </button>
-                  </Link>
+                  <a
+                    href="http://localhost:8000/api/auth/google"
+                    className="flex items-center"
+                  >
+                    <Image
+                      className="w-5 h-5 mr-4"
+                      src={GoogleIcon}
+                      alt="GoogleIcon"
+                    />
+                    <span className="text-base">เข้าสู่ระบบด้วย Google</span>
+                  </a>
                 </div>
 
                 {/* <Link

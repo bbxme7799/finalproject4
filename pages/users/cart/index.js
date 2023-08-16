@@ -90,9 +90,10 @@ const CartPage = ({ me }) => {
             <h1 className="text-base md:text-xl lg:text-2xl font-bold text-gray-900">
               Shopping Cart
             </h1>
-            {/* <span className="mt-2 md:mt-0 px-2 py-1 text-xs md:text-sm font-bold tracking-widest uppercase bg-gray-400 rounded-full rounded-r-none text-gray-50">
-              4 Items
-            </span> */}
+            <span class="px-2 py-1 ml-4 text-xs font-bold tracking-widest uppercase bg-gray-400 rounded-full rounded-r-nonepy-1 text-gray-50">
+              {" "}
+              4 Items{" "}
+            </span>
           </div>
 
           <div className="max-w-3xl mx-auto mt-8 md:mt-12">

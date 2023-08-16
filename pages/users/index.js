@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/router";
 import CategoryButton from "@/components/CategoryButton";
 import InstragramIcon from "@/components/icons/Instagram.png";
 import FacebookIcon from "@/components/icons/facebook.png";
@@ -16,11 +15,11 @@ import "react-toastify/dist/ReactToastify.css";
 const categoriess = [
   { name: "Youtube", image: YtIcon },
   { name: "Facebook", image: FacebookIcon },
-  { name: "Instagram", image: InstragramIcon }, // Replace "google.png" with Googleicon
-  { name: "Twitter", image: TwitterIcon }, // Replace "google.png" with Googleicon
-  { name: "Website Traffic", image: TrafficIcon }, // Replace "google.png" with Googleicon
-  { name: "TikTok", image: TiktokIcon }, // Replace "google.png" with Googleicon
-  // { name: "All Service", image: "google.png" }, // Make sure to provide the correct image path
+  { name: "Instagram", image: InstragramIcon },
+  { name: "Twitter", image: TwitterIcon },
+  { name: "Website Traffic", image: TrafficIcon },
+  { name: "TikTok", image: TiktokIcon },
+  { name: "【﻿𝓕𝓻𝓮𝓮】", image: TiktokIcon },
 ];
 
 export default function User({ me }) {
@@ -305,7 +304,7 @@ export default function User({ me }) {
                     <input
                       type="text"
                       className="w-full py-2 text-base px-2 mr-2" // เพิ่ม mr-2 ใน className เพื่อให้เว้นระยะห่าง
-                      value={(quantity * selectedProduct.rate).toFixed(2)} // คำนวณและแสดงผลค่าใช้จ่ายทั้งหมด
+                      value={(quantity * selectedProduct.rate * 1.5) / 1000} // คำนวณและแสดงผลค่าใช้จ่ายทั้งหมด
                       readOnly
                     />
                   </div>

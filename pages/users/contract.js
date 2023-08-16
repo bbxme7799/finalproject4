@@ -1,9 +1,7 @@
 import React from "react";
 
 import axios from "axios";
-import Navbar from "@/components/layout/navbar";
-import Sidebar from "@/components/layout/sidebar";
-
+import Layout from "@/components/layout/layout";
 export const getServerSideProps = async (context) => {
   const me = await axios
     .get("http://localhost:8000/api/users/me", {

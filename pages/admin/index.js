@@ -43,7 +43,7 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-export default function AdminPage({ me }) {
+export default function AdminDashBoardPage({ me }) {
   return (
     <>
       <PageMetadata title="Dashboard" />

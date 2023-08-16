@@ -40,10 +40,10 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-export default function AdminPage() {
+export default function CategoryManagePage() {
   return (
     <>
-      <PageMetadata title="Dashboard" />
+      <PageMetadata title="Category Management" />
       <div className="flex flex-col">
         <NavbarAdmin />
         <div className="flex flex-1">
@@ -51,13 +51,9 @@ export default function AdminPage() {
           <div className="flex flex-col flex-1 overflow-x-hidden">
             <div className="py-6">
               <div className="px-4 mx-auto sm:px-6 md:px-12">
-                <h1 className="text-2xl font-semibold">จัดการบริการ</h1>
-                {/* <div className="md:items-center md:flex"> */}
-                <ProductTable />
-                {/* </div> */}
-              </div>
-              <div className="px-4 mx-auto sm:px-6 md:px-12">
-                <h1 className="text-2xl font-semibold ">จัดการหมวดหมู่</h1>
+                <h1 className="text-2xl font-semibold ">
+                  จัดการหมวดหมู่ Category Management
+                </h1>
                 {/* <div className="md:items-center md:flex"> */}
                 <CategoryTable />
                 {/* </div> */}

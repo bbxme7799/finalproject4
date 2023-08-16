@@ -51,7 +51,6 @@ const SidebarAdmin = () => {
                 Connect New Account
               </button>
             </div> */}
-
             <nav className="flex-1 space-y-1">
               <Link
                 href="/admin"
@@ -75,14 +74,13 @@ const SidebarAdmin = () => {
                 หน้าหลัก
               </Link>
             </nav>
-
             <div>
               <p className="px-4 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 จัดการ
               </p>
               <nav className="flex-1 mt-4 space-y-1">
                 <Link
-                  href="/admin/servicemanagement"
+                  href="/admin/service"
                   title=""
                   className="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 text-gray-900 rounded-lg hover:bg-gray-200 group"
                 >
@@ -100,11 +98,32 @@ const SidebarAdmin = () => {
                       d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
                     />
                   </svg>
-                  บริการ และ หมวดหมู่
+                  บริการ
+                </Link>
+                <Link
+                  href="/admin/category"
+                  title=""
+                  className="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 text-gray-900 rounded-lg hover:bg-gray-200 group"
+                >
+                  <svg
+                    className="flex-shrink-0 w-5 h-5 mr-4"
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
+                    />
+                  </svg>
+                  หมวดหมู่
                 </Link>
 
-                {/* <a
-                  href="#"
+                <Link
+                  href="/admin/blog"
                   title=""
                   className="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 text-gray-900 rounded-lg hover:bg-gray-200 group"
                 >
@@ -122,15 +141,14 @@ const SidebarAdmin = () => {
                       d="M15 15l-2 5L9 9l11 4-5 2zm0 0l5 5M7.188 2.239l.777 2.897M5.136 7.965l-2.898-.777M13.95 4.05l-2.122 2.122m-5.657 5.656l-2.12 2.122"
                     />
                   </svg>
-                  หมวดหมู่
-                  <span className="text-xs uppercase ml-auto font-semibold text-indigo-600 bg-indigo-50 border border-indigo-300 rounded-full inline-flex items-center px-2 py-0.5">
+                  บล็อก
+                  {/* <span className="text-xs uppercase ml-auto font-semibold text-indigo-600 bg-indigo-50 border border-indigo-300 rounded-full inline-flex items-center px-2 py-0.5">
                     {" "}
                     New{" "}
-                  </span>
-                </a> */}
+                  </span> */}
+                </Link>
               </nav>
-            </div>
-
+            </div>{" "}
             <div>
               <p className="px-4 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 รายงาน และ การอนุมัติ
@@ -156,10 +174,10 @@ const SidebarAdmin = () => {
                     />
                   </svg>
                   อนุมัติการถอนเครดิต
-                  <span className="text-xs uppercase ml-auto font-semibold text-white bg-gray-500 border border-transparent rounded-full inline-flex items-center px-2 py-0.5">
+                  {/* <span className="text-xs uppercase ml-auto font-semibold text-white bg-gray-500 border border-transparent rounded-full inline-flex items-center px-2 py-0.5">
                     {" "}
                     15{" "}
-                  </span>
+                  </span> */}
                 </a>
 
                 <a
@@ -207,7 +225,6 @@ const SidebarAdmin = () => {
                 </a>
               </nav>
             </div>
-
             <div>
               <p className="px-4 text-xs font-semibold tracking-widest text-gray-400 uppercase">
                 Shop
@@ -309,7 +326,7 @@ const SidebarAdmin = () => {
                     d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
                   />
                 </svg>
-                Settings
+                ตั้งค่า
               </a>
 
               <button
@@ -330,7 +347,7 @@ const SidebarAdmin = () => {
                     d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"
                   />
                 </svg>
-                Logout
+                ออกจากระบบ
               </button>
             </nav>
           </div>

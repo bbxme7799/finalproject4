@@ -7,13 +7,14 @@ import Walleticon from "@/components/icons/wallet.png";
 import helpdeskicon from "@/components/icons/help-desk.png";
 import Socialicon from "@/components/icons/social-media.png";
 import StarIcon from "@/components/icons/star.png";
-import Table from "@/components/serviceTable/TableBestService";
+import Table from "@/components/serviceTable/Table";
 import bg from "@/public/images/marketinglogo.png";
 import Footer from "@/components/layout/footer";
 import PageMetadata from "@/components/PageMetadata";
 import { motion } from "framer-motion";
 import MainHeader from "@/components/layout/main-header";
 import axios from "axios";
+import SearchInput from "@/components/serviceTable/SearchInput";
 
 export const getServerSideProps = async (context) => {
   try {
@@ -61,15 +62,21 @@ const HomePage = ({ me }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [apiData, setApiData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
+  // Fetch data based on search query and currentPage
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(
-          `http://localhost:8000/api/products?keyword=${encodeURIComponent(
-            "Best Services"
-          )}&page=${currentPage}&per_page=10`
-        );
+        let apiUrl = `http://localhost:8000/api/products?page=${currentPage}&per_page=10`;
+
+        if (searchQuery) {
+          apiUrl += `&keyword=${encodeURIComponent(searchQuery)}`;
+        } else {
+          apiUrl += "&keyword=Best Service";
+        }
+
+        const response = await axios.get(apiUrl);
 
         const newData = response.data.data;
 
@@ -82,7 +89,7 @@ const HomePage = ({ me }) => {
     };
 
     fetchData();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
@@ -182,12 +189,17 @@ const HomePage = ({ me }) => {
         </div>
         <div className="w-full md:w-2/3  h-[800px] mx-auto border-[3px] border-gray-50 flex items-center justify-center mb-10">
           {apiData && (
-            <Table
-              products={apiData}
-              currentPage={currentPage}
-              totalPages={totalPages}
-              onPageChange={handlePageChange}
-            />
+            <div>
+              <SearchInput value={searchQuery} onChange={setSearchQuery} />
+
+              <Table
+                products={apiData}
+                currentPage={currentPage}
+                totalPages={totalPages}
+                onPageChange={handlePageChange}
+              />
+              {/* Rest of your component */}
+            </div>
           )}
         </div>
         <Footer />

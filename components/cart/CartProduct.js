@@ -34,7 +34,7 @@ const CartProduct = ({ product }) => {
             />
           </div>
 
-          <div className="flex items-end justify-between mt-2 sm:mt-0 sm:items-start sm:mt-1">
+          <div className="flex items-end justify-between mt-2 sm:items-start sm:mt-1">
             <p className="flex-shrink-0 w-16 text-base font-bold text-left text-gray-900 sm:text-right sm:ml-4 sm:order-2">
               ${product.rate}
             </p>
@@ -51,7 +51,7 @@ const CartProduct = ({ product }) => {
           </div>
         </div>
 
-        <p className="flex mt-2 space-x-2 text-xs text-gray-500">
+        {/* <p className="flex mt-2 space-x-2 text-xs text-gray-500">
           <svg
             className="flex-shrink-0 w-4 h-4"
             xmlns="http://www.w3.org/2000/svg"
@@ -67,7 +67,7 @@ const CartProduct = ({ product }) => {
             />
           </svg>
           <span>{product.delivery}</span>
-        </p>
+        </p> */}
 
         <div className="absolute top-0 right-0 flex sm:bottom-0 sm:top-auto">
           <button

@@ -57,14 +57,9 @@ const MainHeader = () => {
         </Link>
         <div className={styles.links}>
           {links.map((link) => (
-            <Link
-              key={link.id}
-              href={link.url}
-              className={styles.link}
-              prefetch
-            >
+            <a key={link.id} href={link.url} className={styles.link} prefetch>
               {link.title}
-            </Link>
+            </a>
           ))}
         </div>
         <Link href="/users/signin" passHref>

@@ -48,7 +48,7 @@ export const getServerSideProps = async (context) => {
   }
 };
 
-export default function LoginPage({ me }) {
+export default function LoginAdminPage({ me }) {
   return (
     <>
       <SignInAdmin />

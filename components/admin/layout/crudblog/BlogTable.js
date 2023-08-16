@@ -1,10 +1,10 @@
 import React, { Fragment, useState, useEffect } from "react";
-import CategoryList from "./CategoryList";
+import CategoryList from "./BlogList";
 import ModalOverlay from "./ModalOverlay";
 import axios from "axios";
 import SearchInput from "./SearchInput";
 
-const CategoryTable = () => {
+const BlogTable = () => {
   const [perPage, setPerPage] = useState(10); // กำหนดค่าเริ่มต้นให้เป็น 10
   const perPageOptions = [10, 20, 30];
   const [showModal, setShowModal] = useState(false);
@@ -270,4 +270,4 @@ const CategoryTable = () => {
   );
 };
 
-export default CategoryTable;
+export default BlogTable;
