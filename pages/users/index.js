@@ -134,13 +134,51 @@ export default function User({ me }) {
     checkInputValidity();
   }, [link, quantity]);
 
-  const handleOrderConfirmation = () => {
+  const handleOrderConfirmation = async () => {
     if (isInputValid) {
-      // ทำสิ่งที่คุณต้องการเมื่อข้อมูล input ถูกต้องและผู้ใช้คลิกยืนยันคำสั่งซื้อ
-      // ตัวอย่างเช่นเรียก API สำหรับการส่งคำสั่งซื้อ
-      console.log("Order confirmed!");
+      try {
+        // Prepare the data to be sent in the POST request
+        const requestData = {
+          quantity: parseInt(quantity),
+          url: link,
+        };
+
+        // Make the POST request to the API endpoint
+        const response = await axios.post(
+          `http://localhost:8000/api/carts/${selectedProduct.service}`,
+          requestData,
+          {
+            withCredentials: true,
+          }
+        );
+
+        if (response.status === 201) {
+          // Order confirmation and POST request were successful
+          console.log("Order confirmed!");
+
+          toast.success("คำสั่งซื้อสำเร็จ!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+      } catch (error) {
+        console.error("Error placing order:", error);
+
+        toast.error("เกิดข้อผิดพลาดในการสั่งซื้อ โปรดลองอีกครั้ง", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
     } else {
-      // แสดงข้อความให้ผู้ใช้รู้ว่าต้องกรอกข้อมูลให้ถูกต้องก่อน
+      // Invalid input
       toast.error("โปรดกรอกข้อมูล input ให้ถูกต้องก่อนที่จะยืนยันคำสั่งซื้อ", {
         position: "top-right",
         autoClose: 3000,
@@ -312,12 +350,12 @@ export default function User({ me }) {
               </div>
             )}
             <div className="flex">
-              <div className="bg-blue-500 w-[120px] text-center my-5 py-3 px-3 rounded-lg text-white ml-auto mr-2">
+              <div className="bg-blue-500 w-[120px] hover:bg-blue-600 transition duration-300 text-center my-5 py-3 px-3 rounded-lg text-white ml-auto mr-2">
                 <button onClick={handleOrderConfirmation}>
                   เพิ่มเข้าตะกร้า
                 </button>
               </div>
-              <div className="bg-green-500 w-[120px] text-center my-5 py-3 px-3 rounded-lg text-white">
+              <div className="bg-green-500 w-[120px] hover:bg-green-600 transition duration-300  text-center my-5 py-3 px-3 rounded-lg text-white">
                 <button onClick={handleOrderConfirmation}>สั่งซื้อเลย</button>
               </div>
             </div>

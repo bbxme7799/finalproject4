@@ -153,15 +153,14 @@ const CategoryTable = () => {
                       </a>
                     </div>
                   </div>
-                  {/* <div
+                  <div
                     id="filterDropdown"
                     className="z-10 hidden w-56 p-3 bg-white rounded-lg shadow "
-                  >
-                  </div> */}
+                  ></div>
                 </div>
               </div>
             </div>
-            <CategoryList category={category} />
+            <CategoryList categorys={category} />
             <nav
               className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
               aria-label="Table navigation"

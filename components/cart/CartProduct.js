@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 
 const CartProduct = ({ product }) => {
+  console.log("🚀 ~ file: CartProduct.js:4 ~ CartProduct ~ product:", product);
   const [editedUrl, setEditedUrl] = useState(product.url);
 
   const handleUrlChange = (event) => {
@@ -21,7 +22,7 @@ const CartProduct = ({ product }) => {
         <div className="sm:grid sm:grid-cols-2 sm:gap-x-3">
           <div className="pr-5 sm:pr-3">
             <p className="text-base font-bold text-gray-900 truncate">
-              {product.name}
+              {product.product_id}
             </p>
             <p className="mt-1 text-sm font-medium text-gray-500 truncate">
               {product.description}
@@ -45,7 +46,7 @@ const CartProduct = ({ product }) => {
                 id=""
                 className="block py-1 pl-2 pr-8 text-sm font-normal text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-md caret-gray-900 focus:ring-gray-900 focus:border-gray-900"
               >
-                <option value="">1</option>
+                <option value={product.quantity}>{product.quantity}</option>
               </select>
             </div>
           </div>

@@ -54,7 +54,7 @@ export default function SerivceUserPage({ me }) {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let apiUrl = `http://localhost:8000/api/products?page=${currentPage}&per_page=10`;
+        let apiUrl = `http://localhost:8000/api/products?page=${currentPage}&per_page=20`;
 
         if (searchQuery) {
           apiUrl += `&keyword=${encodeURIComponent(searchQuery)}`;

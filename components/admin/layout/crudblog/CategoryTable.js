@@ -1,10 +1,10 @@
 import React, { Fragment, useState, useEffect } from "react";
-import CategoryList from "./BlogList";
+import CategoryList from "./CategoryList";
 import ModalOverlay from "./ModalOverlay";
 import axios from "axios";
 import SearchInput from "./SearchInput";
 
-const BlogTable = () => {
+const CategoryTable = () => {
   const [perPage, setPerPage] = useState(10); // กำหนดค่าเริ่มต้นให้เป็น 10
   const perPageOptions = [10, 20, 30];
   const [showModal, setShowModal] = useState(false);
@@ -153,15 +153,14 @@ const BlogTable = () => {
                       </a>
                     </div>
                   </div>
-                  {/* <div
+                  <div
                     id="filterDropdown"
                     className="z-10 hidden w-56 p-3 bg-white rounded-lg shadow "
-                  >
-                  </div> */}
+                  ></div>
                 </div>
               </div>
             </div>
-            <CategoryList category={category} />
+            <CategoryList categorys={category} />
             <nav
               className="flex flex-col md:flex-row justify-between items-start md:items-center space-y-3 md:space-y-0 p-4"
               aria-label="Table navigation"
@@ -270,4 +269,4 @@ const BlogTable = () => {
   );
 };
 
-export default BlogTable;
+export default CategoryTable;
