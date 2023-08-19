@@ -75,6 +75,10 @@ export default function SerivceUserPage({ me }) {
     fetchData();
   }, [currentPage, searchQuery]);
 
+  const handleSearch = (query) => {
+    setSearchQuery(query); // Set searchQuery state based on input value
+    setCurrentPage(1); // Reset currentPage when searching
+  };
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
@@ -103,13 +107,15 @@ export default function SerivceUserPage({ me }) {
             <div className="space-y-4">
               {apiData && (
                 <div>
-                  <SearchInput value={searchQuery} onChange={setSearchQuery} />
-
+                  <SearchInput
+                    value={searchQuery}
+                    onSearch={handleSearch} // ต้องแนบ onSearch ฟังก์ชันที่คุณได้นิยามไว้ใน SerivceUserPage
+                  />
                   <Table
                     products={apiData}
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageChange={handlePageChange}
+                    onPageChange={handlePageChange} // Pass handlePageChange function
                   />
                   {/* Rest of your component */}
                 </div>

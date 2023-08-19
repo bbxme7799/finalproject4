@@ -1,6 +1,16 @@
-import React from "react";
+import React, { useState } from "react";
 
-const SearchInput = ({ value, onChange }) => {
+const SearchInput = ({ value, onSearch }) => {
+  const [inputValue, setInputValue] = useState(value);
+
+  const handleInputChange = (event) => {
+    setInputValue(event.target.value);
+  };
+
+  const handleSearchClick = () => {
+    onSearch(inputValue);
+  };
+
   console.log("🚀 ~ file: SearchInput.js:4 ~ SearchInput ~ value:", value);
   return (
     <div className="relative mt-1">
@@ -21,13 +31,21 @@ const SearchInput = ({ value, onChange }) => {
           />
         </svg>
       </div>
-      <input
-        type="text"
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        placeholder="Search products..."
-        className="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-      />
+      <div className="relative mt-1 flex">
+        <button
+          onClick={handleSearchClick}
+          className="px-3 py-2 text-sm  bg-green-500 text-white rounded-l-lg focus:ring-blue-500 focus:border-blue-500"
+        >
+          Search
+        </button>
+        <input
+          type="text"
+          value={inputValue}
+          onChange={handleInputChange}
+          placeholder="Search products..."
+          className="block p-2 pr-10 text-sm text-gray-900 border border-gray-300 rounded-r-lg w-40 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 flex-grow"
+        />
+      </div>
     </div>
   );
 };

@@ -91,9 +91,14 @@ const HomePage = ({ me }) => {
     fetchData();
   }, [currentPage, searchQuery]);
 
+  const handleSearch = (query) => {
+    setSearchQuery(query); // Set searchQuery state based on input value
+    setCurrentPage(1); // Reset currentPage when searching
+  };
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
+
   const [serviceCards] = useState([
     {
       icon: Servericon,
@@ -190,13 +195,15 @@ const HomePage = ({ me }) => {
         <div className="w-full md:w-2/3  h-[800px] mx-auto border-[3px] border-gray-50 flex items-center justify-center mb-10">
           {apiData && (
             <div>
-              <SearchInput value={searchQuery} onChange={setSearchQuery} />
-
+              <SearchInput
+                value={searchQuery}
+                onSearch={handleSearch} // ต้องแนบ onSearch ฟังก์ชันที่คุณได้นิยามไว้ใน SerivceUserPage
+              />
               <Table
                 products={apiData}
                 currentPage={currentPage}
                 totalPages={totalPages}
-                onPageChange={handlePageChange}
+                onPageChange={handlePageChange} // Pass handlePageChange function
               />
               {/* Rest of your component */}
             </div>

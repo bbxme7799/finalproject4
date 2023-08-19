@@ -32,12 +32,8 @@ export const getServerSideProps = async (context) => {
 
 const CartPage = ({ me }) => {
   const [isOpen, setIsOpen] = useState(false);
-
-  const handleSidebarToggle = () => {
-    setIsOpen((prev) => !prev);
-  };
-
   const [cartItems, setCartItems] = useState([]);
+  const [totalItemCount, setTotalItemCount] = useState(0);
 
   useEffect(() => {
     async function fetchCartItems() {
@@ -48,6 +44,7 @@ const CartPage = ({ me }) => {
         });
 
         setCartItems(response.data);
+        setTotalItemCount(response.data.length);
       } catch (error) {
         console.error("Error fetching cart items:", error);
       }
@@ -55,6 +52,11 @@ const CartPage = ({ me }) => {
 
     fetchCartItems();
   }, []);
+
+  const handleCartItemDelete = () => {
+    setTotalItemCount((prevCount) => prevCount - 1);
+  };
+
   return (
     <>
       <Layout me={me}></Layout>
@@ -74,7 +76,7 @@ const CartPage = ({ me }) => {
             </h1>
             <span class="px-2 py-1 ml-4 text-xs font-bold tracking-widest uppercase bg-gray-400 rounded-full rounded-r-nonepy-1 text-gray-50">
               {" "}
-              4 Items{" "}
+              {totalItemCount} Items{" "}
             </span>
           </div>
 
@@ -84,7 +86,11 @@ const CartPage = ({ me }) => {
                 <div className="flow-root">
                   <ul className="divide-y divide-gray-200 -my-4 md:-my-7">
                     {cartItems.map((product) => (
-                      <CartProduct key={product.id} product={product} />
+                      <CartProduct
+                        key={product.id}
+                        product={product}
+                        onDelete={handleCartItemDelete} // Pass onDelete callback here
+                      />
                     ))}
                   </ul>
                 </div>

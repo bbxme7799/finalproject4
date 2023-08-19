@@ -1,15 +1,61 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
+import axios from "axios";
+import SubTotal from "./SubTotal";
 
-const CartProduct = ({ product }) => {
-  console.log("🚀 ~ file: CartProduct.js:4 ~ CartProduct ~ product:", product);
+const CartProduct = ({ product, onDelete }) => {
   const [editedUrl, setEditedUrl] = useState(product.url);
+  const [quantity, setQuantity] = useState(product.quantity);
+  const [isDeleted, setIsDeleted] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const editedUrlRef = useRef(editedUrl); // Using a ref to track the initial editedUrl
+  const quantityRef = useRef(quantity); // Using a ref to track the initial quantity
 
   const handleUrlChange = (event) => {
     setEditedUrl(event.target.value);
+    setIsEditing(true);
+  };
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`http://localhost:8000/api/carts/${product.id}`, {
+        withCredentials: true,
+      });
+      setIsDeleted(true);
+      onDelete(); // Invoke the onDelete callback from props
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  const handleEdit = async () => {
+    if (
+      quantity !== quantityRef.current ||
+      editedUrl !== editedUrlRef.current
+    ) {
+      try {
+        await axios.put(
+          `http://localhost:8000/api/carts/${product.id}`,
+          {
+            quantity: parseInt(quantity),
+            url: editedUrl,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+        setIsEditing(false);
+        editedUrlRef.current = editedUrl; // Update the reference value
+        quantityRef.current = quantity; // Update the reference value
+      } catch (error) {
+        console.error(error);
+      }
+    } else {
+      setIsEditing(false);
+    }
   };
 
   return (
-    <li className="flex py-5">
+    <li className={`flex py-5 ${isDeleted ? "hidden" : ""}`}>
       {/* <div className="flex-shrink-0">
         <img
           className="object-cover w-16 h-16 rounded-lg"
@@ -22,32 +68,39 @@ const CartProduct = ({ product }) => {
         <div className="sm:grid sm:grid-cols-2 sm:gap-x-3">
           <div className="pr-5 sm:pr-3">
             <p className="text-base font-bold text-gray-900 truncate">
-              {product.product_id}
+              {product.product.name}
             </p>
             <p className="mt-1 text-sm font-medium text-gray-500 truncate">
-              {product.description}
+              {/* {product.product.description} */}
             </p>
             <input
               type="text"
               className="mt-1 text-sm text-blue-500 border rounded-md px-2 py-1 w-full overflow-x-auto"
               value={editedUrl}
               onChange={handleUrlChange}
+              onBlur={handleEdit} // เมื่อมีการเปลี่ยน focus ให้เรียก handleEdit
             />
           </div>
 
           <div className="flex items-end justify-between mt-2 sm:items-start sm:mt-1">
             <p className="flex-shrink-0 w-16 text-base font-bold text-left text-gray-900 sm:text-right sm:ml-4 sm:order-2">
-              ${product.rate}
+              {(((product.product.rate * 1.5) / 1000) * quantity).toFixed(2)}{" "}
             </p>
 
             <div className="sm:order-1">
-              <select
-                name=""
-                id=""
-                className="block py-1 pl-2 pr-8 text-sm font-normal text-gray-900 placeholder-gray-500 bg-white border border-gray-300 rounded-md caret-gray-900 focus:ring-gray-900 focus:border-gray-900"
-              >
-                <option value={product.quantity}>{product.quantity}</option>
-              </select>
+              <div className="flex">
+                <input
+                  type="number"
+                  className="w-16 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none"
+                  value={quantity}
+                  onChange={(event) =>
+                    setQuantity(
+                      Math.max(parseInt(event.target.value, 10) || 0, 0)
+                    )
+                  }
+                  onBlur={handleEdit} // เมื่อมีการเปลี่ยน focus ให้เรียก handleEdit
+                />
+              </div>
             </div>
           </div>
         </div>
@@ -73,6 +126,7 @@ const CartProduct = ({ product }) => {
         <div className="absolute top-0 right-0 flex sm:bottom-0 sm:top-auto">
           <button
             type="button"
+            onClick={handleDelete}
             className="inline-flex p-1 -m-1 text-gray-400 transition-all duration-200 rounded focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-900 hover:text-gray-900"
           >
             <svg
