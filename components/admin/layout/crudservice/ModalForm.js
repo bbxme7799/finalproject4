@@ -67,7 +67,10 @@ const ModalForm = () => {
         try {
           const response = await axios.post(
             "http://localhost:8000/api/products",
-            productData
+            productData,
+            {
+              withCredentials: true,
+            }
           );
 
           // เคลียร์ช่องข้อมูล

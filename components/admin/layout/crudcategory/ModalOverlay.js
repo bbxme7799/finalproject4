@@ -1,6 +1,6 @@
 import React from "react";
 import ModalHeader from "./ModalHeader";
-import ModalForm from "./ModalForm";
+import AddModal from "./AddModal";
 
 const ModalOverlay = ({ closeModal }) => {
   return (
@@ -11,7 +11,7 @@ const ModalOverlay = ({ closeModal }) => {
           <div className="relative p-4 w-full max-w-2xl h-full md:h-auto">
             <div className="relative p-4 bg-white rounded-lg shadow sm:p-5">
               <ModalHeader closeModal={closeModal} />
-              <ModalForm />
+              <AddModal />
             </div>
           </div>
         </div>

@@ -38,7 +38,10 @@ const Modal = ({ isOpen, onClose, product }) => {
     try {
       const response = await axios.put(
         `http://localhost:8000/api/products/${editedProduct.service}`,
-        editedProduct
+        editedProduct,
+        {
+          withCredentials: true,
+        }
       );
 
       console.log("Product updated:", response.data);

@@ -62,7 +62,10 @@ const ModalForm = () => {
         try {
           const response = await axios.post(
             "http://localhost:8000/api/categories",
-            productData
+            productData,
+            {
+              withCredentials: true,
+            }
           );
 
           // เคลียร์ช่องข้อมูล
@@ -84,11 +87,11 @@ const ModalForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div class="grid gap-4 mb-4 sm:grid-cols-2">
+      <div className="grid gap-4 mb-4 sm:grid-cols-2">
         <div>
           <label
             for="serviceid"
-            class="block mb-2 text-sm font-medium text-gray-900 "
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             ไอดี
           </label>
@@ -96,7 +99,7 @@ const ModalForm = () => {
             type="number"
             name="serviceid"
             id="serviceid"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
             placeholder="15"
             required=""
           />
@@ -104,7 +107,7 @@ const ModalForm = () => {
         <div>
           <label
             for="name"
-            class="block mb-2 text-sm font-medium text-gray-900 "
+            className="block mb-2 text-sm font-medium text-gray-900 "
           >
             ชื่อหมวดหมู่
           </label>
@@ -112,7 +115,7 @@ const ModalForm = () => {
             type="text"
             name="category"
             id="category"
-            class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
             placeholder="บริการเพิ่มผู้ติดตาม"
             required=""
           />

@@ -2,9 +2,23 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { parse } from "dotenv";
 import Swal from "sweetalert2";
+import dynamic from "next/dynamic"; // Import dynamic from 'next/dynamic'
+
+// Dynamically import ReactQuillEditor only on the client side
+const ReactQuillEditor = dynamic(() => import("./ReactQuillEditor"), {
+  ssr: false, // Disable Server-Side Rendering
+});
 
 const ModalForm = () => {
   const [categories, setCategories] = useState([]);
+  const [quillContent, setQuillContent] = useState("");
+  console.log(
+    "🚀 ~ file: ModalForm.js:15 ~ ModalForm ~ quillContent:",
+    quillContent
+  );
+  const [editedProduct, setEditedProduct] = useState({
+    imageUrl: "", // Initialize other properties as needed
+  });
 
   useEffect(() => {
     fetchAllCategories();
@@ -37,6 +51,10 @@ const ModalForm = () => {
     }
   };
 
+  const handleQuillChange = (content) => {
+    setQuillContent(content);
+  };
+
   const handleSubmit = async (event) => {
     console.log("🚀 ~ file: ModalForm.js:39 ~ handleSubmit ~ event:", event);
     event.preventDefault();
@@ -45,9 +63,14 @@ const ModalForm = () => {
     const formData = new FormData(form);
 
     const productData = {
-      // id: parseInt(formData.get("serviceid")),
-      name: formData.get("category"),
+      title: formData.get("title"),
+      imageUrl: editedProduct.imageUrl, // Use the imageUrl from state
+      content: quillContent, // Use the content from state
     };
+    console.log(
+      "🚀 ~ file: ModalForm.js:70 ~ handleSubmit ~ productData:",
+      productData
+    );
 
     Swal.fire({
       title: "Are you sure?",
@@ -61,8 +84,11 @@ const ModalForm = () => {
       if (result.isConfirmed) {
         try {
           const response = await axios.post(
-            "http://localhost:8000/api/categories",
-            productData
+            "http://localhost:8000/api/blog/createpost",
+            productData,
+            {
+              withCredentials: true,
+            }
           );
 
           // เคลียร์ช่องข้อมูล
@@ -82,15 +108,23 @@ const ModalForm = () => {
     });
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+    setEditedProduct((prevProduct) => ({
+      ...prevProduct,
+      [name]: value,
+    }));
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <div class="grid gap-4 mb-4 sm:grid-cols-2">
-        <div>
+        {/* <div>
           <label
             for="serviceid"
             class="block mb-2 text-sm font-medium text-gray-900 "
           >
-            ไอดี
+            Blog Id
           </label>
           <input
             type="number"
@@ -100,22 +134,53 @@ const ModalForm = () => {
             placeholder="15"
             required=""
           />
-        </div>
-        <div>
+        </div> */}
+        <div className="w-full col-span-2">
           <label
-            for="name"
+            for="title"
             class="block mb-2 text-sm font-medium text-gray-900 "
           >
-            ชื่อหมวดหมู่
+            Blog Title
           </label>
           <input
             type="text"
-            name="category"
-            id="category"
+            name="title"
+            id="title"
             class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 "
             placeholder="บริการเพิ่มผู้ติดตาม"
             required=""
           />
+        </div>
+        <div className="w-full col-span-2">
+          <label
+            htmlFor="title"
+            className="block mb-2 text-sm font-medium text-gray-900 "
+          >
+            Blog ImageUrl
+          </label>
+          <input
+            type="text"
+            name="imageUrl"
+            id="imageUrl"
+            onChange={handleInputChange}
+            className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 :bg-gray-700 "
+          />
+        </div>
+        <div className="w-full col-span-2">
+          <label
+            htmlFor="name"
+            className="block mb-2 text-sm font-medium text-gray-900 "
+          >
+            Content
+          </label>
+          <div className="max-h-[60vh] overflow-y-auto">
+            {typeof window !== "undefined" && (
+              <ReactQuillEditor
+                value={quillContent}
+                onChange={handleQuillChange} // Use the defined function here
+              />
+            )}
+          </div>
         </div>
       </div>
       <button className="text-white inline-flex items-center bg-green-500 hover:bg-green-600 focus:ring-4 focus:outline-none focus:ring-green-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center">
@@ -131,7 +196,7 @@ const ModalForm = () => {
             clipRule="evenodd"
           ></path>
         </svg>
-        Add new product
+        Add new blog
       </button>
     </form>
   );

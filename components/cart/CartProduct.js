@@ -22,11 +22,12 @@ const CartProduct = ({ product, onDelete }) => {
         withCredentials: true,
       });
       setIsDeleted(true);
-      onDelete(); // Invoke the onDelete callback from props
+      onDelete(product); // Pass the deleted product to the onDelete callback
     } catch (error) {
       console.error(error);
     }
   };
+
   const handleEdit = async () => {
     if (
       quantity !== quantityRef.current ||

@@ -1,14 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import dynamic from "next/dynamic"; // Import dynamic from 'next/dynamic'
 
-const Modal = ({ isOpen, onClose, category }) => {
+// Dynamically import ReactQuillEditor only on the client side
+const ReactQuillEditor = dynamic(() => import("./ReactQuillEditor"), {
+  ssr: false, // Disable Server-Side Rendering
+});
+
+const Modal = ({ isOpen, onClose, category, me }) => {
   const [editedProduct, setEditedProduct] = useState(category);
-  console.log("🚀 ~ file: Modal.js:6 ~ Modal ~ editedProduct:", editedProduct);
-  const [categories, setCategories] = useState([]); // Store fetched categories
+  const [categories, setCategories] = useState([]);
+  const [value, setValue] = useState("");
+  const [editorContent, setEditorContent] = useState(editedProduct.content);
 
   useEffect(() => {
-    // Fetch categories from the API
     axios
       .get("http://localhost:8000/api/categories")
       .then((response) => {
@@ -20,11 +26,7 @@ const Modal = ({ isOpen, onClose, category }) => {
       });
   }, []);
 
-  if (!isOpen) {
-    return null;
-  }
   const handleInputChange = (event) => {
-    // Preview;
     const { name, value } = event.target;
     setEditedProduct((prevProduct) => ({
       ...prevProduct,
@@ -32,15 +34,35 @@ const Modal = ({ isOpen, onClose, category }) => {
     }));
   };
 
+  const handleQuillChange = useCallback((content) => {
+    setEditedProduct((prevProduct) => ({
+      ...prevProduct,
+      content: content,
+    }));
+  }, []);
+
   const handleSubmit = async (event) => {
     event.preventDefault();
 
     try {
+      // const response = await axios.put(
+      //   `http://localhost:8000/api/blog/editPost/${editedProduct.id}`, // แก้ไข URL ตามเส้นทางของ API ของคุณ
+      //   {
+      //     title: editedProduct.title,
+      //     content: editorContent, // เพิ่มเนื้อหาที่แก้ไข
+      //   }
+      // );
       const response = await axios.put(
-        `http://localhost:8000/api/categories/${editedProduct.id}`,
-        editedProduct
+        `http://localhost:8000/api/blog/editPost/${editedProduct.id}`,
+        {
+          title: editedProduct.title,
+          content: editedProduct.content,
+          imageUrl: editedProduct.imageUrl,
+        },
+        {
+          withCredentials: true, // แนบ Cookie ไปด้วยคำร้อง
+        }
       );
-
       console.log("Product updated:", response.data);
       Swal.fire({
         icon: "success",
@@ -50,6 +72,7 @@ const Modal = ({ isOpen, onClose, category }) => {
       onClose();
     } catch (error) {
       console.error("Error updating category:", error);
+      console.log("🚀 ~ file: Modal.js:12 ~ Modal ~ me:", me);
       if (error.response && error.response.status === 400) {
         const errorMessage = error.response.data.error.message;
         Swal.fire({
@@ -62,7 +85,6 @@ const Modal = ({ isOpen, onClose, category }) => {
   };
 
   const handleDelete = async (event) => {
-    console.log("🚀 ~ file: Modal.js:60 ~ handleDelete ~ event:", event);
     event.preventDefault();
 
     try {
@@ -79,7 +101,10 @@ const Modal = ({ isOpen, onClose, category }) => {
 
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `http://localhost:8000/api/categories/${editedProduct.id}`
+          `http://localhost:8000/api/categories/${editedProduct.id}`,
+          {
+            withCredentials: true,
+          }
         );
 
         console.log("Product deleted:", response.data);
@@ -107,9 +132,7 @@ const Modal = ({ isOpen, onClose, category }) => {
     <div className="relative p-4 w-full max-w-2xl h-full md:h-auto">
       <div className="relative p-4 bg-white rounded-lg shadow ">
         <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5 ">
-          <h3 className="text-lg font-semibold text-gray-900">
-            Update Service
-          </h3>
+          <h3 className="text-lg font-semibold text-gray-900">Update Blog</h3>
           <button
             type="button"
             onClick={onClose}
@@ -138,7 +161,7 @@ const Modal = ({ isOpen, onClose, category }) => {
                 htmlFor="name"
                 className="block mb-2 text-sm font-medium text-gray-900 "
               >
-                Service ID
+                Blog ID
               </label>
               <input
                 disabled
@@ -151,18 +174,49 @@ const Modal = ({ isOpen, onClose, category }) => {
             </div>
             <div>
               <label
-                for="brand"
+                htmlFor="title"
                 className="block mb-2 text-sm font-medium text-gray-900 "
               >
-                Service Name
+                Blog title
               </label>
               <input
                 type="text"
-                name="name"
-                value={editedProduct.name}
+                name="title"
+                value={editedProduct.title}
                 onChange={handleInputChange}
                 className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 :bg-gray-700 "
               />
+            </div>
+            <div className="w-full col-span-2">
+              <label
+                htmlFor="title"
+                className="block mb-2 text-sm font-medium text-gray-900 "
+              >
+                Blog ImageUrl
+              </label>
+              <input
+                type="text"
+                name="imageUrl"
+                value={editedProduct.imageUrl}
+                onChange={handleInputChange}
+                className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5 :bg-gray-700 "
+              />
+            </div>
+            <div className="w-full col-span-2">
+              <label
+                htmlFor="name"
+                className="block mb-2 text-sm font-medium text-gray-900 "
+              >
+                Content
+              </label>
+              <div className="max-h-[60vh] overflow-y-auto">
+                {typeof window !== "undefined" && (
+                  <ReactQuillEditor
+                    value={editedProduct.content}
+                    onChange={handleQuillChange}
+                  />
+                )}
+              </div>
             </div>
           </div>
           <div className="flex items-center space-x-4">

@@ -2,7 +2,32 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
-const Modal = ({ isOpen, onClose, category }) => {
+export const getServerSideProps = async (context) => {
+  const me = await axios
+    .get("http://localhost:8000/api/users/me", {
+      headers: { cookie: context.req.headers.cookie },
+      withCredentials: true,
+    })
+    .then((response) => response.data)
+    .catch(() => null);
+
+  console.log("user/me info => ", me);
+  if (!me) {
+    return {
+      redirect: {
+        destination: "/users/signin",
+        permanent: false,
+      },
+    };
+  }
+  return {
+    props: {
+      me,
+    },
+  };
+};
+
+const Modal = ({ isOpen, onClose, category, me }) => {
   const [editedProduct, setEditedProduct] = useState(category);
   console.log("🚀 ~ file: Modal.js:6 ~ Modal ~ editedProduct:", editedProduct);
   const [categories, setCategories] = useState([]); // Store fetched categories
@@ -38,7 +63,10 @@ const Modal = ({ isOpen, onClose, category }) => {
     try {
       const response = await axios.put(
         `http://localhost:8000/api/categories/${editedProduct.id}`,
-        editedProduct
+        editedProduct,
+        {
+          withCredentials: true,
+        }
       );
 
       console.log("Product updated:", response.data);
@@ -76,19 +104,20 @@ const Modal = ({ isOpen, onClose, category }) => {
         confirmButtonText: "ลบเลย!",
         cancelButtonText: "ยกเลิก",
       });
-
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `http://localhost:8000/api/categories/${editedProduct.id}`
+          `http://localhost:8000/api/categories/${editedProduct.id}`,
+          {
+            withCredentials: true,
+          }
         );
 
         console.log("Product deleted:", response.data);
         Swal.fire({
           icon: "success",
           title: "สำเร็จ",
-          text: `ลบสำเร็จแล้ว ไอดี ${response.data.service}`,
+          text: `ลบสำเร็จแล้ว ไอดี ${editedProduct.id}`,
         });
-        onClose();
       }
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -151,7 +180,7 @@ const Modal = ({ isOpen, onClose, category }) => {
             </div>
             <div>
               <label
-                for="brand"
+                htmlFor="brand"
                 className="block mb-2 text-sm font-medium text-gray-900 "
               >
                 Service Name

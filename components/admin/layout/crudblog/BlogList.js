@@ -39,7 +39,10 @@ const CategoryList = ({ categorys }) => {
       try {
         // Make a DELETE request to the API endpoint with the given category ID
         await axios.delete(
-          `http://localhost:8000/api/categories/${categoryId}`
+          `http://localhost:8000/api/categories/${categoryId}`,
+          {
+            withCredentials: true,
+          }
         );
 
         // Remove the deleted category from the category list
@@ -60,6 +63,12 @@ const CategoryList = ({ categorys }) => {
       }
     }
   };
+
+  function formatDate(dateString) {
+    const options = { year: "numeric", month: "short", day: "numeric" };
+    return new Date(dateString).toLocaleDateString("th-TH", options);
+  }
+
   return (
     <>
       <div className="overflow-x-auto">
@@ -67,10 +76,22 @@ const CategoryList = ({ categorys }) => {
           <thead className="text-xs text-gray-700 uppercase bg-gray-50">
             <tr>
               <th scope="col" className="px-4 py-4">
-                Category id
+                id
               </th>
               <th scope="col" className="px-4 py-3">
-                Category Name
+                title
+              </th>
+              <th scope="col" className="px-4 py-3">
+                content
+              </th>
+              <th scope="col" className="px-4 py-3">
+                imageUrl
+              </th>
+              <th scope="col" className="px-4 py-3">
+                Author
+              </th>
+              <th scope="col" className="px-4 py-3">
+                createdAt
               </th>
               <th scope="col" className="px-4 py-3">
                 <span className="sr-only">Actions</span>
@@ -88,16 +109,36 @@ const CategoryList = ({ categorys }) => {
                   {category.id}
                 </th>
                 <td className="px-4 py-3 max-w-[12rem] truncate">
-                  {category.name}
+                  {category.title}
+                </td>
+                <td className="px-4 py-3 max-w-[6rem] truncate">
+                  {category.content}
+                </td>
+                <td className="px-4 py-3 max-w-[6rem] truncate">
+                  {category.imageUrl}
+                </td>
+                <td className="px-4 py-3 max-w-[6rem] truncate">
+                  {category.author.username}
+                </td>
+                <td className="px-4 py-3 max-w-[12rem] truncate">
+                  {formatDate(category.createdAt)}
                 </td>
                 <td className="px-4 py-3">
                   <button
-                    id={`${category.name
-                      .toLowerCase()
-                      .replace(/\s/g, "-")}-dropdown-button`}
-                    data-dropdown-toggle={`${category.name
-                      .toLowerCase()
-                      .replace(/\s/g, "-")}-dropdown`}
+                    id={
+                      category.title
+                        ? `${category.title
+                            .toLowerCase()
+                            .replace(/\s/g, "-")}-dropdown-button`
+                        : ""
+                    }
+                    data-dropdown-toggle={
+                      category.title
+                        ? `${category.title
+                            .toLowerCase()
+                            .replace(/\s/g, "-")}-dropdown`
+                        : ""
+                    }
                     onClick={() => toggleDropdown(category.id)}
                     className="text-gray-500 hover:text-gray-800 focus:outline-none"
                     type="button"
@@ -112,9 +153,10 @@ const CategoryList = ({ categorys }) => {
                       <path d="M6 10a2 2 0 11-4 0 2 2 0 014 0zM12 10a2 2 0 11-4 0 2 2 0 014 0zM16 12a2 2 0 100-4 2 2 0 000 4z" />
                     </svg>
                   </button>
+
                   {activeDropdowns.includes(category.id) && (
                     <div
-                      id={`${category.name
+                      id={`${category.title
                         .toLowerCase()
                         .replace(/\s/g, "-")}-dropdown`}
                       className="absolute z-20 right-20 mt-2 w-44 bg-white border border-gray-200 divide-y divide-gray-100 rounded-lg shadow"

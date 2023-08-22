@@ -34,6 +34,7 @@ const CartPage = ({ me }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [totalItemCount, setTotalItemCount] = useState(0);
+  const [totalSubtotal, setTotalSubtotal] = useState(0);
 
   useEffect(() => {
     async function fetchCartItems() {
@@ -53,8 +54,24 @@ const CartPage = ({ me }) => {
     fetchCartItems();
   }, []);
 
-  const handleCartItemDelete = () => {
-    setTotalItemCount((prevCount) => prevCount - 1);
+  useEffect(() => {
+    async function calculateTotalSubtotal() {
+      const newTotalSubtotal = cartItems.reduce((total, product) => {
+        const itemSubtotal =
+          ((product.product.rate * 1.5) / 1000) * product.quantity;
+        return total + itemSubtotal;
+      }, 0);
+
+      setTotalSubtotal(newTotalSubtotal);
+    }
+
+    calculateTotalSubtotal();
+  }, [cartItems]);
+
+  const handleCartItemDelete = (deletedProduct) => {
+    setCartItems((prevItems) =>
+      prevItems.filter((product) => product.id !== deletedProduct.id)
+    );
   };
 
   return (
@@ -89,7 +106,7 @@ const CartPage = ({ me }) => {
                       <CartProduct
                         key={product.id}
                         product={product}
-                        onDelete={handleCartItemDelete} // Pass onDelete callback here
+                        onDelete={handleCartItemDelete}
                       />
                     ))}
                   </ul>
@@ -97,7 +114,7 @@ const CartPage = ({ me }) => {
 
                 <hr className="border-gray-200 my-4 md:my-7" />
 
-                <SubTotal total={699} />
+                <SubTotal total={totalSubtotal.toFixed(2)} />
 
                 <div className="mt-6 text-center">
                   <CheckoutButton />

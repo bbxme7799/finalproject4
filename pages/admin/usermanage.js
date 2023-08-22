@@ -1,7 +1,8 @@
+import { useEffect, useState } from "react";
 import SidebarAdmin from "../../components/admin/layout/sidebarAdmin";
 import NavbarAdmin from "../../components/admin/layout/navbarAdmin";
 import PageMetadata from "@/components/PageMetadata";
-import BlogTable from "@/components/admin/layout/crudblog/BlogTable";
+import UserTable from "@/components/admin/layout/tableuser/UserTable";
 import axios from "axios";
 
 export const getServerSideProps = async (context) => {
@@ -39,10 +40,26 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-export default function BlogManagePage() {
+export default function UserManagePage() {
+  const [users, setUsers] = useState([]);
+
+  useEffect(() => {
+    axios
+      .get("http://localhost:8000/api/users/getusers", {
+        withCredentials: true,
+      })
+      .then((response) => {
+        const fetchedUsers = response.data;
+        setUsers(fetchedUsers);
+      })
+      .catch((error) => {
+        console.error("Error fetching users:", error);
+      });
+  }, []);
+
   return (
     <>
-      <PageMetadata title="Category Management" />
+      <PageMetadata title="User Management" />
       <div className="flex flex-col">
         <NavbarAdmin />
         <div className="flex flex-1">
@@ -51,11 +68,9 @@ export default function BlogManagePage() {
             <div className="py-6">
               <div className="px-4 mx-auto sm:px-6 md:px-12">
                 <h1 className="text-2xl font-semibold ">
-                  จัดการบล็อก Blog Management
+                  จัดการผู้ใช้งาน User Management
                 </h1>
-                {/* <div className="md:items-center md:flex"> */}
-                <BlogTable />
-                {/* </div> */}
+                <UserTable users={users} />
               </div>
             </div>
           </div>

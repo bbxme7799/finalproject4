@@ -38,7 +38,9 @@ const ProductList = ({ products }) => {
     if (result.isConfirmed) {
       try {
         // Make a DELETE request to the API endpoint with the given product ID
-        await axios.delete(`http://localhost:8000/api/products/${productId}`);
+        await axios.delete(`http://localhost:8000/api/products/${productId}`, {
+          withCredentials: true,
+        });
 
         // Remove the deleted product from the products list
         setProductList((prevProductList) =>

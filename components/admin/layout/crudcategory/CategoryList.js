@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import stylesCategory from "./stylesCategory.module.css";
-import Modal from "./Modal";
+import Modal from "./EditModal";
 import Swal from "sweetalert2";
 import axios from "axios";
 
@@ -39,7 +39,10 @@ const CategoryList = ({ categorys }) => {
       try {
         // Make a DELETE request to the API endpoint with the given category ID
         await axios.delete(
-          `http://localhost:8000/api/categories/${categoryId}`
+          `http://localhost:8000/api/categories/${categoryId}`,
+          {
+            withCredentials: true,
+          }
         );
 
         // Remove the deleted category from the category list

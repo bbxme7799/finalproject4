@@ -3,7 +3,7 @@ import React from "react";
 const ModalHeader = ({ closeModal }) => {
   return (
     <div className="flex justify-between items-center pb-4 mb-4 rounded-t border-b sm:mb-5">
-      <h3 className="text-lg font-semibold text-gray-900">Add Services</h3>
+      <h3 className="text-lg font-semibold text-gray-900">Add Blog</h3>
       <button
         type="button"
         className="text-gray-400 bg-transparent hover:bg-gray-200 hover:text-gray-900 rounded-lg text-sm p-1.5 ml-auto inline-flex items-center"

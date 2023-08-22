@@ -56,6 +56,7 @@ export default function CategoryManagePage() {
                 </h1>
                 {/* <div className="md:items-center md:flex"> */}
                 <CategoryTable />
+
                 {/* </div> */}
               </div>
             </div>

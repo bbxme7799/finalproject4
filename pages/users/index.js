@@ -13,13 +13,17 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 const categoriess = [
-  { name: "Youtube", image: YtIcon },
-  { name: "Facebook", image: FacebookIcon },
-  { name: "Instagram", image: InstragramIcon },
-  { name: "Twitter", image: TwitterIcon },
-  { name: "Website Traffic", image: TrafficIcon },
-  { name: "TikTok", image: TiktokIcon },
-  { name: "【﻿𝓕𝓻𝓮𝓮】", image: TiktokIcon },
+  { name: "Youtube", searchName: "Youtube", image: YtIcon },
+  { name: "Facebook", searchName: "Facebook", image: FacebookIcon },
+  { name: "Instagram", searchName: "Instagram", image: InstragramIcon },
+  { name: "Twitter", searchName: "Twitter", image: TwitterIcon },
+  {
+    name: "Website Traffic",
+    searchName: "Website Traffic",
+    image: TrafficIcon,
+  },
+  { name: "TikTok", searchName: "TikTok", image: TiktokIcon },
+  { name: "Free", searchName: "【﻿𝓕𝓻𝓮𝓮】", image: TiktokIcon },
 ];
 
 export default function User({ me }) {
