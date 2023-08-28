@@ -11,6 +11,7 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
 import SignInButton from "../../components/signin/SignInButton";
+import Web3 from "web3";
 
 const SignInSection = () => {
   const router = useRouter();
@@ -88,6 +89,68 @@ const SignInSection = () => {
     }
   };
 
+  const getNonce = async () => {
+    try {
+      const response = await axios.get("http://localhost:8000/api/auth/nonce");
+      return response.data.nonce;
+    } catch (error) {
+      console.error("Error fetching nonce:", error);
+      throw error;
+    }
+  };
+
+  const handleMetamaskLogin = async () => {
+    if (window.ethereum) {
+      const web3 = new Web3(window.ethereum);
+
+      try {
+        // Request access to accounts
+        await window.ethereum.enable();
+
+        const accounts = await web3.eth.getAccounts();
+        const selectedAddress = accounts[0];
+
+        // Call your Metamask authentication endpoint with the selectedAddress
+        const nonceResponse = await axios.get(
+          "http://localhost:8000/api/auth/nonce"
+        );
+
+        const { nonce } = nonceResponse.data;
+
+        // Sign the nonce with Metamask
+        const signedMessage = await web3.eth.personal.sign(
+          `Login to YourApp: ${nonce}`,
+          selectedAddress,
+          ""
+        );
+
+        // Call your Metamask authentication endpoint with the signed message
+        const response = await axios.post(
+          "http://localhost:8000/api/auth/metamask", // ปรับ URL เป็น URL ของเว็บเซิร์ฟเวอร์ของคุณ
+          {
+            signedMessage,
+            message: `Login to YourApp: ${nonce}`,
+            address: selectedAddress,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+
+        // Handle successful Metamask login...
+      } catch (error) {
+        console.error("Error with Metamask:", error);
+      }
+    } else {
+      console.error("Metamask is not installed.");
+    }
+  };
+
+  console.log(
+    "🚀 ~ file: SignInSection.js:125 ~ handleMetamaskLogin ~ handleMetamaskLogin:",
+    handleMetamaskLogin
+  );
+
   return (
     <section
       className="relative py-12 bg-gray-900 sm:py-16 lg:py-20"
@@ -120,11 +183,25 @@ const SignInSection = () => {
                   iconSrc={GoogleIcon}
                   text="เข้าสู่ระบบด้วย Google"
                 />
-                <SignInButton
-                  href="/signup"
-                  iconSrc={MetamaskIcon}
-                  text="เข้าสู่ระบบด้วย Metamask"
-                />
+                <button
+                  className="
+    flex items-center justify-center w-full px-6 py-3 mt-8
+    text-sm font-bold text-gray-900 transition-all duration-200
+    bg-gray-100 border border-transparent rounded-xl hover:bg-gray-200
+    focus:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200
+    font-pj"
+                  onClick={handleMetamaskLogin}
+                  role="button"
+                >
+                  <div className="flex items-center">
+                    <Image
+                      className="w-5 h-5 mr-4"
+                      src={MetamaskIcon}
+                      alt="Icon"
+                    />
+                    <span className="text-base">เข้าสู่ระบบด้วย Metamask</span>
+                  </div>
+                </button>
 
                 <p className="mt-8 text-sm font-normal text-center text-gray-600">
                   หรือ เข้าสู่ระบบด้วยอีเมล

@@ -4,6 +4,9 @@ import { useRouter } from "next/router";
 import PageMetadata from "@/components/PageMetadata";
 import axios from "axios";
 import Layout from "@/components/layout/layout";
+import OrderStatusButtons from "../../../components/history/OrderStatusButtons";
+import OrderDetailsModal from "../../../components/user/orderhistory/OrderHistoryModal"; // เพิ่ม import
+import StatusBadge from "@/components/user/orderhistory/StatusBadge";
 
 export const getServerSideProps = async (context) => {
   const me = await axios
@@ -15,6 +18,7 @@ export const getServerSideProps = async (context) => {
     .catch(() => null);
 
   console.log("user/me info => ", me);
+
   if (!me) {
     return {
       redirect: {
@@ -23,139 +27,64 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
+
+  // Check if the user is banned
+  if (me.is_banned) {
+    return {
+      redirect: {
+        destination: "/suspended",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       me,
     },
   };
 };
-const Users = [
-  {
-    id: 1,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "เสร็จสิ้น",
-    more: "Show",
-  },
-  {
-    id: 2,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "ยกเลิก",
-    more: "Show",
-  },
-  {
-    id: 3,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "ยกเลิก",
-    more: "Show",
-  },
-  {
-    id: 4,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "เสร็จสิ้น",
-    more: "Show",
-  },
-  {
-    id: 5,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "ยกเลิก",
-    more: "Show",
-  },
-  {
-    id: 6,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "คืนบางส่วน",
-    more: "Show",
-  },
-  {
-    id: 7,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "เสร็จสิ้น",
-    more: "Show",
-  },
-  {
-    id: 8,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "คืนบางส่วน",
-    more: "Show",
-  },
-  {
-    id: 9,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "เสร็จสิ้น",
-    more: "Show",
-  },
-  {
-    id: 10,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "เสร็จสิ้น",
-    more: "Show",
-  },
-  {
-    id: 11,
-    service: "Instagram Likes Free Trial",
-    src: "https://www.figma.com/file/t1sCg8bQQWEWQQEQ5ZJnrGQX57bgKi/Untitled",
-    cost: "100",
-    start: "410",
-    count: "10",
-    status: "เสร็จสิ้น",
-    more: "Show",
-  },
-];
 
 function index({ me }) {
-  const [query, setquery] = useState("");
-  const [btn, setbtn] = useState("");
-  const [currentPage, setcurrentPage] = useState(1);
-  const [recordsPerPage, setrecordsPerPage] = useState(10);
-  const lastIndex = currentPage * recordsPerPage;
-  const firstIndex = lastIndex - recordsPerPage;
-  const records = Users.slice(firstIndex, lastIndex);
-  const npage = Math.ceil(Users.length / recordsPerPage);
-  const number = [...Array(npage + 1).keys()].slice(1);
+  const [orderData, setOrderData] = useState([]);
+  const [orderDataDetails, setOrderDataDetails] = useState([]);
+  const [selectedOrder, setSelectedOrder] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [recordsPerPage, setRecordsPerPage] = useState(10);
+  const [query, setQuery] = useState("");
+  const [btn, setBtn] = useState("");
 
-  const router = useRouter();
+  // โค้ดอื่น ๆ ที่เหมือนเดิม
+  const [loading, setLoading] = useState(true);
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get("http://localhost:8000/api/orders", {
+          withCredentials: true,
+        });
+        setOrderData(response.data.data);
 
-  function getStatusColor(status) {
+        const orderPromises = await response.data.data.map((order) =>
+          axios.get(`http://localhost:8000/api/orders/${order.id}`, {
+            withCredentials: true,
+          })
+        );
+
+        const responses = await Promise.all(orderPromises);
+        const orderDetails = responses.map((response) => response.data);
+        setOrderDataDetails(orderDetails);
+
+        setLoading(false); // ตั้งค่าให้โหลดเสร็จแล้ว
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  const getStatusColor = (status) => {
     switch (status) {
       case "โปรดรอ..":
         return "#008CBA";
@@ -172,28 +101,47 @@ function index({ me }) {
       default:
         return "black";
     }
-  }
+  };
 
-  function handleButtonClick(value) {
-    setbtn(value);
-  }
+  const handleButtonClick = (value) => {
+    setBtn(value);
+  };
 
-  function nextPage() {
+  const nextPage = () => {
     if (currentPage !== lastIndex) {
-      setcurrentPage(currentPage + 1);
+      setCurrentPage(currentPage + 1);
     }
-  }
+  };
 
-  function prePage() {
+  const prePage = () => {
     if (currentPage !== firstIndex) {
-      setcurrentPage(currentPage - 1);
+      setCurrentPage(currentPage - 1);
     }
-  }
+  };
 
-  function changeCPage(id) {
-    setcurrentPage(id);
+  const changeCPage = (id) => {
+    setCurrentPage(id);
     handleButtonClick(""); // Clear the active button state when changing page
-  }
+  };
+
+  const handleViewDetailsClick = (order) => {
+    const selectedOrderWithId = {
+      ...order,
+      order_id: order.order_id,
+    };
+    setSelectedOrder(selectedOrderWithId);
+    setIsModalOpen(true);
+  };
+
+  const closeModal = () => {
+    setIsModalOpen(false);
+  };
+
+  const lastIndex = currentPage * recordsPerPage;
+  const firstIndex = lastIndex - recordsPerPage;
+  const records = orderData.slice(firstIndex, lastIndex);
+  const npage = Math.ceil(orderData.length / recordsPerPage);
+  const number = [...Array(npage + 1).keys()].slice(1);
 
   return (
     <>
@@ -207,79 +155,13 @@ function index({ me }) {
           </div>
         </div>
         <div className="mx-[150px] my-6 shadow-md h-full">
-          <div className="bg-white h-auto rounded-lg px-8 py-8 ">
+          <div className="bg-white h-auto rounded-lg px-8 py-8">
             <div className="relative">
               <div className="border-b-2 border-gray-200">
-                <ul className={styles.section}>
-                  <li
-                    className={`sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg ${
-                      btn === "" ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick("")}
-                  >
-                    <button onClick={() => handleButtonClick("")}>All</button>
-                  </li>
-                  <li
-                    className={`sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg ${
-                      btn === "โปรดรอ.." ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick("โปรดรอ..")}
-                  >
-                    <button onClick={() => handleButtonClick("โปรดรอ..")}>
-                      โปรดรอ..
-                    </button>
-                  </li>
-                  <li
-                    className={`sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg ${
-                      btn === "ดำเนินการ" ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick("ดำเนินการ")}
-                  >
-                    <button onClick={() => handleButtonClick("ดำเนินการ")}>
-                      ดำเนินการ
-                    </button>
-                  </li>
-                  <li
-                    className={`sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg ${
-                      btn === "เสร็จสิ้น" ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick("เสร็จสิ้น")}
-                  >
-                    <button onClick={() => handleButtonClick("เสร็จสิ้น")}>
-                      เสร็จสิ้น
-                    </button>
-                  </li>
-                  <li
-                    className={`sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg ${
-                      btn === "คืนบางส่วน" ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick("คืนบางส่วน")}
-                  >
-                    <button onClick={() => handleButtonClick("คืนบางส่วน")}>
-                      คืนบางส่วน
-                    </button>
-                  </li>
-                  <li
-                    className={`sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg ${
-                      btn === "ประมาลผล" ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick("ประมาลผล")}
-                  >
-                    <button onClick={() => handleButtonClick("ประมาลผล")}>
-                      ประมาลผล
-                    </button>
-                  </li>
-                  <li
-                    className={`sectionli mx-1 my-3 bg-gray-50 text-gray-500 px-5 py-2 rounded-lg ${
-                      btn === "ยกเลิก" ? "active" : ""
-                    }`}
-                    onClick={() => handleButtonClick("ยกเลิก")}
-                  >
-                    <button onClick={() => handleButtonClick("ยกเลิก")}>
-                      ยกเลิก
-                    </button>
-                  </li>
-                </ul>
+                <OrderStatusButtons
+                  activeStatus={btn}
+                  handleButtonClick={handleButtonClick}
+                />
               </div>
               <div className="flex justify-end my-3">
                 <input
@@ -289,63 +171,91 @@ function index({ me }) {
                   onChange={(e) => setquery(e.target.value)}
                 />
               </div>
-
               <div className="w-full my-5 mx-5 px-5 py-5">
-                <div className=" md:overflow-x-scroll">
-                  <table className="w-full mx-auto">
-                    <tbody>
-                      <tr className="border-b-2">
-                        <th className="text-left p-4  ">ID</th>
-                        <th className="text-left   ">บริการ</th>
-                        <th className="text-left  ">ลิงก์</th>
-                        <th className="text-center  ">ค่าใช้จ่าย</th>
-                        <th className="text-center  ">เริ่ม</th>
-                        <th className="text-center ">ปริมาณ</th>
-                        <th className="text-center ">Status</th>
-                        <th className="text-center ">เพิ่มเติม</th>
-                      </tr>
-                      {records
-                        .filter((user) =>
-                          user.status.toLowerCase().includes(query || btn)
-                        )
-                        .map((item) => (
-                          <tr key={item.id} className="border-b-2">
-                            <td className="text-left ">
-                              <p className="mx-2 my-3">{item.id}</p>
-                            </td>
-                            <td className="text-left ">
-                              <p className="my-3 ">{item.service}</p>
-                            </td>
-                            <td className="text-left ">
-                              <p className="my-3 ">{item.src}</p>
-                            </td>
-                            <td className="text-center ">
-                              <p className="my-3">{item.cost}</p>
-                            </td>
-                            <td className="text-center ">
-                              <p className="my-3">{item.start}</p>
-                            </td>
-                            <td className="text-center ">
-                              <p className="my-3">{item.count}</p>
-                            </td>
-                            <td className="text-center">
-                              <p
-                                className={`my-3 w-24 mx-auto rounded-md py-1 text-white`}
-                                style={{
-                                  backgroundColor: getStatusColor(item.status),
-                                }}
-                              >
-                                {item.status}
-                              </p>
-                            </td>
-
-                            <td className="text-center ">
-                              <p className="my-3">{item.more}</p>
-                            </td>
-                          </tr>
-                        ))}
-                    </tbody>
-                  </table>
+                <div className="relative overflow-x-auto">
+                  {loading ? (
+                    <div>Loading...</div>
+                  ) : (
+                    <table className="w-full text-sm text-left text-gray-500 ">
+                      <thead className="text-xs text-gray-700 uppercase bg-gray-50 ">
+                        <tr>
+                          <th scope="col" className="px-6 py-3">
+                            id
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Order Id
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            Service_name
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            quantity
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            price
+                          </th>
+                          <th scope="col" className="px-6 py-3">
+                            status
+                          </th>
+                          <th scope="col" className="relative py-3.5 px-4">
+                            <span className="sr-only">Actions</span>
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orderDataDetails.map((orderGroup, groupIndex) =>
+                          orderGroup.data.map((order, orderIndex) => (
+                            <tr key={order.id} className="bg-white border-b">
+                              {orderIndex === 0 ? (
+                                <>
+                                  <td className="px-6 py-4">{order.id}</td>
+                                  <td
+                                    className="px-6 py-4"
+                                    rowSpan={orderGroup.data.length}
+                                  >
+                                    {order.order_id}
+                                  </td>
+                                  <td
+                                    className="px-6 py-4 truncate"
+                                    rowSpan={orderGroup.data.length}
+                                  >
+                                    {order.service_name}
+                                  </td>
+                                  <td className="px-6 py-4">
+                                    {order.quantity}
+                                  </td>
+                                  <td className="px-6 py-4">{order.price}</td>
+                                </>
+                              ) : null}
+                              {orderIndex === 0 ? (
+                                <td
+                                  className="px-6 py-4"
+                                  rowSpan={orderGroup.data.length}
+                                >
+                                  <StatusBadge status={order.status} />
+                                </td>
+                              ) : null}
+                              {orderIndex === 0 ? (
+                                <td
+                                  className="px-6 py-4"
+                                  rowSpan={orderGroup.data.length}
+                                >
+                                  <button
+                                    onClick={() =>
+                                      handleViewDetailsClick(order)
+                                    }
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                  >
+                                    View Details
+                                  </button>
+                                </td>
+                              ) : null}
+                            </tr>
+                          ))
+                        )}
+                      </tbody>
+                    </table>
+                  )}
                 </div>
 
                 <div className="flex justify-between mx-3 my-5 ">
@@ -366,7 +276,7 @@ function index({ me }) {
                     <label htmlFor="dropdownMenu" className="pl-4 flex">
                       แถว{" "}
                       <p className="ml-3 opacity-70">
-                        จากทั้งหมด {Users.length} ข้อมูล
+                        จากทั้งหมด {orderDataDetails.length} ข้อมูล
                       </p>
                     </label>
                   </div>
@@ -407,20 +317,14 @@ function index({ me }) {
           </div>
         </div>
       </div>
+      <OrderDetailsModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        selectedOrder={selectedOrder}
+        orderDataDetails={orderDataDetails}
+      />
     </>
   );
-
-  // function nextPage() {
-  //   if (currentPage !== lastIndex) {
-  //     setcurrentPage(currentPage + 1);
-  //   }
-  // }
-  // function prePage() {
-  //   if (currentPage !== firstIndex) {
-  //     setcurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {}
 }
 
 export default index;

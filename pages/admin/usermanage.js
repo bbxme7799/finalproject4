@@ -42,6 +42,7 @@ export const getServerSideProps = async (context) => {
 
 export default function UserManagePage() {
   const [users, setUsers] = useState([]);
+  console.log("🚀 ~ file: usermanage.js:45 ~ UserManagePage ~ users:", users);
 
   useEffect(() => {
     axios
@@ -50,6 +51,10 @@ export default function UserManagePage() {
       })
       .then((response) => {
         const fetchedUsers = response.data;
+        console.log(
+          "🚀 ~ file: usermanage.js:53 ~ .then ~ fetchedUsers:",
+          fetchedUsers
+        );
         setUsers(fetchedUsers);
       })
       .catch((error) => {

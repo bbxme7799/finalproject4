@@ -17,6 +17,7 @@ export const getServerSideProps = async (context) => {
     .catch(() => null);
 
   console.log("user/me info => ", me);
+
   if (!me) {
     return {
       redirect: {
@@ -25,6 +26,17 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
+
+  // Check if the user is banned
+  if (me.is_banned) {
+    return {
+      redirect: {
+        destination: "/suspended",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       me,

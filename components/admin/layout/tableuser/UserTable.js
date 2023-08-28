@@ -1,21 +1,67 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
 
 const UserTable = ({ users }) => {
-  // Table component that maps through users and renders UserTableRow
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
+  const [userList, setUserList] = useState(users);
 
-  // Calculate indexes for pagination
+  useEffect(() => {
+    setUserList(users);
+  }, [users]);
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  // Filter users based on search term
-  const filteredUsers = users.filter((user) =>
-    user.username.toLowerCase().includes(searchTerm.toLowerCase())
+  const filteredUsers = userList.filter(
+    (user) =>
+      user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      user.email === null ||
+      user.address === null ||
+      user.balance === null
   );
 
   const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
+
+  const banUser = async (userId) => {
+    try {
+      await axios.put(
+        `http://localhost:8000/api/users/banuser`,
+        { userId, action: "ban" },
+        { withCredentials: true }
+      );
+
+      const updatedUserList = userList.map((user) =>
+        user.id === userId ? { ...user, is_banned: true } : user
+      );
+      setUserList(updatedUserList);
+
+      Swal.fire("Banned!", "User has been banned.", "success");
+    } catch (error) {
+      console.error("Error banning user:", error);
+    }
+  };
+
+  const unbanUser = async (userId) => {
+    try {
+      await axios.put(
+        `http://localhost:8000/api/users/unbanuser`,
+        { userId, action: "unban" },
+        { withCredentials: true }
+      );
+
+      const updatedUserList = userList.map((user) =>
+        user.id === userId ? { ...user, is_banned: false } : user
+      );
+      setUserList(updatedUserList);
+
+      Swal.fire("Unbanned!", "User has been unbanned.", "success");
+    } catch (error) {
+      console.error("Error unbanning user:", error);
+    }
+  };
 
   return (
     <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
@@ -38,6 +84,9 @@ const UserTable = ({ users }) => {
         <thead class="bg-gray-50">
           <tr>
             <th scope="col" class="px-6 py-4 font-medium text-gray-900">
+              id
+            </th>
+            <th scope="col" class="px-6 py-4 font-medium text-gray-900">
               Name
             </th>
             <th scope="col" class="px-6 py-4 font-medium text-gray-900">
@@ -49,12 +98,16 @@ const UserTable = ({ users }) => {
             <th scope="col" class="px-6 py-4 font-medium text-gray-900">
               Wallet Address
             </th>
+            <th scope="col" class="px-6 py-4 font-medium text-gray-900">
+              Balance
+            </th>
             <th scope="col" class="px-6 py-4 font-medium text-gray-900"></th>
           </tr>
         </thead>
         <tbody class="divide-y divide-gray-100 border-t border-gray-100">
-          {currentUsers.map((user) => (
-            <tr class="hover:bg-gray-50">
+          {currentUsers.map((user, index) => (
+            <tr key={index} class="hover:bg-gray-50">
+              <td class="px-6 py-4">{user.id}</td>
               <th class="flex gap-3 px-6 py-4 font-normal text-gray-900">
                 <div class="relative h-10 w-10">
                   <img
@@ -65,64 +118,53 @@ const UserTable = ({ users }) => {
                   <span class="absolute right-0 bottom-0 h-2 w-2 rounded-full bg-green-400 ring ring-white"></span>
                 </div>
                 <div class="text-sm">
-                  <div class="font-medium text-gray-700">{user.username}</div>
-                  <div class="text-gray-400">{user.email}</div>
+                  <div class="font-medium text-gray-700">
+                    {user.username || "NULL"}
+                  </div>
+                  <div class="text-gray-400">{user.email || "NULL"}</div>
                 </div>
               </th>
               <td class="px-6 py-4">
-                <span class="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600">
-                  <span class="h-1.5 w-1.5 rounded-full bg-green-600"></span>
-                  Active
-                </span>
+                {user.is_banned ? (
+                  <span class="inline-flex items-center gap-1 rounded-full bg-red-50 px-2 py-1 text-xs font-semibold text-red-600">
+                    <span class="h-1.5 w-1.5 rounded-full bg-red-600"></span>
+                    Banned
+                  </span>
+                ) : (
+                  <span class="inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-xs font-semibold text-green-600">
+                    <span class="h-1.5 w-1.5 rounded-full bg-green-600"></span>
+                    Active
+                  </span>
+                )}
               </td>
               <td class="px-6 py-4">
                 <div class="flex gap-2">
                   <span class="inline-flex items-center gap-1 rounded-full bg-blue-50 px-2 py-1 text-xs font-semibold text-blue-600">
-                    {user.role === 0 ? "User" : user.role}
+                    {user.role === 0 ? "User" : user.role || "NULL"}
                   </span>
                 </div>
               </td>
               <td class="px-6 py-4">
-                <div class="flex gap-2">
-                  0x0c18aEe54A5e4bF95A1338BB6d1E8182491993D9
-                </div>
+                <div class="flex gap-2 truncate">{user.address || "NULL"}</div>
+              </td>
+              <td class="px-6 py-4">
+                <div class="flex gap-2 truncate">{user.balance || "NULL"}</div>
               </td>
               <td class="px-6 py-4">
                 <div class="flex justify-end gap-4">
-                  <a x-data="{ tooltip: 'Delete' }" href="#">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="h-6 w-6"
-                      x-tooltip="tooltip"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
-                      />
-                    </svg>
-                  </a>
-                  <a x-data="{ tooltip: 'Edite' }" href="#">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke-width="1.5"
-                      stroke="currentColor"
-                      class="h-6 w-6"
-                      x-tooltip="tooltip"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L6.832 19.82a4.5 4.5 0 01-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 011.13-1.897L16.863 4.487zm0 0L19.5 7.125"
-                      />
-                    </svg>
-                  </a>
+                  <button
+                    class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow"
+                    onClick={() => banUser(user.id)} // ใช้ฟังก์ชัน confirmBanUser ที่เราสร้างไว้
+                  >
+                    Ban
+                  </button>
+
+                  <button
+                    class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow"
+                    onClick={() => unbanUser(user.id)} // ใช้ฟังก์ชัน confirmUnbanUser ที่เราสร้างไว้
+                  >
+                    Unban
+                  </button>
                 </div>
               </td>
             </tr>

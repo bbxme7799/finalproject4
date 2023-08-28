@@ -7,6 +7,7 @@ import TransactionsList from "../../components/admin/layout/dashboard/Transactio
 import CustomersList from "../../components/admin/layout/dashboard/CustomersList";
 import PageMetadata from "@/components/PageMetadata";
 import axios from "axios";
+import { useEffect, useState } from "react";
 
 export const getServerSideProps = async (context) => {
   const me = await axios
@@ -44,6 +45,18 @@ export const getServerSideProps = async (context) => {
 };
 
 export default function AdminDashBoardPage({ me }) {
+  const [totalCustomers, setTotalCustomers] = useState(0);
+
+  useEffect(() => {
+    // Fetch total customers from API
+    axios
+      .get("http://localhost:8000/api/users/getusers", {
+        withCredentials: true, // เพิ่มตรงนี้
+      })
+      .then((response) => {
+        setTotalCustomers(response.data.length);
+      });
+  }, []);
   return (
     <>
       <PageMetadata title="Dashboard" />
@@ -82,15 +95,15 @@ export default function AdminDashBoardPage({ me }) {
                         positive={false}
                       />
                       <SaleItem
-                        title="Total Orders"
-                        amount="84,382"
-                        percentage="36"
-                        positive
+                        title="Total Sales"
+                        amount="2,38,485"
+                        percentage="14"
+                        positive={false}
                       />
                       <SaleItem
                         title="Total Customers"
-                        amount="33,493"
-                        percentage="36"
+                        amount={totalCustomers.toLocaleString()}
+                        percentage="14"
                         positive
                       />
                     </div>

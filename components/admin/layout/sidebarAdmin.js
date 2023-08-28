@@ -179,8 +179,8 @@ const SidebarAdmin = () => {
                 รายงาน และ การอนุมัติ
               </p>
               <nav className="flex-1 mt-4 space-y-1">
-                <a
-                  href="#"
+                <Link
+                  href="/admin/reportorder"
                   title=""
                   className="flex items-center px-4 py-2.5 text-sm font-medium transition-all duration-200 text-gray-900 rounded-lg hover:bg-gray-200 group"
                 >
@@ -198,12 +198,12 @@ const SidebarAdmin = () => {
                       d="M7.5 14.25v2.25m3-4.5v4.5m3-6.75v6.75m3-9v9M6 20.25h12A2.25 2.25 0 0020.25 18V6A2.25 2.25 0 0018 3.75H6A2.25 2.25 0 003.75 6v12A2.25 2.25 0 006 20.25z"
                     />
                   </svg>
-                  อนุมัติการถอนเครดิต
+                  รายงานออเดอร์
                   {/* <span className="text-xs uppercase ml-auto font-semibold text-white bg-gray-500 border border-transparent rounded-full inline-flex items-center px-2 py-0.5">
                     {" "}
                     15{" "}
                   </span> */}
-                </a>
+                </Link>
 
                 <a
                   href="#"

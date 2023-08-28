@@ -6,6 +6,8 @@ import YtIcon from "@/components/icons/youtube.png";
 import TwitterIcon from "@/components/icons/twitter.png";
 import TrafficIcon from "@/components/icons/traffic.png";
 import TiktokIcon from "@/components/icons/tiktok.png";
+import TelegramIcon from "@/components/icons/telegram.png";
+import FreeIcon from "@/components/icons/free.png";
 import PageMetadata from "@/components/PageMetadata";
 import axios from "axios";
 import Layout from "@/components/layout/layout";
@@ -23,7 +25,10 @@ const categoriess = [
     image: TrafficIcon,
   },
   { name: "TikTok", searchName: "TikTok", image: TiktokIcon },
-  { name: "Free", searchName: "【﻿𝓕𝓻𝓮𝓮】", image: TiktokIcon },
+  { name: "Telegrama", searchName: "Telegram", image: TelegramIcon },
+  { name: "Telegramb", searchName: "Telegram", image: TelegramIcon },
+  { name: "Telegramc", searchName: "Telegram", image: TelegramIcon },
+  { name: "Free", searchName: "【﻿𝓕𝓻𝓮𝓮】", image: FreeIcon },
 ];
 
 export default function User({ me }) {
@@ -55,11 +60,6 @@ export default function User({ me }) {
       console.log("No similar category found.");
     }
   };
-
-  console.log(
-    "🚀 ~ file: index.js:31 ~ User ~ selectedProduct:",
-    selectedProduct
-  );
 
   const handleProductChange = (selectedProductJSON) => {
     const productWithoutSpace = selectedProductJSON
@@ -128,7 +128,13 @@ export default function User({ me }) {
 
   const checkInputValidity = () => {
     const isLinkValid = link !== "";
-    const isQuantityValid = quantity > 0;
+
+    let isQuantityValid = quantity > 0;
+    if (selectedProduct) {
+      const { min, step } = selectedProduct;
+      isQuantityValid =
+        isQuantityValid && quantity >= min && (quantity - min) % step === 0; // เช็คว่าหารด้วย step แล้วเหลือเศษเป็น 0
+    }
 
     setIsInputValid(isLinkValid && isQuantityValid);
   };
@@ -140,27 +146,41 @@ export default function User({ me }) {
 
   const handleOrderConfirmation = async () => {
     if (isInputValid) {
-      try {
-        // Prepare the data to be sent in the POST request
-        const requestData = {
-          quantity: parseInt(quantity),
-          url: link,
-        };
+      if (selectedProduct) {
+        // เพิ่มเงื่อนไขเพื่อตรวจสอบ selectedProduct ก่อนใช้งาน
+        try {
+          // Prepare the data to be sent in the POST request
+          const requestData = {
+            quantity: parseInt(quantity),
+            url: link,
+          };
 
-        // Make the POST request to the API endpoint
-        const response = await axios.post(
-          `http://localhost:8000/api/carts/${selectedProduct.service}`,
-          requestData,
-          {
-            withCredentials: true,
+          // Make the POST request to the API endpoint
+          const response = await axios.post(
+            `http://localhost:8000/api/carts/${selectedProduct.service}`,
+            requestData,
+            {
+              withCredentials: true,
+            }
+          );
+
+          if (response.status === 201) {
+            // Order confirmation and POST request were successful
+            console.log("Order confirmed!");
+
+            toast.success("คำสั่งซื้อสำเร็จ!", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
           }
-        );
+        } catch (error) {
+          console.error("Error placing order:", error);
 
-        if (response.status === 201) {
-          // Order confirmation and POST request were successful
-          console.log("Order confirmed!");
-
-          toast.success("คำสั่งซื้อสำเร็จ!", {
+          toast.error("เกิดข้อผิดพลาดในการสั่งซื้อ โปรดลองอีกครั้ง", {
             position: "top-right",
             autoClose: 3000,
             hideProgressBar: false,
@@ -169,17 +189,8 @@ export default function User({ me }) {
             draggable: true,
           });
         }
-      } catch (error) {
-        console.error("Error placing order:", error);
-
-        toast.error("เกิดข้อผิดพลาดในการสั่งซื้อ โปรดลองอีกครั้ง", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+      } else {
+        console.error("Selected product is not available."); // แสดงข้อความในกรณีที่ selectedProduct ไม่พร้อมใช้งาน
       }
     } else {
       // Invalid input
@@ -216,10 +227,10 @@ export default function User({ me }) {
           <div className="bg-white h-auto rounded-lg px-8 py-8">
             <div className="flex relative">
               <div className="w-full flex flex-wrap gap-4 content-start">
-                {categoriess.map(({ name, image }) => (
+                {categoriess.map(({ name, searchName, image }) => (
                   <CategoryButton
                     key={name}
-                    onClick={() => handleCategoryChange(name)}
+                    onClick={() => handleCategoryChange(searchName)}
                     name={name}
                     image={image}
                   />
@@ -381,6 +392,7 @@ export const getServerSideProps = async (context) => {
     .catch(() => null);
 
   console.log("user/me info => ", me);
+
   if (!me) {
     return {
       redirect: {
@@ -389,6 +401,17 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
+
+  // Check if the user is banned
+  if (me.is_banned) {
+    return {
+      redirect: {
+        destination: "/suspended",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       me,

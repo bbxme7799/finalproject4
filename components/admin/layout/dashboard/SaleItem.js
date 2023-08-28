@@ -8,7 +8,7 @@ const SaleItem = ({ title, amount, percentage, positive }) => (
         {title}
       </p>
       <div className="flex items-center justify-between mt-3">
-        <p className="text-xl font-bold text-gray-900">${amount}</p>
+        <p className="text-xl font-bold text-gray-900">{amount}</p>
 
         <span
           className={`inline-flex items-center text-sm font-semibold ${

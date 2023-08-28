@@ -1,9 +1,36 @@
 import React, { useState, useEffect, useRef } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import Link from "next/link";
+import axios from "axios";
+import Image from "next/image";
+import busdIcon from "../icons/binance-usd-busd-logo.png";
 
 const Navbar = ({ me }) => {
-  console.log("🚀 ~ file: navbar.js:6 ~ Navbar ~ me:", me);
+  const [usdToThbRate, setUsdToThbRate] = useState(null);
+  const [usdBalance, setUsdBalance] = useState(null);
+
+  useEffect(() => {
+    // Fetch USD to THB exchange rate from the API
+    async function fetchUsdToThbRate() {
+      try {
+        const response = await axios.get("http://localhost:8000/api/usd");
+        setUsdToThbRate(response.data.rate);
+      } catch (error) {
+        console.error("Error fetching USD to THB exchange rate:", error);
+      }
+    }
+
+    fetchUsdToThbRate();
+  }, []);
+
+  useEffect(() => {
+    // Calculate USD balance when the exchange rate or THB balance changes
+    if (usdToThbRate !== null && me.balance !== undefined) {
+      const usdEquivalent = me.balance / parseFloat(usdToThbRate[0].rate); // Convert rate to a number
+      setUsdBalance(usdEquivalent.toFixed(2)); // Round to 2 decimal places
+    }
+  }, [usdToThbRate, me.balance]);
+
   return (
     <nav className="shadow bg-white fixed w-full z-10">
       <div className="mx-auto px-4 sm:px-6 lg:px-8 ">
@@ -32,16 +59,25 @@ const Navbar = ({ me }) => {
               </div>
             </div>
             <div className="ml-3 relative">
-              <div>
-                <button
-                  className="max-w-xs flex items-center text-sm rounded-full focus:outline-none"
-                  id="balance-menu"
-                  aria-haspopup="true"
-                >
-                  {/* Your balance content */}
-                  <span className="font-semibold">$1,234.56</span>
-                </button>
-              </div>
+              <button
+                className="max-w-xs flex items-center text-sm rounded-full focus:outline-none"
+                id="balance-menu"
+                aria-haspopup="true"
+              >
+                {usdBalance !== null ? (
+                  <span className="font-semibold">
+                    {parseFloat(me.balance).toFixed(2)} ({usdBalance}
+                    <Image
+                      src={busdIcon}
+                      alt="BUSD Icon"
+                      className="inline-block w-4 h-4 ml-1"
+                    />
+                    )
+                  </span>
+                ) : (
+                  <span>Loading...</span>
+                )}
+              </button>
             </div>
             <div className="ml-3 relative">
               {/* Your logo image for small screens */}
@@ -51,7 +87,13 @@ const Navbar = ({ me }) => {
                 alt="Logo"
               /> */}
               <span className="hidden md:flex bg-black text-white text-sm px-3 py-4 rounded-xl mr-2 items-center w-[fit-content]">
-                <span className="flex-grow">{me.username || "Hi"}</span>
+                <span className="flex-grow">
+                  {me.address ? (
+                    <>{me.address.substring(0, 10)}...</>
+                  ) : (
+                    <>{me.username || "Hi"}</>
+                  )}
+                </span>
               </span>
 
               {/* <img

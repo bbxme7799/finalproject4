@@ -6,7 +6,6 @@ import Navbar from "./navbar";
 import { useRouter } from "next/router";
 
 export default function Layout({ children, me }) {
-  console.log("🚀 ~ file: layout.js:9 ~ Layout ~ me:", me);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const router = useRouter();
 

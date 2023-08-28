@@ -18,13 +18,23 @@ export const getServerSideProps = async (context) => {
     if (response.status === 200) {
       me = response.data;
       console.log("user/me info => ", me);
+
       if (me) {
-        return {
-          redirect: {
-            destination: "/users",
-            permanent: false,
-          },
-        };
+        if (me.is_banned) {
+          return {
+            redirect: {
+              destination: "/suspended",
+              permanent: false,
+            },
+          };
+        } else {
+          return {
+            redirect: {
+              destination: "/users",
+              permanent: false,
+            },
+          };
+        }
       }
     }
 
@@ -34,9 +44,6 @@ export const getServerSideProps = async (context) => {
       },
     };
   } catch (error) {
-    // Handle errors (e.g., network error, server error)
-    // console.error("Error fetching user info: ", error);
-
     return {
       props: {
         me: null,
@@ -44,8 +51,7 @@ export const getServerSideProps = async (context) => {
     };
   }
 };
-
-export default function LoginPage() {
+export default function LoginPage({ me }) {
   const router = useRouter();
 
   return (

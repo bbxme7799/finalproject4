@@ -6,6 +6,8 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Layout from "@/components/layout/layout";
+import Web3 from "web3";
+import CONTRACT_ABI from "../../../contract/busd-abi.json";
 
 export const getServerSideProps = async (context) => {
   const me = await axios
@@ -17,6 +19,7 @@ export const getServerSideProps = async (context) => {
     .catch(() => null);
 
   console.log("user/me info => ", me);
+
   if (!me) {
     return {
       redirect: {
@@ -25,6 +28,17 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
+
+  // Check if the user is banned
+  if (me.is_banned) {
+    return {
+      redirect: {
+        destination: "/suspended",
+        permanent: false,
+      },
+    };
+  }
+
   return {
     props: {
       me,
@@ -60,6 +74,61 @@ export default function CreditPage({ me }) {
     console.log("Credit Amount:", creditAmount);
     // Clear the input field after submission
     setCreditAmount("");
+  };
+
+  const CONTRACT_ADDRESS = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";
+
+  const web3 = new Web3(
+    Web3.givenProvider || "https://data-seed-prebsc-1-s1.binance.org:8545"
+  );
+  const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
+
+  function convertToWei(price) {
+    return "0x" + Number(price * 1e18).toString(16);
+  }
+
+  const handletopup = async () => {
+    // const web3 = new Web3(window.ethereum);
+    try {
+      // Request access to accounts
+      // await window.ethereum.enable();
+      const accounts = await window.ethereum.request({
+        method: "eth_requestAccounts",
+      });
+      const selectedAddress = accounts[0];
+      console.log("selectedAddress:", selectedAddress);
+      const response = await axios.post(
+        "http://localhost:8000/api/topup", // ปรับ URL เป็น URL ของเว็บเซิร์ฟเวอร์ของคุณ
+        {
+          address: selectedAddress,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+      console.log(
+        "🚀 ~ file: index.js:141 ~ handletopup ~ response:",
+        response
+      );
+      let result = await window.ethereum.request({
+        method: "eth_sendTransaction",
+        params: [
+          {
+            from: selectedAddress,
+            to: CONTRACT_ADDRESS,
+            chainId: 97,
+            data: contract.methods
+              .transfer(
+                "0xF66D753De15379B0B445df6956356d18A1B47e1F",
+                convertToWei(1)
+              )
+              .encodeABI(),
+          },
+        ],
+      });
+    } catch (error) {
+      console.error("Error with Metamask:", error);
+    }
   };
 
   return (
@@ -101,28 +170,27 @@ export default function CreditPage({ me }) {
                   {/* Lorem ipsum dolor sit, amet consectetur adipisicing elit.
                   Dignissimos dolorem vel cupiditate laudantium dicta. */}
                 </p>
-                <form onSubmit={handleSubmit}>
-                  <div className="mt-8 space-y-6">
-                    <div>
-                      <label
-                        htmlFor="name"
-                        className="text-sm text-gray-700 block mb-1 font-medium"
-                      >
-                        Send BUSD Payment
-                      </label>
-                      <select
-                        name="name"
-                        id="name"
-                        className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                      >
-                        <option>
-                          0x0c18aEe54A5e4bF95A1338BB6d1E8182491993D9
-                        </option>
-                        {/* Add more options as needed */}
-                      </select>
-                    </div>
+                <div className="mt-8 space-y-6">
+                  <div>
+                    <label
+                      htmlFor="name"
+                      className="text-sm text-gray-700 block mb-1 font-medium"
+                    >
+                      Send BUSD Payment
+                    </label>
+                    <select
+                      name="name"
+                      id="name"
+                      className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                    >
+                      <option>
+                        0x0c18aEe54A5e4bF95A1338BB6d1E8182491993D9
+                      </option>
+                      {/* Add more options as needed */}
+                    </select>
+                  </div>
 
-                    {/* <div>
+                  {/* <div>
                       <label
                         htmlFor="email"
                         className="text-sm text-gray-700 block mb-1 font-medium"
@@ -137,31 +205,30 @@ export default function CreditPage({ me }) {
                         placeholder="yourmail@provider.com"
                       />
                     </div> */}
-                    <div>
-                      <label
-                        htmlFor="job"
-                        className="text-sm text-gray-700 block mb-1 font-medium"
-                      >
-                        Amount
-                      </label>
-                      <input
-                        type="text"
-                        name="amount"
-                        id="amount"
-                        className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                        placeholder="15.23"
-                      />
-                    </div>
-                  </div>
-                  <div className="space-x-4 mt-8">
-                    <button
-                      type="submit"
-                      className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
+                  <div>
+                    <label
+                      htmlFor="job"
+                      className="text-sm text-gray-700 block mb-1 font-medium"
                     >
-                      PAY NOW
-                    </button>
+                      Amount
+                    </label>
+                    <input
+                      type="text"
+                      name="amount"
+                      id="amount"
+                      className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
+                      placeholder="15.23"
+                    />
                   </div>
-                </form>
+                </div>
+                <div className="space-x-4 mt-8">
+                  <button
+                    onClick={handletopup}
+                    className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
+                  >
+                    PAY NOW
+                  </button>
+                </div>
               </div>
             </div>
           </div>

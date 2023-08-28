@@ -2,7 +2,7 @@ import React, { useState, useRef } from "react";
 import axios from "axios";
 import SubTotal from "./SubTotal";
 
-const CartProduct = ({ product, onDelete }) => {
+const CartProduct = ({ product, onDelete, onChange }) => {
   const [editedUrl, setEditedUrl] = useState(product.url);
   const [quantity, setQuantity] = useState(product.quantity);
   const [isDeleted, setIsDeleted] = useState(false);
@@ -33,6 +33,10 @@ const CartProduct = ({ product, onDelete }) => {
       quantity !== quantityRef.current ||
       editedUrl !== editedUrlRef.current
     ) {
+      if (quantity % product.product.step !== 0) {
+        alert(`กรุณากรอกจำนวนที่มีค่าในขั้นตอน ${product.product.step}`);
+        return; // หยุดการอัปเดตหากมีเศษในจำนวน
+      }
       try {
         await axios.put(
           `http://localhost:8000/api/carts/${product.id}`,
@@ -44,6 +48,12 @@ const CartProduct = ({ product, onDelete }) => {
             withCredentials: true,
           }
         );
+        const changedProduct = {
+          ...product,
+          quantity: parseInt(quantity),
+          url: editedUrl,
+        };
+        onChange(changedProduct);
         setIsEditing(false);
         editedUrlRef.current = editedUrl; // Update the reference value
         quantityRef.current = quantity; // Update the reference value
@@ -55,16 +65,42 @@ const CartProduct = ({ product, onDelete }) => {
     }
   };
 
+  const findImageForProductName = (productName) => {
+    const processedProductName = productName.toLowerCase().replace(/\s+/g, "");
+    const availableImageNames = [
+      "youtube", // รายชื่อไฟล์รูปภาพที่คุณมีในโฟลเดอร์ /public/images/
+      "twitter",
+      "เพิ่มทราฟฟิค",
+      "instagram",
+      "facebook",
+      "twitter",
+      "tiktok",
+      // เพิ่มรายชื่อไฟล์รูปภาพที่คุณมีต่อท้าย
+    ];
+
+    const closestImageName = availableImageNames.find((imageName) =>
+      processedProductName.includes(imageName)
+    );
+
+    if (closestImageName) {
+      return `/images/${closestImageName}.png`;
+    } else {
+      return "/images/not-found.png";
+    }
+  };
+
+  const productImage = findImageForProductName(product.product.name);
+  // console.log("Product Image URL:", productImage);
+
   return (
     <li className={`flex py-5 ${isDeleted ? "hidden" : ""}`}>
-      {/* <div className="flex-shrink-0">
+      <div className="flex-shrink-0">
         <img
-          className="object-cover w-16 h-16 rounded-lg"
-          src={product.image}
+          className="object-cover w-8 h-8 rounded-lg"
+          src={productImage}
           alt=""
         />
-      </div> */}
-
+      </div>
       <div className="relative flex flex-col justify-between flex-1 ml-3">
         <div className="sm:grid sm:grid-cols-2 sm:gap-x-3">
           <div className="pr-5 sm:pr-3">
@@ -92,38 +128,31 @@ const CartProduct = ({ product, onDelete }) => {
               <div className="flex">
                 <input
                   type="number"
-                  className="w-16 px-2 py-1 text-sm text-gray-900 bg-white border border-gray-300 rounded-md focus:outline-none"
+                  className={`w-16 px-2 py-1 text-sm text-gray-900 bg-white ${
+                    quantity % product.product.step !== 0
+                      ? "ring-1 ring-red-500 border-red-500"
+                      : "border border-gray-300"
+                  } rounded-md focus:outline-none`}
                   value={quantity}
-                  onChange={(event) =>
-                    setQuantity(
-                      Math.max(parseInt(event.target.value, 10) || 0, 0)
-                    )
-                  }
-                  onBlur={handleEdit} // เมื่อมีการเปลี่ยน focus ให้เรียก handleEdit
+                  onChange={(event) => {
+                    const newQuantity = Math.max(
+                      parseInt(event.target.value, 10) || 0,
+                      0
+                    );
+                    setQuantity(newQuantity);
+                  }}
+                  onBlur={handleEdit}
+                  step={product.product.step}
                 />
               </div>
             </div>
           </div>
-        </div>
-
-        {/* <p className="flex mt-2 space-x-2 text-xs text-gray-500">
-          <svg
-            className="flex-shrink-0 w-4 h-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth="2"
-              d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-            />
-          </svg>
-          <span>{product.delivery}</span>
-        </p> */}
-
+        </div>{" "}
+        <p className="flex mt-2 space-x-2 text-xs text-gray-500">
+          <span>
+            ทวีคูณ {product.product.step} หมายเหตุ กรอกจำนวนที่เป็นจำนวนเต็ม
+          </span>
+        </p>
         <div className="absolute top-0 right-0 flex sm:bottom-0 sm:top-auto">
           <button
             type="button"
