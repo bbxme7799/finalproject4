@@ -208,28 +208,32 @@ function index({ me }) {
                             <tr key={order.id} className="bg-white border-b">
                               {orderIndex === 0 ? (
                                 <>
-                                  <td className="px-6 py-4">{order.id}</td>
+                                  <td className="px-2 py-2 text-sm">
+                                    {order.id}
+                                  </td>
                                   <td
-                                    className="px-6 py-4"
+                                    className="px-2 py-2 text-sm"
                                     rowSpan={orderGroup.data.length}
                                   >
                                     {order.order_id}
                                   </td>
                                   <td
-                                    className="px-6 py-4 truncate"
+                                    className="px-2 py-2 truncate text-sm"
                                     rowSpan={orderGroup.data.length}
                                   >
                                     {order.service_name}
                                   </td>
-                                  <td className="px-6 py-4">
+                                  <td className="px-2 py-2 text-sm">
                                     {order.quantity}
                                   </td>
-                                  <td className="px-6 py-4">{order.price}</td>
+                                  <td className="px-2 py-2 text-sm">
+                                    {order.price}
+                                  </td>
                                 </>
                               ) : null}
                               {orderIndex === 0 ? (
                                 <td
-                                  className="px-6 py-4"
+                                  className="px-2 py-2 text-sm truncate"
                                   rowSpan={orderGroup.data.length}
                                 >
                                   <StatusBadge status={order.status} />
@@ -237,14 +241,14 @@ function index({ me }) {
                               ) : null}
                               {orderIndex === 0 ? (
                                 <td
-                                  className="px-6 py-4"
+                                  className="px-2 py-2 text-sm"
                                   rowSpan={orderGroup.data.length}
                                 >
                                   <button
                                     onClick={() =>
                                       handleViewDetailsClick(order)
                                     }
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
                                   >
                                     View Details
                                   </button>

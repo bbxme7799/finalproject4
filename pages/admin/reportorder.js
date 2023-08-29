@@ -59,7 +59,7 @@ export default function UserManagePage() {
 
     const totalPrice = orders.reduce((accumulator, order) => {
       const { totalPrice } = calculateTotalQuantityAndPrice(order);
-      return accumulator + totalPrice;
+      return accumulator + parseFloat(totalPrice);
     }, 0);
 
     setTotalQuantityAllOrders(totalQuantity);
@@ -110,19 +110,14 @@ export default function UserManagePage() {
     setIsModalOpen(false);
   };
 
-  // console.log(
-  //   "🚀 ~ file: reportorder.js:46 ~ UserManagePage ~ orders:",
-  //   orders
-  // );
-
   const calculateTotalQuantityAndPrice = (order) => {
     let totalQuantity = 0;
     let totalPrice = 0;
 
     order.order_items.forEach((item) => {
-      if (item.status !== "canceled" && item.status !== "refund") {
+      if (item.status !== "Canceled" && item.status !== "Refund") {
         totalQuantity += item.quantity;
-        totalPrice += item.price * item.quantity;
+        totalPrice += item.price;
       }
     });
 
@@ -142,119 +137,124 @@ export default function UserManagePage() {
                 <h1 className="text-2xl font-semibold ">
                   รายงานออเดอร์ Report orders
                 </h1>
-                <section class="container px-4 mx-auto sm:px-6 lg:px-8">
-                  <div class="overflow-x-auto">
-                    <div class="py-2 align-middle">
-                      <div class="overflow-hidden border border-gray-200 md:rounded-lg">
-                        <div class="max-h-[400px] md:max-h-[600px] lg:max-h-[800px] xl:max-h-[1000px] overflow-y-auto">
-                          <table class="min-w-full divide-y divide-gray-200">
-                            <thead class="bg-gray-50 ">
+                <section className="container px-4 mx-auto sm:px-6 lg:px-8">
+                  <div className="overflow-x-auto">
+                    <div className="py-2 align-middle">
+                      <div className="overflow-hidden border border-gray-200 md:rounded-lg">
+                        <div className="max-h-[400px] md:max-h-[600px] lg:max-h-[800px] xl:max-h-[1000px] overflow-y-auto">
+                          <table className="min-w-full divide-y divide-gray-200">
+                            <thead className="bg-gray-50 ">
                               <tr>
                                 <th
                                   scope="col"
-                                  class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
+                                  className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
                                 >
                                   order_id
                                 </th>
                                 <th
                                   scope="col"
-                                  class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
+                                  className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
                                 >
                                   user_id
                                 </th>
 
                                 <th
                                   scope="col"
-                                  class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500"
+                                  className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500"
                                 >
                                   service_name
                                 </th>
 
                                 <th
                                   scope="col"
-                                  class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
+                                  className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
                                 >
                                   status
                                 </th>
                                 <th
                                   scope="col"
-                                  class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
+                                  className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
                                 >
                                   quantity
                                 </th>
                                 <th
                                   scope="col"
-                                  class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
+                                  className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
                                 >
                                   price
                                 </th>
                                 <th
                                   scope="col"
-                                  class="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
+                                  className="px-4 py-3.5 text-sm font-normal text-left rtl:text-right text-gray-500 "
                                 >
                                   count
                                 </th>
 
-                                <th scope="col" class="relative py-3.5 px-4">
-                                  <span class="sr-only">Actions</span>
+                                <th
+                                  scope="col"
+                                  className="relative py-3.5 px-4"
+                                >
+                                  <span className="sr-only">Actions</span>
                                 </th>
                               </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-200  ">
+                            <tbody className="bg-white divide-y divide-gray-200  ">
                               {orders.map((order) => (
                                 <tr key={order.id}>
-                                  <td class="px-4 py-4 text-sm font-medium text-gray-700  whitespace-nowrap">
-                                    <div class="inline-flex items-center gap-x-3">
+                                  <td className="px-4 py-4 text-sm font-medium text-gray-700  whitespace-nowrap">
+                                    <div className="inline-flex items-center gap-x-3">
                                       <input
                                         type="checkbox"
-                                        class="text-blue-500 border-gray-300 rounded   "
+                                        className="text-blue-500 border-gray-300 rounded   "
                                       />
 
                                       <span> {order.id}</span>
                                     </div>
                                   </td>
-                                  <td class="px-4 py-4 text-sm font-medium text-gray-700  whitespace-nowrap">
-                                    <div class="inline-flex items-center gap-x-3">
+                                  <td className="px-4 py-4 text-sm font-medium text-gray-700  whitespace-nowrap">
+                                    <div className="inline-flex items-center gap-x-3">
                                       <input
                                         type="checkbox"
-                                        class="text-blue-500 border-gray-300 rounded   "
+                                        className="text-blue-500 border-gray-300 rounded   "
                                       />
 
                                       <span> {order.user_id}</span>
                                     </div>
                                   </td>
-                                  <td class="px-4 py-4 text-sm text-gray-500 whitespace-nowrap truncate">
+                                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap truncate">
                                     {order.order_items[0].service_name}
                                   </td>
-                                  <td class="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                                  <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
                                     <StatusBadge
                                       status={order.order_items[0].status}
                                     />
                                   </td>
 
-                                  <td class="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                                    <h2 class="text-sm font-medium text-gray-800 ">
+                                  <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
+                                    <h2 className="text-sm font-medium text-gray-800 ">
                                       {" "}
                                       {order.order_items[0].quantity}
                                     </h2>
                                   </td>
 
-                                  <td class="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                                    {order.order_items[0].price}
+                                  <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
+                                    {Number(order.order_items[0].price).toFixed(
+                                      2
+                                    )}
                                   </td>
-                                  <td class="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                                    <h2 class="text-sm font-medium text-gray-800 ">
+                                  <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
+                                    <h2 className="text-sm font-medium text-gray-800 ">
                                       {order.order_items.length}
                                     </h2>
                                   </td>
-                                  <td class="px-4 py-4 text-sm whitespace-nowrap">
-                                    <div class="flex items-center gap-x-6">
-                                      {/* <button class="text-gray-500 transition-colors duration-200  hover:text-indigo-500 focus:outline-none">
+                                  <td className="px-4 py-4 text-sm whitespace-nowrap">
+                                    <div className="flex items-center gap-x-6">
+                                      {/* <button className="text-gray-500 transition-colors duration-200  hover:text-indigo-500 focus:outline-none">
                                         Archive
                                       </button> */}
 
                                       <button
-                                        class="text-blue-500 transition-colors duration-200 hover:text-indigo-500 focus:outline-none"
+                                        className="text-blue-500 transition-colors duration-200 hover:text-indigo-500 focus:outline-none"
                                         onClick={() => openModal(order)}
                                       >
                                         View Details
@@ -266,24 +266,24 @@ export default function UserManagePage() {
                               <tr>
                                 <td
                                   colspan="4"
-                                  class="px-4 py-4 text-right font-medium text-gray-700"
+                                  className="px-4 py-4 text-right font-medium text-gray-700"
                                 >
                                   Total:
                                 </td>
-                                <td class="px-4 py-4 text-sm font-medium text-gray-700">
+                                <td className="px-4 py-4 text-sm font-medium text-gray-700">
                                   {totalQuantityAllOrders}
                                 </td>
-                                <td class="px-4 py-4 text-sm font-medium text-gray-700">
-                                  {totalPriceAllOrders}
+                                <td className="px-4 py-4 text-sm font-medium text-gray-700">
+                                  {totalPriceAllOrders.toFixed(2)}
                                 </td>
-                                <td class="px-4 py-4 text-sm font-medium text-gray-700">
+                                <td className="px-4 py-4 text-sm font-medium text-gray-700">
                                   {orders.reduce(
                                     (accumulator, order) =>
                                       accumulator + order.order_items.length,
                                     0
                                   )}
                                 </td>
-                                <td class="px-4 py-4"></td>
+                                <td className="px-4 py-4"></td>
                               </tr>
                             </tbody>
                           </table>
@@ -292,10 +292,10 @@ export default function UserManagePage() {
                     </div>
                   </div>
 
-                  <div class="flex items-center justify-end mt-6">
+                  <div className="flex items-center justify-end mt-6">
                     <button
                       onClick={handlePreviousPage}
-                      class="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100 mr-2"
+                      className="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100 mr-2"
                     >
                       <svg
                         xmlns="http://www.w3.org/2000/svg"
@@ -303,7 +303,7 @@ export default function UserManagePage() {
                         viewBox="0 0 24 24"
                         stroke-width="1.5"
                         stroke="currentColor"
-                        class="w-5 h-5 rtl:-scale-x-100"
+                        className="w-5 h-5 rtl:-scale-x-100"
                       >
                         <path
                           stroke-linecap="round"
@@ -321,7 +321,7 @@ export default function UserManagePage() {
                       <button
                         key={index}
                         onClick={() => handlePageChange(index + 1)}
-                        class={`px-2 py-1 text-sm rounded-md hover:bg-gray-100 ${
+                        className={`px-2 py-1 text-sm rounded-md hover:bg-gray-100 ${
                           index + 1 === currentPage
                             ? "text-blue-500 bg-blue-100/60"
                             : "text-gray-500"
@@ -333,7 +333,7 @@ export default function UserManagePage() {
 
                     <button
                       onClick={handleNextPage}
-                      class="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100 ml-2"
+                      className="flex items-center px-5 py-2 text-sm text-gray-700 capitalize transition-colors duration-200 bg-white border rounded-md gap-x-2 hover:bg-gray-100 ml-2"
                     >
                       <span>Next</span>
 
@@ -343,7 +343,7 @@ export default function UserManagePage() {
                         viewBox="0 0 24 24"
                         stroke-width="1.5"
                         stroke="currentColor"
-                        class="w-5 h-5 rtl:-scale-x-100"
+                        className="w-5 h-5 rtl:-scale-x-100"
                       >
                         <path
                           stroke-linecap="round"

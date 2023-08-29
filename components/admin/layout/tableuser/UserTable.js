@@ -1,26 +1,28 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
+import EditModal from "./EditModal";
 
 const UserTable = ({ users }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [searchTerm, setSearchTerm] = useState("");
   const [userList, setUserList] = useState(users);
+  const [selectedUser, setSelectedUser] = useState(null);
 
   useEffect(() => {
     setUserList(users);
   }, [users]);
 
+  const handleEditBalance = (user) => {
+    setSelectedUser(user);
+  };
+
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
 
-  const filteredUsers = userList.filter(
-    (user) =>
-      user.username?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      user.email === null ||
-      user.address === null ||
-      user.balance === null
+  const filteredUsers = userList.filter((user) =>
+    user.username?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
   const currentUsers = filteredUsers.slice(indexOfFirstItem, indexOfLastItem);
@@ -63,6 +65,34 @@ const UserTable = ({ users }) => {
     }
   };
 
+  const updateBalance = async (userId, newBalance) => {
+    try {
+      await axios.put(
+        "http://localhost:8000/api/users/editbalance",
+        { userId, newBalance },
+        { withCredentials: true }
+      );
+
+      const updatedUserList = userList.map((user) =>
+        user.id === userId ? { ...user, balance: newBalance } : user
+      );
+      setUserList(updatedUserList);
+
+      setSelectedUser(null);
+
+      Swal.fire(
+        "Balance Updated",
+        "User's balance has been updated.",
+        "success"
+      );
+    } catch (error) {
+      console.error("Error updating balance:", error);
+    }
+  };
+
+  const closeModal = () => {
+    setSelectedUser(null);
+  };
   return (
     <div class="overflow-hidden rounded-lg border border-gray-200 shadow-md m-5">
       <div className="flex justify-between items-center p-5">
@@ -165,6 +195,12 @@ const UserTable = ({ users }) => {
                   >
                     Unban
                   </button>
+                  <button
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded shadow"
+                    onClick={() => handleEditBalance(user)}
+                  >
+                    Edit
+                  </button>
                 </div>
               </td>
             </tr>
@@ -194,6 +230,14 @@ const UserTable = ({ users }) => {
           </button>
         </div>
       </div>
+
+      {selectedUser && (
+        <EditModal
+          user={selectedUser}
+          onUpdateBalance={updateBalance}
+          onClose={closeModal} // Pass the onClose function here
+        />
+      )}
     </div>
   );
 };

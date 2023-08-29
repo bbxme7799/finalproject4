@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import StatusBadge from "./StatusBadge";
 
 const OrderDetailsModal = ({ order, onClose }) => {
   const totalPrice = order.order_items.reduce((accumulator, item) => {
@@ -55,7 +56,7 @@ const OrderDetailsModal = ({ order, onClose }) => {
                   Price: {item.price}
                 </p>
                 <p className="text-sm md:text-base text-gray-600">
-                  Status: {item.status}
+                  <StatusBadge status={item.status} />
                 </p>
                 <hr className="my-2 border-gray-300" />
                 {/* Other order item details */}
