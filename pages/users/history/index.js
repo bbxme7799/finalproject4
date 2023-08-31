@@ -195,6 +195,9 @@ function index({ me }) {
                             price
                           </th>
                           <th scope="col" className="px-6 py-3">
+                            count
+                          </th>
+                          <th scope="col" className="px-6 py-3">
                             status
                           </th>
                           <th scope="col" className="relative py-3.5 px-4">
@@ -208,26 +211,29 @@ function index({ me }) {
                             <tr key={order.id} className="bg-white border-b">
                               {orderIndex === 0 ? (
                                 <>
-                                  <td className="px-2 py-2 text-sm">
+                                  <td className="px-6 py-3 text-sm">
                                     {order.id}
                                   </td>
                                   <td
-                                    className="px-2 py-2 text-sm"
+                                    className="px-6 py-3 text-sm"
                                     rowSpan={orderGroup.data.length}
                                   >
                                     {order.order_id}
                                   </td>
                                   <td
-                                    className="px-2 py-2 truncate text-sm"
+                                    className="px-6 py-3 truncate text-sm"
                                     rowSpan={orderGroup.data.length}
                                   >
                                     {order.service_name}
                                   </td>
-                                  <td className="px-2 py-2 text-sm">
+                                  <td className="px-6 py-3 text-sm">
                                     {order.quantity}
                                   </td>
-                                  <td className="px-2 py-2 text-sm">
+                                  <td className="px-6 py-3 text-sm">
                                     {order.price}
+                                  </td>
+                                  <td className="px-6 py-3 text-sm">
+                                    {orderGroup.data.length}
                                   </td>
                                 </>
                               ) : null}

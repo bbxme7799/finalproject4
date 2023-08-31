@@ -39,6 +39,16 @@ const SignInSection = () => {
   };
   const handleLogin = async (e) => {
     e.preventDefault();
+
+    const toastOptions = {
+      position: "top-right",
+      autoClose: 3000,
+      hideProgressBar: false,
+      closeOnClick: true,
+      pauseOnHover: true,
+      draggable: true,
+    };
+
     try {
       const response = await axios.post(
         "http://localhost:8000/api/auth/signin",
@@ -67,24 +77,17 @@ const SignInSection = () => {
         }, 1000);
       }
     } catch (error) {
-      // console.log("Server error response:", error.response);
-      // console.log("Response data:", error.response.data.error.message);
-      // console.log("Response status:", error.response.status);
-      // console.log("Response message:", error.response.statusText);
+      const errorMessage = error.response?.data?.error?.message;
 
-      if (error.response.data.error.message === "Invalid credentials") {
-        console.log(
-          "🚀 ~ file: SignInSection.js:58 ~ handleLogin ~  error.response.data.error.message:",
-          error.response.data.error.message
-        );
-        toast.error("Invalid credentials", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
+      if (errorMessage === "Invalid credentials") {
+        console.log("Invalid credentials error:", errorMessage);
+        toast.error("Invalid credentials", toastOptions);
+      } else if (errorMessage === "Email is not verified") {
+        console.log("Email is not verified error:", errorMessage);
+        toast.error("Email is not verified", toastOptions);
+      } else {
+        console.log("Other error:", errorMessage);
+        toast.error("An error occurred", toastOptions);
       }
     }
   };
@@ -145,11 +148,6 @@ const SignInSection = () => {
       console.error("Metamask is not installed.");
     }
   };
-
-  console.log(
-    "🚀 ~ file: SignInSection.js:125 ~ handleMetamaskLogin ~ handleMetamaskLogin:",
-    handleMetamaskLogin
-  );
 
   return (
     <section
@@ -241,7 +239,7 @@ const SignInSection = () => {
                       </label>
 
                       <a
-                        href="#"
+                        href="http://localhost:3000/users/forgotpassword"
                         title=""
                         className="text-base font-medium text-gray-500 rounded font-pj hover:text-gray-900 hover:underline focus:outline-none focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
                       >

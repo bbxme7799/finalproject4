@@ -8,6 +8,8 @@ import axios from "axios";
 import Layout from "@/components/layout/layout";
 import Web3 from "web3";
 import CONTRACT_ABI from "../../../contract/busd-abi.json";
+import Image from "next/image";
+import Metamaskiconlogin from "../../../components/icons/Metamaskiconlogin.png";
 
 export const getServerSideProps = async (context) => {
   const me = await axios
@@ -52,29 +54,6 @@ export default function CreditPage({ me }) {
   const handleCreditChange = (e) => {
     setCreditAmount(e.target.value);
   };
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    const amountInput = e.target.elements.amount.value;
-
-    // Check if creditAmount is empty
-    if (!amountInput) {
-      toast.error("โปรดกรอกข้อมูล input ให้ครบถ้วนก่อนที่ชำระ", {
-        position: "top-right",
-        autoClose: 3000,
-        hideProgressBar: false,
-        closeOnClick: true,
-        pauseOnHover: true,
-        draggable: true,
-      });
-      return; // Stop execution if creditAmount is empty
-    }
-
-    // Handle your submit logic here, e.g., send the credit amount to the server
-    console.log("Credit Amount:", creditAmount);
-    // Clear the input field after submission
-    setCreditAmount("");
-  };
 
   const CONTRACT_ADDRESS = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";
 
@@ -87,7 +66,30 @@ export default function CreditPage({ me }) {
     return "0x" + Number(price * 1e18).toString(16);
   }
 
-  const handletopup = async () => {
+  const handletopup = async (amount) => {
+    if (!amount) {
+      toast.error("โปรดกรอกข้อมูล input ให้ครบถ้วนก่อนที่ชำระ", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return; // Stop execution if creditAmount is empty
+    }
+    if (isNaN(amount) || Number(amount) < 1) {
+      toast.error("โปรดกรอกจำนวนเงินมากกว่าหรือเท่ากับ 1", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+      return;
+    }
+
     // const web3 = new Web3(window.ethereum);
     try {
       // Request access to accounts
@@ -120,7 +122,7 @@ export default function CreditPage({ me }) {
             data: contract.methods
               .transfer(
                 "0xF66D753De15379B0B445df6956356d18A1B47e1F",
-                convertToWei(1)
+                convertToWei(amount)
               )
               .encodeABI(),
           },
@@ -142,8 +144,8 @@ export default function CreditPage({ me }) {
             <p className="text-lg pl-2">เติมเครดิต</p>
           </div>
         </div>
-        <div className="mx-[200px] my-8 shadow-md h-full">
-          <div className="bg-white h-auto rounded-lg px-8 py-8">
+        <div className="mx-[200px] my-8  h-full">
+          <div className="h-auto rounded-lg px-8 py-8">
             <div className="relative">
               {/* <form rm onSubmit={handleSubmit} className="my-3">
                 <div className="mb-4">
@@ -164,70 +166,87 @@ export default function CreditPage({ me }) {
                   </button>
                 </div>
               </form> */}
-              <div className="p-8 border-gray-200">
-                <h1 className="font-medium text-3xl">Add Credit</h1>
-                <p className="text-gray-600 mt-6">
-                  {/* Lorem ipsum dolor sit, amet consectetur adipisicing elit.
-                  Dignissimos dolorem vel cupiditate laudantium dicta. */}
-                </p>
-                <div className="mt-8 space-y-6">
-                  <div>
-                    <label
-                      htmlFor="name"
-                      className="text-sm text-gray-700 block mb-1 font-medium"
-                    >
-                      Send BUSD Payment
-                    </label>
-                    <select
-                      name="name"
-                      id="name"
-                      className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                    >
-                      <option>
-                        0x0c18aEe54A5e4bF95A1338BB6d1E8182491993D9
-                      </option>
-                      {/* Add more options as needed */}
-                    </select>
-                  </div>
-
-                  {/* <div>
-                      <label
-                        htmlFor="email"
-                        className="text-sm text-gray-700 block mb-1 font-medium"
+              <div className="flex items-center justify-center px-5 pt-3 pb-10">
+                <div className="w-full mx-auto rounded-lg bg-white shadow-lg p-5 text-gray-700 sm:max-w-md">
+                  <div className="w-full pt-1 pb-5">
+                    <div className="bg-black text-white overflow-hidden rounded-full w-20 h-20 -mt-16 mx-auto shadow-lg flex justify-center items-center">
+                      <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="none"
+                        viewBox="0 0 24 24"
+                        stroke-width="1.5"
+                        stroke="currentColor"
+                        className="w-12 h-12"
                       >
-                        Email Adress
+                        <path
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3"
+                        />
+                      </svg>
+                    </div>
+                  </div>
+                  <div className="mb-10">
+                    <h1 className="text-center font-bold text-xl uppercase">
+                      Add credit
+                    </h1>
+                  </div>
+                  <div className="mb-3 flex -mx-2">
+                    <div className="px-2">
+                      <label
+                        htmlFor="type1"
+                        className="flex items-center cursor-pointer"
+                      >
+                        <input
+                          type="radio"
+                          className="form-radio h-5 w-5 text-indigo-500"
+                          name="type"
+                          id="type1"
+                          checked
+                        />
+                        <Image
+                          src={Metamaskiconlogin}
+                          className="w-8 h-8 mr-4"
+                          // alt="Your Alt Text"
+                        />
                       </label>
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="font-bold text-sm mb-2 ml-1">
+                      Address transfer
+                    </label>
+                    <div>
                       <input
+                        className="w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-black transition-colors"
+                        value="0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee"
                         type="text"
-                        name="email"
-                        id="email"
-                        className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                        placeholder="yourmail@provider.com"
+                        disabled
                       />
-                    </div> */}
-                  <div>
-                    <label
-                      htmlFor="job"
-                      className="text-sm text-gray-700 block mb-1 font-medium"
-                    >
+                    </div>
+                  </div>
+                  <div className="mb-3">
+                    <label className="font-bold text-sm mb-2 ml-1">
                       Amount
                     </label>
-                    <input
-                      type="text"
-                      name="amount"
-                      id="amount"
-                      className="bg-gray-100 border border-gray-200 rounded py-1 px-3 block focus:ring-blue-500 focus:border-blue-500 text-gray-700 w-full"
-                      placeholder="15.23"
-                    />
+                    <div>
+                      <input
+                        className="w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-black transition-colors"
+                        placeholder="1"
+                        type="number"
+                        value={creditAmount}
+                        onChange={handleCreditChange}
+                      />
+                    </div>
                   </div>
-                </div>
-                <div className="space-x-4 mt-8">
-                  <button
-                    onClick={handletopup}
-                    className="py-2 px-4 bg-blue-500 text-white rounded hover:bg-blue-600 active:bg-blue-700 disabled:opacity-50"
-                  >
-                    PAY NOW
-                  </button>
+                  <div>
+                    <button
+                      onClick={() => handletopup(creditAmount)}
+                      className="block w-full max-w-xs mx-auto bg-black hover:bg-gray-900 focus:bg-gray-900 text-white rounded-lg px-3 py-3 font-semibold mt-10"
+                    >
+                      <i className="mdi mdi-lock-outline mr-1"></i> PAY NOW
+                    </button>
+                  </div>
                 </div>
               </div>
             </div>

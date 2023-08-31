@@ -3,8 +3,7 @@ import { useState } from "react";
 import PageMetadata from "@/components/PageMetadata";
 import PrivacySettingsHeader from "../../components/UserSetting/PrivacySettingsHeader";
 import ProfileSection from "../../components/UserSetting/ProfileSection";
-import UsernameInput from "../../components/UserSetting/UsernameInput";
-import UpdateButton from "../../components/UserSetting/UpdateButton";
+import PasswordChangeModal from "../../components/UserSetting/PasswordChangeModal";
 // import fetchUserData from "../../utils/fetchUserData";
 
 import axios from "axios";
@@ -48,9 +47,11 @@ export const getServerSideProps = async (context) => {
 };
 
 export default function SettingPage({ me }) {
+  console.log("🚀 ~ file: settings.js:51 ~ SettingPage ~ me:", me);
   const [formData, setFormData] = useState({
     newUsername: me.username, // เริ่มต้นด้วยค่า username จาก me
     email: me.email, // เริ่มต้นด้วยค่า email จาก me
+    address: me.address,
   });
 
   console.log("🚀 ~ file: settings.js:40 ~ formData:", formData);
@@ -58,6 +59,16 @@ export default function SettingPage({ me }) {
   const handleInputChange = (event) => {
     const { name, value } = event.target;
     setFormData((prevFormData) => ({ ...prevFormData, [name]: value }));
+  };
+
+  const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+
+  const openPasswordModal = () => {
+    setIsPasswordModalOpen(true);
+  };
+
+  const closePasswordModal = () => {
+    setIsPasswordModalOpen(false);
   };
 
   const handleSubmit = async (event) => {
@@ -74,6 +85,26 @@ export default function SettingPage({ me }) {
       console.log("Response data:", response.data);
     } catch (error) {
       console.error("Error updating data:", error);
+    }
+  };
+
+  const handleEmailVerify = async () => {
+    try {
+      const response = await axios.post(
+        "http://localhost:8000/api/users/verify-email",
+        {
+          email: formData.email,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      console.log("Email verification response:", response.data);
+      toast.success("Email verified successfully!");
+    } catch (error) {
+      console.error("Error verifying email:", error);
+      toast.error("Email verification failed. Please try again.");
     }
   };
 
@@ -95,7 +126,7 @@ export default function SettingPage({ me }) {
                       handleInputChange={handleInputChange}
                     /> */}
                     <div className="space-y-8">
-                      {/* <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
+                      <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                         <label
                           for=""
                           className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
@@ -125,41 +156,7 @@ export default function SettingPage({ me }) {
                             </button>
                           </div>
                         </div>
-                      </div> */}
-                      {/* <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
-                        <label
-                          for=""
-                          className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
-                        >
-                          {" "}
-                          First & Last Name{" "}
-                        </label>
-                        <div className="mt-2 sm:mt-0 sm:col-span-2">
-                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-5">
-                            <div>
-                              <input
-                                type="text"
-                                name=""
-                                id=""
-                                placeholder=""
-                                value="Janiter"
-                                className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
-                              />
-                            </div>
-
-                            <div>
-                              <input
-                                type="text"
-                                name=""
-                                id=""
-                                placeholder=""
-                                value="Janiter"
-                                className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
-                              />
-                            </div>
-                          </div>
-                        </div>
-                      </div> */}
+                      </div>
                       <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                         <div className="sm:mt-px sm:pt-2">
                           <label
@@ -175,150 +172,82 @@ export default function SettingPage({ me }) {
                               type="text"
                               name="newUsername"
                               placeholder=""
-                              value={formData.newUsername} // ใช้ค่าจาก formData
+                              value={formData.newUsername}
                               onChange={handleInputChange}
                               className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
                             />
+                            <button
+                              type="button"
+                              className="text-sm font-semibold text-indigo-600 transition-all duration-200 bg-white rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 absolute top-1/2 right-4 transform -translate-y-1/2"
+                              onClick={handleSubmit}
+                            >
+                              Update
+                            </button>
                           </div>
                         </div>
                       </div>
 
                       <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                         <label
-                          for=""
+                          htmlFor=""
                           className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
                         >
                           {" "}
                           Email Address{" "}
                         </label>
-                        <div className="mt-2 sm:mt-0 sm:col-span-2">
+                        <div className="mt-2 sm:mt-0 sm:col-span-2 flex items-center">
                           <input
                             type="email"
                             name="email"
                             id="email"
                             placeholder=""
-                            disabled
                             value={formData.email} // ใช้ค่าจาก formData
+                            onChange={handleInputChange}
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600 mr-4"
+                          />
+                          {formData.email && (
+                            <button
+                              className="px-4 py-2 text-sm font-semibold text-white bg-indigo-600 rounded-md hover:bg-indigo-700"
+                              onClick={handleEmailVerify}
+                            >
+                              Verify
+                            </button>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
+                        <label
+                          htmlFor=""
+                          className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
+                        >
+                          {" "}
+                          Wallet Address{" "}
+                        </label>
+                        <div className="mt-2 sm:mt-0 sm:col-span-2">
+                          <input
+                            type="text"
+                            name="text"
+                            id="text"
+                            placeholder=""
+                            disabled
+                            value={formData.address} // ใช้ค่าจาก formData
                             onChange={handleInputChange}
                             className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
                           />
                         </div>
                       </div>
-                      {/* <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
-                        <label
-                          for=""
-                          className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
-                        >
-                          {" "}
-                          Write Your Bio{" "}
-                        </label>
-                        <div className="mt-2 sm:mt-0 sm:col-span-2">
-                          <textarea
-                            name=""
-                            id=""
-                            placeholder="Write about you"
-                            value=""
-                            rows="4"
-                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg resize-y focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
-                            spellcheck="false"
-                          ></textarea>
-                        </div>
-                      </div> */}
-                      {/* <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
-                        <div className="sm:mt-px sm:pt-2">
-                          <label
-                            for=""
-                            className="block text-sm font-bold text-gray-900"
-                          >
-                            {" "}
-                            Username{" "}
-                          </label>
-                          <p className="mt-1 text-sm font-medium text-gray-500">
-                            You can change it later
-                          </p>
-                        </div>
-                        <div className="mt-2 sm:mt-0 sm:col-span-2">
-                          <div className="relative flex">
-                            <input
-                              type="text"
-                              name="newUsername" // เปลี่ยน name เป็น newUsername
-                              placeholder=""
-                              value={formData.newUsername} // ใช้ค่าจาก state formData
-                              onChange={handleInputChange} // เรียกใช้ฟังก์ชัน handleInputChange
-                              className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
-                            />
-                          </div>
-                        </div>
-                      </div> */}
-                      {/* <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
-                        <label
-                          for=""
-                          className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
-                        >
-                          {" "}
-                          Website{" "}
-                        </label>
-                        <div className="mt-2 sm:mt-0 sm:col-span-2">
-                          <div className="relative flex">
-                            <div className="inline-flex items-center px-3 text-gray-900 border border-r-0 border-gray-300 rounded-l-lg bg-gray-50 sm:text-sm">
-                              https://
-                            </div>
-
-                            <input
-                              type="url"
-                              name=""
-                              id=""
-                              placeholder=""
-                              value="postcrafts.co"
-                              className="border flex-1 block w-full min-w-0 px-4 py-3 placeholder-gray-500 border-gray-300 rounded-none rounded-r-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
-                            />
-                          </div>
-                        </div>
-                      </div> */}
-                      {/* <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
-                        <label
-                          for=""
-                          className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
-                        >
-                          {" "}
-                          Job Title{" "}
-                        </label>
-                        <div className="mt-2 sm:mt-0 sm:col-span-2">
-                          <input
-                            type="text"
-                            name=""
-                            id=""
-                            placeholder=""
-                            value="Software Developer"
-                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
-                          />
-
-                          <div className="relative flex items-center mt-2">
-                            <div className="flex items-center h-5">
-                              <input
-                                type="checkbox"
-                                name="profile"
-                                id="profile"
-                                className="border w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-600"
-                                checked
-                              />
-                            </div>
-
-                            <div className="ml-3">
-                              <label
-                                for="profile"
-                                className="text-sm font-medium text-gray-900"
-                              >
-                                {" "}
-                                Show this on my profile{" "}
-                              </label>
-                            </div>
-                          </div>
-                        </div>
-                      </div> */}
                     </div>
 
-                    <UpdateButton />
+                    <div className="mt-6 sm:mt-12">
+                      <button
+                        type="button"
+                        className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-indigo-600 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 hover:bg-indigo-500"
+                        onClick={openPasswordModal} // เปิด Modal เมื่อคลิกที่ปุ่ม
+                      >
+                        CHANGE PASSWORD
+                      </button>
+                    </div>
                   </form>
                 </div>
               </main>
@@ -326,6 +255,12 @@ export default function SettingPage({ me }) {
           </div>
         </div>
       </div>
+      {me.google_id === null && me.address === null && (
+        <PasswordChangeModal
+          isOpen={isPasswordModalOpen}
+          onClose={closePasswordModal}
+        />
+      )}
     </>
   );
 }

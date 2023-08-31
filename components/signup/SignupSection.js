@@ -6,11 +6,13 @@ import GoogleIcon from "@/components/icons/google-iconlogin.png";
 import MetamaskIcon from "@/components/icons/Metamaskiconlogin.png";
 import Image from "next/image";
 import SignupButton from "../../components/signup/SignupButton";
+import { useRouter } from "next/router";
 
 const SignInSection = () => {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const router = useRouter();
 
   const handleSignup = async () => {
     try {
@@ -30,11 +32,13 @@ const SignInSection = () => {
 
       // เช็คว่ามี statusText เป็น 'Created' (201) หรือไม่
       if (response.statusText === "Created") {
+        // Extract user and verificationToken from the response
+
         // แสดง Sweetalert เมื่อสมัครสำเร็จ
         Swal.fire({
           icon: "success",
           title: "สมัครสำเร็จ!",
-          text: "คุณได้ทำการสมัครสมาชิกเรียบร้อยแล้ว",
+          text: "คุณได้ทำการสมัครสมาชิกเรียบร้อยแล้ว โปรดตรวจสอบอีเมลของคุณเพื่อทำการยืนยันการสมัครสมาชิก",
         });
       }
     } catch (error) {
