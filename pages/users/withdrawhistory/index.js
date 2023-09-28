@@ -1,8 +1,5 @@
-import { User } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import PageMetadata from "@/components/PageMetadata";
 import axios from "axios";
 import Layout from "@/components/layout/layout";
@@ -45,18 +42,22 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-function index({ me }) {
+function WithdrawHistoryPage({ me }) {
   const [query, setQuery] = useState("");
   const [btn, setBtn] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
-
+  const [showWalletPublicKey, setShowWalletPublicKey] = useState(false);
   const [topupHistory, setTopupHistory] = useState([]);
+  console.log(
+    "🚀 ~ file: index.js:52 ~ WithdrawHistoryPage ~ topupHistory:",
+    topupHistory
+  );
 
   useEffect(() => {
     // Fetch top-up history data from the API with credentials
     axios
-      .get("http://localhost:8000/api/transactoins/", {
+      .get("http://localhost:8000/api/transactoins/request-withdraw", {
         withCredentials: true, // Include this option to send credentials
       })
       .then((response) => {
@@ -132,11 +133,11 @@ function index({ me }) {
     <>
       <PageMetadata title="Credit history" />
       <Layout me={me}></Layout>
-      <div className="ml-[255px] mt-[65px] h-auto">
+      <div className="ml-[255px] mt-[65px] h-auto overflow-x-auto">
         <div className="bg-white my-[2px] ">
           <div className="flex mx-2 py-2 ">
-            <h1 className="font-bold text-lg"> Orders :</h1>
-            <p className="text-lg pl-2"> ประวัติฝากเครดิต</p>
+            <h1 className="font-bold text-lg"> Credit withdrawal history :</h1>
+            <p className="text-lg pl-2"> ประวัติถอนเครดิต</p>
           </div>
         </div>
         <div className="mx-[50px] my-6 shadow-md h-full">
@@ -158,9 +159,8 @@ function index({ me }) {
                     <tbody>
                       <tr className="border-b-2">
                         <th className="text-left p-4  ">ID</th>
-                        <th className="text-left   ">ช่องทางเงินฝาก</th>
+                        <th className="text-left   ">เลขกระเป๋า</th>
                         <th className="text-left  ">จำนวน</th>
-                        <th className="text-center  ">จำนวนที่ได้รับ</th>
                         <th className="text-center  ">สถานะ</th>
                         {/* <th className="text-center  ">Status</th> */}
                         <th className="text-center ">วันที่สร้าง</th>
@@ -171,13 +171,21 @@ function index({ me }) {
                             <p className="mx-2 my-3">{item.id}</p>
                           </td>
                           <td className="text-left ">
-                            <p className="my-3 ">Metamask</p>
+                            <p
+                              className="my-3 cursor-pointer"
+                              onClick={() =>
+                                setShowWalletPublicKey(!showWalletPublicKey)
+                              }
+                            >
+                              {showWalletPublicKey
+                                ? item.wallet_public_key // แสดงทั้งหมดเมื่อคลิก
+                                : item.wallet_public_key.slice(-20)}{" "}
+                              {/* แสดงเพียง 20 ตัวอักษรเมื่อไม่คลิก */}
+                            </p>
                           </td>
+
                           <td className="text-left ">
                             <p className="my-3 ">{item.amount}</p>
-                          </td>
-                          <td className="text-center ">
-                            <p className="my-3">{item.amount}</p>
                           </td>
                           <td className="text-center ">
                             <StatusBadge status={item.status} />
@@ -270,4 +278,4 @@ function index({ me }) {
   // function changeCPage(id) {}
 }
 
-export default index;
+export default WithdrawHistoryPage;

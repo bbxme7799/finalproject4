@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect } from "react";
 import { FaShoppingCart } from "react-icons/fa";
 import Link from "next/link";
 import axios from "axios";
@@ -11,14 +11,14 @@ const Navbar = ({ me }) => {
 
   useEffect(() => {
     // Fetch USD to THB exchange rate from the API
-    async function fetchUsdToThbRate() {
+    const fetchUsdToThbRate = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/usd");
         setUsdToThbRate(response.data.rate);
       } catch (error) {
         console.error("Error fetching USD to THB exchange rate:", error);
       }
-    }
+    };
 
     fetchUsdToThbRate();
   }, []);
@@ -26,14 +26,32 @@ const Navbar = ({ me }) => {
   useEffect(() => {
     // Calculate USD balance when the exchange rate or THB balance changes
     if (usdToThbRate !== null && me.balance !== undefined) {
-      const usdEquivalent = me.balance / parseFloat(usdToThbRate[0].rate); // Convert rate to a number
+      const usdEquivalent = me.balance / parseFloat(usdToThbRate[0]?.rate); // Convert rate to a number
       setUsdBalance(usdEquivalent.toFixed(2)); // Round to 2 decimal places
     }
   }, [usdToThbRate, me.balance]);
 
+  const renderBalance = () => {
+    if (usdBalance !== null) {
+      return (
+        <span className="font-semibold">
+          {parseFloat(me.balance).toFixed(2)} ({usdBalance}
+          <Image
+            src={busdIcon}
+            alt="BUSD Icon"
+            className="inline-block w-4 h-4 ml-1"
+          />
+          )
+        </span>
+      );
+    } else {
+      return <span>Loading...</span>;
+    }
+  };
+
   return (
     <nav className="shadow bg-white fixed w-full z-10">
-      <div className="mx-auto px-4 sm:px-6 lg:px-8 ">
+      <div className="mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-[63px]">
           <div className="flex-shrink-0 flex items-center">
             {/* Your logo image */}
@@ -64,19 +82,7 @@ const Navbar = ({ me }) => {
                 id="balance-menu"
                 aria-haspopup="true"
               >
-                {usdBalance !== null ? (
-                  <span className="font-semibold">
-                    {parseFloat(me.balance).toFixed(2)} ({usdBalance}
-                    <Image
-                      src={busdIcon}
-                      alt="BUSD Icon"
-                      className="inline-block w-4 h-4 ml-1"
-                    />
-                    )
-                  </span>
-                ) : (
-                  <span>Loading...</span>
-                )}
+                {renderBalance()}
               </button>
             </div>
             <div className="ml-3 relative">

@@ -67,7 +67,7 @@ const SidebarAdmin = () => {
           </div>
 
           <div className="flex items-center justify-end ml-auto space-x-6">
-            <div className="relative">
+            {/* <div className="relative">
               <button
                 type="button"
                 className="p-1 text-gray-700 transition-all duration-200 bg-white rounded-full hover:text-gray-900 focus:outline-none hover:bg-gray-100"
@@ -91,8 +91,8 @@ const SidebarAdmin = () => {
                 {" "}
                 2{" "}
               </span>
-            </div>
-
+            </div> */}
+            {/* 
             <div className="relative">
               <button
                 type="button"
@@ -113,9 +113,9 @@ const SidebarAdmin = () => {
                   ></path>
                 </svg>
               </button>
-            </div>
+            </div> */}
 
-            <button
+            {/* <button
               type="button"
               className="flex items-center max-w-xs rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600"
             >
@@ -124,7 +124,7 @@ const SidebarAdmin = () => {
                 src="https://landingfoliocom.imgix.net/store/collection/clarity-dashboard/images/previews/dashboards/1/avatar-male.png"
                 alt=""
               />
-            </button>
+            </button> */}
           </div>
         </div>
       </div>

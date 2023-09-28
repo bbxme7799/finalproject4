@@ -221,11 +221,16 @@ function index({ me }) {
                                     {order.order_id}
                                   </td>
                                   <td
-                                    className="px-6 py-3 truncate text-sm"
+                                    className="px-6 py-3 text-sm"
                                     rowSpan={orderGroup.data.length}
+                                    style={{ maxWidth: "200px" }} // ปรับค่า maxWidth
                                   >
-                                    {order.service_name}
+                                    {order.service_name.length > 20 // ตัดคำหลังจาก 20 ตัวอักษร
+                                      ? order.service_name.substring(0, 20) +
+                                        "..."
+                                      : order.service_name}
                                   </td>
+
                                   <td className="px-6 py-3 text-sm">
                                     {order.quantity}
                                   </td>
@@ -277,7 +282,7 @@ function index({ me }) {
                       id="dropdownMenu"
                       name="dropdownMenu"
                       className="mt-[0.2rem]  border-2 rounded-md py-2 px-3"
-                      onClick={(e) => setrecordsPerPage(e.target.value)}
+                      onClick={(e) => setRecordsPerPage(e.target.value)}
                     >
                       <option value="10">10</option>
                       <option value="25">25</option>

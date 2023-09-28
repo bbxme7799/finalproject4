@@ -68,7 +68,7 @@ export default function BlogPage() {
 
   return (
     <>
-      <PageMetadata title="ฺBlog" />
+      <PageMetadata title="Blog" />
       <MainHeader />
       <section className="py-12 mt-6 bg-gray-50 sm:py-16 lg:py-20">
         <div className="px-4 mx-auto sm:px-6 lg:px-8 max-w-7xl">
@@ -100,7 +100,11 @@ export default function BlogPage() {
                   />
                 </a>
                 <div className="flex-1 px-4 py-5 sm:p-6">
-                  <a href={post.id} title="" className="">
+                  <a
+                    href={`/blog/${encodeURIComponent(post.id)}`}
+                    title=""
+                    className=""
+                  >
                     <p className="text-lg font-bold text-gray-900">
                       {post.title}
                     </p>

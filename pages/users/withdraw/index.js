@@ -48,39 +48,22 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-export default function CreditPage({ me }) {
+export default function WithdrawPage({ me }) {
   const [creditAmount, setCreditAmount] = useState("");
+  const [walletAddress, setWalletAddress] = useState("");
 
   const handleCreditChange = (e) => {
     setCreditAmount(e.target.value);
   };
 
-  const CONTRACT_ADDRESS = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";
+  const handleWalletAddressChange = (e) => {
+    setWalletAddress(e.target.value);
+  };
 
-  const web3 = new Web3(
-    "https://getblock.io/nodes/bsc/?gclid=CjwKCAjwgsqoBhBNEiwAwe5w04Zf4x0I59mkeYbhHWihBSDRnfwSuxMnWT_OCG2e6GxqC_bv3sXCOhoCeNUQAvD_BwE"
-  );
-  const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
-
-  function convertToWei(price) {
-    return "0x" + Number(price * 1e18).toString(16);
-  }
-
-  const handletopup = async (amount) => {
+  const handleWithdrawal = async () => {
     try {
-      if (!amount) {
-        toast.error("โปรดกรอกข้อมูล input ให้ครบถ้วนก่อนที่จะชำระ", {
-          position: "top-right",
-          autoClose: 3000,
-          hideProgressBar: false,
-          closeOnClick: true,
-          pauseOnHover: true,
-          draggable: true,
-        });
-        return; // หยุดการทำงานถ้า creditAmount ว่างเปล่า
-      }
-      if (isNaN(amount) || Number(amount) < 1) {
-        toast.error("โปรดกรอกจำนวนเงินมากกว่าหรือเท่ากับ 1", {
+      if (!creditAmount || !walletAddress) {
+        toast.error("Please fill in both wallet address and amount.", {
           position: "top-right",
           autoClose: 3000,
           hideProgressBar: false,
@@ -91,69 +74,43 @@ export default function CreditPage({ me }) {
         return;
       }
 
-      const accounts = await window.ethereum.request({
-        method: "eth_requestAccounts",
-      });
-      const selectedAddress = accounts[0];
-      console.log("selectedAddress:", selectedAddress);
+      // Convert creditAmount to a number
+      const amount = parseFloat(creditAmount);
 
-      const gasEstimate = await window.ethereum.request({
-        method: "eth_estimateGas",
-        params: [
-          {
-            from: selectedAddress,
-            to: CONTRACT_ADDRESS,
-            data: contract.methods
-              .transfer(
-                "0xF66D753De15379B0B445df6956356d18A1B47e1F",
-                convertToWei(amount)
-              )
-              .encodeABI(),
-          },
-        ],
-      });
-
-      const gasPriceEstimate = await window.ethereum.request({
-        method: "eth_gasPrice",
-      });
-      console.log("gasEstimate =>", gasEstimate);
-      console.log("gasPriceEstimate =>", gasPriceEstimate);
-
-      // สร้างทรานแซ็คชั่น Ethereum สำหรับการโอน BUSD
-      let result = await window.ethereum.request({
-        method: "eth_sendTransaction",
-        params: [
-          {
-            from: selectedAddress,
-            to: CONTRACT_ADDRESS,
-            chainId: 97,
-            data: contract.methods
-              .transfer(
-                "0xF66D753De15379B0B445df6956356d18A1B47e1F",
-                convertToWei(amount)
-              )
-              .encodeABI(),
-            gas: gasEstimate, // ปรับค่า gas limit ตามที่ต้องการ
-            gasPrice: gasPriceEstimate, // ปรับค่า gas price ตามที่ต้องการ
-          },
-        ],
-      });
-      console.log("Transaction Result:", result);
-
-      // แก้ URL ของ API เป็น URL ของเว็บเซิร์ฟเวอร์ของคุณ
+      // Send a POST request to the withdrawal API
       const response = await axios.post(
-        "http://localhost:8000/api/topup",
+        "http://localhost:8000/api/transactoins/request-withdraw",
         {
-          txHash: result,
+          amount: amount,
+          walletPublicKey: walletAddress,
         },
         {
-          withCredentials: true,
+          withCredentials: true, // Include credentials
         }
       );
-      console.log("Response:", response);
+      // Check the response for success or error messages
+      if (response.data.message === "success") {
+        toast.success("Withdrawal request sent successfully.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      } else {
+        toast.error("Failed to send withdrawal request.", {
+          position: "top-right",
+          autoClose: 3000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+        });
+      }
     } catch (error) {
-      console.error("Error with Metamask:", error);
-      toast.error("เกิดข้อผิดพลาดในการทำธุรกรรม", {
+      console.error("Error with withdrawal:", error);
+      toast.error("An error occurred during withdrawal request.", {
         position: "top-right",
         autoClose: 3000,
         hideProgressBar: false,
@@ -171,32 +128,13 @@ export default function CreditPage({ me }) {
       <div className="ml-[255px] mt-[65px] h-auto">
         <div className="bg-white my-[2px] ">
           <div className="flex mx-2 py-2">
-            <h1 className="font-bold text-lg">Add credit:</h1>
-            <p className="text-lg pl-2">เติมเครดิต</p>
+            <h1 className="font-bold text-lg">WithDraw credit:</h1>
+            <p className="text-lg pl-2">ถอนเครดิต</p>
           </div>
         </div>
         <div className="mx-[200px] my-8  h-full">
           <div className="h-auto rounded-lg px-8 py-8">
             <div className="relative">
-              {/* <form rm onSubmit={handleSubmit} className="my-3">
-                <div className="mb-4">
-                  <input
-                    type="number"
-                    className="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring focus:border-blue-300 w-full"
-                    placeholder="Enter credit amount"
-                    value={creditAmount}
-                    onChange={handleCreditChange}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form> */}
               <div className="flex items-center justify-center px-5 pt-3 pb-10">
                 <div className="w-full mx-auto rounded-lg bg-white shadow-lg p-5 text-gray-700 sm:max-w-md">
                   <div className="w-full pt-1 pb-5">
@@ -219,7 +157,7 @@ export default function CreditPage({ me }) {
                   </div>
                   <div className="mb-10">
                     <h1 className="text-center font-bold text-xl uppercase">
-                      Add credit
+                      Withdraw credit
                     </h1>
                   </div>
                   <div className="mb-3 flex -mx-2">
@@ -245,14 +183,14 @@ export default function CreditPage({ me }) {
                   </div>
                   <div className="mb-3">
                     <label className="font-bold text-sm mb-2 ml-1">
-                      Address transfer
+                      Withdrawal Wallet Address
                     </label>
                     <div>
                       <input
                         className="w-full px-3 py-2 mb-1 border-2 border-gray-200 rounded-md focus:outline-none focus:border-black transition-colors"
-                        value="0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee"
                         type="text"
-                        disabled
+                        value={walletAddress}
+                        onChange={handleWalletAddressChange}
                       />
                     </div>
                   </div>
@@ -272,10 +210,10 @@ export default function CreditPage({ me }) {
                   </div>
                   <div>
                     <button
-                      onClick={() => handletopup(creditAmount)}
+                      onClick={handleWithdrawal}
                       className="block w-full max-w-xs mx-auto bg-black hover:bg-gray-900 focus:bg-gray-900 text-white rounded-lg px-3 py-3 font-semibold mt-10"
                     >
-                      <i className="mdi mdi-lock-outline mr-1"></i> PAY NOW
+                      <i className="mdi mdi-lock-outline mr-1"></i> WITHDRAW NOW
                     </button>
                   </div>
                 </div>

@@ -46,17 +46,44 @@ export const getServerSideProps = async (context) => {
 
 export default function AdminDashBoardPage({ me }) {
   const [totalCustomers, setTotalCustomers] = useState(0);
+  const [totalTransactions, setTotalTransactions] = useState(0);
+  const [totalDeposit, setTotalDeposit] = useState(0);
+  const [totalWithdraw, setTotalWithdraw] = useState(0);
 
   useEffect(() => {
     // Fetch total customers from API
     axios
       .get("http://localhost:8000/api/users/getusers", {
-        withCredentials: true, // เพิ่มตรงนี้
+        withCredentials: true,
       })
       .then((response) => {
         setTotalCustomers(response.data.length);
       });
+
+    // Fetch total transactions from API
+    axios
+      .get("http://localhost:8000/api/transactoins/admin", {
+        withCredentials: true,
+      }) // Adjust the API endpoint as needed
+      .then((response) => {
+        setTotalTransactions(response.data.total);
+      });
+    axios
+      .get("http://localhost:8000/api/transactoins/deposit", {
+        withCredentials: true,
+      }) // Adjust the API endpoint as needed
+      .then((response) => {
+        setTotalDeposit(response.data.totalAmount);
+      });
+    axios
+      .get("http://localhost:8000/api/transactoins/withdraw", {
+        withCredentials: true,
+      }) // Adjust the API endpoint as needed
+      .then((response) => {
+        setTotalWithdraw(response.data.total);
+      });
   }, []);
+
   return (
     <>
       <PageMetadata title="Dashboard" />
@@ -69,41 +96,30 @@ export default function AdminDashBoardPage({ me }) {
             <main>
               <div className="py-6">
                 <div className="px-4 mx-auto sm:px-6 md:px-8">
-                  <div className="md:items-center md:flex">
-                    <p className="text-base font-bold text-gray-900">
-                      Hey Mariana -
-                    </p>
-                    <p className="mt-1 text-base font-medium text-gray-500 md:mt-0 md:ml-2">
-                      here's what's happening with your store today
-                    </p>
-                  </div>
+                  <div className="md:items-center md:flex"></div>
                 </div>
 
                 <div className="px-4 mx-auto mt-8 sm:px-6 md:px-8">
                   <div className="space-y-5 sm:space-y-6">
                     <div className="grid grid-cols-1 gap-5 sm:gap-6 sm:grid-cols-2 lg:grid-cols-4">
                       <SaleItem
-                        title="Today's Sale"
-                        amount="12,426"
-                        percentage="36"
+                        title="Total Transaction"
+                        amount={totalTransactions}
                         positive
                       />
                       <SaleItem
-                        title="Total Sales"
-                        amount="2,38,485"
-                        percentage="14"
+                        title="Total Deposit"
+                        amount={totalDeposit}
                         positive={false}
                       />
                       <SaleItem
-                        title="Total Sales"
-                        amount="2,38,485"
-                        percentage="14"
+                        title="Total Withdraw"
+                        amount={totalWithdraw}
                         positive={false}
                       />
                       <SaleItem
                         title="Total Customers"
                         amount={totalCustomers.toLocaleString()}
-                        percentage="14"
                         positive
                       />
                     </div>
@@ -111,9 +127,9 @@ export default function AdminDashBoardPage({ me }) {
                     <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-6">
                       <SalesReport />
 
-                      <div className="overflow-hidden bg-white border border-gray-200 rounded-xl lg:col-span-2">
+                      {/* <div className="overflow-hidden bg-white border border-gray-200 rounded-xl lg:col-span-2">
                         <TrafficSourcesChart />
-                      </div>
+                      </div> */}
                     </div>
 
                     <div className="grid grid-cols-1 gap-5 sm:gap-6 lg:grid-cols-6">

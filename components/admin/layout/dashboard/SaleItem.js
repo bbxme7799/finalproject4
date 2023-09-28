@@ -15,7 +15,7 @@ const SaleItem = ({ title, amount, percentage, positive }) => (
             positive ? "text-green-500" : "text-red-500"
           }`}
         >
-          {positive ? "+" : "-"} {percentage}%
+          {/* {positive ? "+" : "-"} {percentage}%
           <svg
             xmlns="http://www.w3.org/2000/svg"
             className="w-3 h-3 ml-0.5"
@@ -29,7 +29,7 @@ const SaleItem = ({ title, amount, percentage, positive }) => (
               strokeLinejoin="round"
               d="M7 11l5-5m0 0l5 5m-5-5v12"
             />
-          </svg>
+          </svg> */}
         </span>
       </div>
     </div>

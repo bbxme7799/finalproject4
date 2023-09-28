@@ -9,10 +9,9 @@ import Image from "next/image";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { useRouter } from "next/router";
 import SignInButton from "../../components/signin/SignInButton";
 import Web3 from "web3";
-
+import { useRouter } from "next/router";
 const SignInSection = () => {
   const router = useRouter();
   const [password, setPassword] = useState("");
@@ -129,7 +128,7 @@ const SignInSection = () => {
 
         // Call your Metamask authentication endpoint with the signed message
         const response = await axios.post(
-          "http://localhost:8000/api/auth/metamask", // ปรับ URL เป็น URL ของเว็บเซิร์ฟเวอร์ของคุณ
+          "http://localhost:8000/api/auth/metamask",
           {
             signedMessage,
             message: `Login to YourApp: ${nonce}`,
@@ -141,6 +140,21 @@ const SignInSection = () => {
         );
 
         // Handle successful Metamask login...
+        // หลังจาก login สำเร็จ ให้ใช้ router.push() เพื่อนำผู้ใช้ไปยังหน้า "/users"
+        if (response.data.message === "success") {
+          console.log("Login successful!");
+          toast.success("Login successful!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+          setTimeout(() => {
+            router.push("/users");
+          }, 1000);
+        }
       } catch (error) {
         console.error("Error with Metamask:", error);
       }

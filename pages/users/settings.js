@@ -126,7 +126,7 @@ export default function SettingPage({ me }) {
                       handleInputChange={handleInputChange}
                     /> */}
                     <div className="space-y-8">
-                      <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
+                      {/* <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                         <label
                           for=""
                           className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
@@ -156,7 +156,7 @@ export default function SettingPage({ me }) {
                             </button>
                           </div>
                         </div>
-                      </div>
+                      </div> */}
                       <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                         <div className="sm:mt-px sm:pt-2">
                           <label
@@ -187,7 +187,7 @@ export default function SettingPage({ me }) {
                         </div>
                       </div>
 
-                      <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
+                      {/* <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
                         <label
                           htmlFor=""
                           className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
@@ -213,6 +213,27 @@ export default function SettingPage({ me }) {
                               Verify
                             </button>
                           )}
+                        </div>
+                      </div> */}
+                      <div className="sm:grid sm:grid-cols-3 sm:gap-5 sm:items-start">
+                        <label
+                          htmlFor=""
+                          className="block text-sm font-bold text-gray-900 sm:mt-px sm:pt-2"
+                        >
+                          {" "}
+                          Email{" "}
+                        </label>
+                        <div className="mt-2 sm:mt-0 sm:col-span-2">
+                          <input
+                            type="text"
+                            name="text"
+                            id="text"
+                            placeholder=""
+                            disabled
+                            value={formData.email} // ใช้ค่าจาก formData
+                            onChange={handleInputChange}
+                            className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
+                          />
                         </div>
                       </div>
 
@@ -240,13 +261,15 @@ export default function SettingPage({ me }) {
                     </div>
 
                     <div className="mt-6 sm:mt-12">
-                      <button
-                        type="button"
-                        className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-indigo-600 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 hover:bg-indigo-500"
-                        onClick={openPasswordModal} // เปิด Modal เมื่อคลิกที่ปุ่ม
-                      >
-                        CHANGE PASSWORD
-                      </button>
+                      {me.google_id === null && me.address === null && (
+                        <button
+                          type="button"
+                          className="inline-flex items-center justify-center px-6 py-3 text-sm font-semibold leading-5 text-white transition-all duration-200 bg-indigo-600 border border-transparent rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 hover:bg-indigo-500"
+                          onClick={openPasswordModal} // เปิด Modal เมื่อคลิกที่ปุ่ม
+                        >
+                          CHANGE PASSWORD
+                        </button>
+                      )}
                     </div>
                   </form>
                 </div>
