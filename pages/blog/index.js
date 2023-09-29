@@ -51,7 +51,7 @@ export default function BlogPage() {
     const fetchData = async () => {
       try {
         const response = await axios.get("http://localhost:8000/api/blog");
-        setPosts(response.data);
+        setPosts(response.data.data);
       } catch (error) {
         console.error("Error fetching data:", error);
         // Handle error

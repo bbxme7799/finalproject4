@@ -3,9 +3,9 @@ import styles from "./index.module.css";
 
 const OrderStatusButtons = ({ activeStatus, handleButtonClick }) => {
   const statuses = [
-    { status: "", label: "All" },
+    { status: "ALL", label: "All" },
     { status: "โปรดรอ..", label: "โปรดรอ.." },
-    { status: "ดำเนินการ", label: "ดำเนินการ" },
+    { status: "Canceled", label: "Canceled" },
     // ... add other statuses
   ];
 

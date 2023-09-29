@@ -39,7 +39,7 @@ const CategoryList = ({ categorys }) => {
       try {
         // Make a DELETE request to the API endpoint with the given category ID
         await axios.delete(
-          `http://localhost:8000/api/categories/${categoryId}`,
+          `http://localhost:8000/api/blog/deletePost/${categoryId}`,
           {
             withCredentials: true,
           }

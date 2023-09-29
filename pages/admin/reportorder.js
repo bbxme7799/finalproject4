@@ -42,7 +42,7 @@ export const getServerSideProps = async (context) => {
   };
 };
 
-export default function UserManagePage() {
+export default function ReportOrderPage() {
   const [orders, setOrders] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
@@ -265,7 +265,7 @@ export default function UserManagePage() {
                               ))}
                               <tr>
                                 <td
-                                  colspan="4"
+                                  colSpan="4"
                                   className="px-4 py-4 text-right font-medium text-gray-700"
                                 >
                                   Total:
@@ -301,13 +301,13 @@ export default function UserManagePage() {
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                         stroke="currentColor"
                         className="w-5 h-5 rtl:-scale-x-100"
                       >
                         <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                           d="M6.75 15.75L3 12m0 0l3.75-3.75M3 12h18"
                         />
                       </svg>
@@ -341,13 +341,13 @@ export default function UserManagePage() {
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                         stroke="currentColor"
                         className="w-5 h-5 rtl:-scale-x-100"
                       >
                         <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                           d="M17.25 8.25L21 12m0 0l-3.75 3.75M21 12H3"
                         />
                       </svg>

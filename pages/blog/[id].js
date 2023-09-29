@@ -76,8 +76,9 @@ export default function PostDetail() {
                   style={{ height: "28em" }}
                 />
               </div>
-              <div class="px-4 lg:px-0 mt-12 text-gray-700 text-lg leading-relaxed w-full lg:w-3/4">
-                <p class="pb-6">{post.content}</p>
+              <div className="px-4 lg:px-0 mt-12 text-gray-700 text-lg leading-relaxed w-full lg:w-3/4">
+                {/* ใช้ dangerouslySetInnerHTML เพื่อแสดง HTML ที่อยู่ใน post.content */}
+                <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
               </div>
             </main>
           </section>

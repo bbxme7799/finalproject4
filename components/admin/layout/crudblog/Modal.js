@@ -10,21 +10,6 @@ const ReactQuillEditor = dynamic(() => import("./ReactQuillEditor"), {
 
 const Modal = ({ isOpen, onClose, category, me }) => {
   const [editedProduct, setEditedProduct] = useState(category);
-  const [categories, setCategories] = useState([]);
-  const [value, setValue] = useState("");
-  const [editorContent, setEditorContent] = useState(editedProduct.content);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/categories")
-      .then((response) => {
-        const fetchedCategories = response.data.data;
-        setCategories(fetchedCategories);
-      })
-      .catch((error) => {
-        console.error("Error fetching categories:", error);
-      });
-  }, []);
 
   const handleInputChange = (event) => {
     const { name, value } = event.target;
@@ -101,7 +86,7 @@ const Modal = ({ isOpen, onClose, category, me }) => {
 
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `http://localhost:8000/api/categories/${editedProduct.id}`,
+          `http://localhost:8000/api/deletePost/${editedProduct.id}`,
           {
             withCredentials: true,
           }

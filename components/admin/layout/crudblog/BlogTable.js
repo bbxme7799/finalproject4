@@ -18,7 +18,7 @@ const BlogTable = ({ me }) => {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        let apiUrl = `http://localhost:8000/api/blog`;
+        let apiUrl = `http://localhost:8000/api/blog?page=${currentPage}&perPage=${perPage}`;
 
         if (searchQuery) {
           apiUrl += `&keyword=${searchQuery}`;
@@ -29,8 +29,8 @@ const BlogTable = ({ me }) => {
           "🚀 ~ file: BlogTable.js:28 ~ fetchCategories ~ response:",
           response
         );
-        setCategory(response.data);
-        setTotalPages(response.data);
+        setCategory(response.data.data);
+        setTotalPages(response.data.total_page);
       } catch (error) {
         console.error("Error fetching categories:", error);
       }
