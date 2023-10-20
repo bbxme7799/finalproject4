@@ -5,6 +5,8 @@ import PageMetadata from "@/components/PageMetadata";
 import ApproveTable from "@/components/admin/layout/tableapprove/UserTable";
 import axios from "axios";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
     .get("http://localhost:8000/api/users/me", {
@@ -46,7 +48,7 @@ export default function ApprovePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/transactoins/request-withdraw/admin", {
+      .get(`${API_BASE_URL}/api/transactoins/request-withdraw/admin`, {
         withCredentials: true,
       })
       .then((response) => {

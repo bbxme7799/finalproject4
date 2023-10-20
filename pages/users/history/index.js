@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
-import styles from "./index.module.css";
-import { useRouter } from "next/router";
 import PageMetadata from "@/components/PageMetadata";
 import axios from "axios";
 import Layout from "@/components/layout/layout";
 import OrderStatusButtons from "../../../components/history/OrderStatusButtons";
-import OrderDetailsModal from "../../../components/user/orderhistory/OrderHistoryModal"; // เพิ่ม import
+import OrderDetailsModal from "../../../components/user/orderhistory/OrderHistoryModal";
 import StatusBadge from "@/components/user/orderhistory/StatusBadge";
+
+const API_BASE_URL = process.env.BACKEND_URL;
 
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -54,19 +54,20 @@ function index({ me }) {
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [query, setQuery] = useState("");
   const [btn, setBtn] = useState("");
-
-  // โค้ดอื่น ๆ ที่เหมือนเดิม
   const [loading, setLoading] = useState(true);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/orders", {
+        const response = await axios.get(`${API_BASE_URL}/api/orders`, {
           withCredentials: true,
         });
+        console.log("🚀 ~ file: index.js:65 ~ fetchData ~ response:", response);
+
         setOrderData(response.data.data);
 
         const orderPromises = await response.data.data.map((order) =>
-          axios.get(`http://localhost:8000/api/orders/${order.id}`, {
+          axios.get(`${API_BASE_URL}/api/orders/${order.id}`, {
             withCredentials: true,
           })
         );
@@ -75,7 +76,7 @@ function index({ me }) {
         const orderDetails = responses.map((response) => response.data);
         setOrderDataDetails(orderDetails);
 
-        setLoading(false); // ตั้งค่าให้โหลดเสร็จแล้ว
+        setLoading(false);
       } catch (error) {
         console.error("Error fetching orders:", error);
       }
@@ -121,7 +122,7 @@ function index({ me }) {
 
   const changeCPage = (id) => {
     setCurrentPage(id);
-    handleButtonClick(""); // Clear the active button state when changing page
+    handleButtonClick("");
   };
 
   const handleViewDetailsClick = (order) => {
@@ -139,8 +140,18 @@ function index({ me }) {
 
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
-  const records = orderData.slice(firstIndex, lastIndex);
-  const npage = Math.ceil(orderData.length / recordsPerPage);
+
+  // แสดงรายการออร์เดอร์ที่ผ่านการค้นหา
+  const filteredOrders = orderDataDetails.filter((order) => {
+    const service_name = order.service_name || "";
+    const sanitizedQuery = query.toLowerCase().replace(/[^\w\s]/g, ""); // ลบอักขระพิเศษและเปลี่ยนเป็นตัวพิมพ์เล็ก
+    const sanitizedServiceName = service_name
+      .toLowerCase()
+      .replace(/[^\w\s]/g, ""); // ลบอักขระพิเศษและเปลี่ยนเป็นตัวพิมพ์เล็ก
+    return sanitizedServiceName.includes(sanitizedQuery);
+  });
+
+  const npage = Math.ceil(filteredOrders.length / recordsPerPage);
   const number = [...Array(npage + 1).keys()].slice(1);
 
   return (
@@ -157,18 +168,18 @@ function index({ me }) {
         <div className="mx-[150px] my-6 shadow-md h-full">
           <div className="bg-white h-auto rounded-lg px-8 py-8">
             <div className="relative">
-              <div className="border-b-2 border-gray-200">
+              {/* <div className="border-b-2 border-gray-200">
                 <OrderStatusButtons
                   activeStatus={btn}
                   handleButtonClick={handleButtonClick}
                 />
-              </div>
+              </div> */}
               <div className="flex justify-end my-3">
                 <input
                   type="text"
-                  placeholder="Seach..."
-                  className=" border-2 rounded-md px-3 py-2 "
-                  onChange={(e) => setquery(e.target.value)}
+                  placeholder="Search..."
+                  className="border-2 rounded-md px-3 py-2"
+                  onChange={(e) => setQuery(e.target.value)}
                 />
               </div>
               <div className="w-full my-5 mx-5 px-5 py-5">
@@ -206,68 +217,69 @@ function index({ me }) {
                         </tr>
                       </thead>
                       <tbody>
-                        {orderDataDetails.map((orderGroup, groupIndex) =>
-                          orderGroup.data.map((order, orderIndex) => (
-                            <tr key={order.id} className="bg-white border-b">
-                              {orderIndex === 0 ? (
-                                <>
-                                  <td className="px-6 py-3 text-sm">
-                                    {order.id}
-                                  </td>
+                        {filteredOrders
+                          .slice(firstIndex, lastIndex)
+                          .map((orderGroup, groupIndex) =>
+                            orderGroup.data.map((order, orderIndex) => (
+                              <tr key={order.id} className="bg-white border-b">
+                                {orderIndex === 0 ? (
+                                  <>
+                                    <td className="px-6 py-3 text-sm">
+                                      {order.id}
+                                    </td>
+                                    <td
+                                      className="px-6 py-3 text-sm"
+                                      rowSpan={orderGroup.data.length}
+                                    >
+                                      {order.order_id}
+                                    </td>
+                                    <td
+                                      className="px-6 py-3 text-sm"
+                                      rowSpan={orderGroup.data.length}
+                                      style={{ maxWidth: "200px" }}
+                                    >
+                                      {order.service_name.length > 20
+                                        ? order.service_name.substring(0, 20) +
+                                          "..."
+                                        : order.service_name}
+                                    </td>
+                                    <td className="px-6 py-3 text-sm">
+                                      {order.quantity}
+                                    </td>
+                                    <td className="px-6 py-3 text-sm">
+                                      {order.price}
+                                    </td>
+                                    <td className="px-6 py-3 text-sm">
+                                      {orderGroup.data.length}
+                                    </td>
+                                  </>
+                                ) : null}
+                                {orderIndex === 0 ? (
                                   <td
-                                    className="px-6 py-3 text-sm"
+                                    className="px-2 py-2 text-sm truncate"
                                     rowSpan={orderGroup.data.length}
                                   >
-                                    {order.order_id}
+                                    <StatusBadge status={order.status} />
                                   </td>
+                                ) : null}
+                                {orderIndex === 0 ? (
                                   <td
-                                    className="px-6 py-3 text-sm"
+                                    className="px-2 py-2 text-sm"
                                     rowSpan={orderGroup.data.length}
-                                    style={{ maxWidth: "200px" }} // ปรับค่า maxWidth
                                   >
-                                    {order.service_name.length > 20 // ตัดคำหลังจาก 20 ตัวอักษร
-                                      ? order.service_name.substring(0, 20) +
-                                        "..."
-                                      : order.service_name}
+                                    <button
+                                      onClick={() =>
+                                        handleViewDetailsClick(order)
+                                      }
+                                      className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
+                                    >
+                                      View Details
+                                    </button>
                                   </td>
-
-                                  <td className="px-6 py-3 text-sm">
-                                    {order.quantity}
-                                  </td>
-                                  <td className="px-6 py-3 text-sm">
-                                    {order.price}
-                                  </td>
-                                  <td className="px-6 py-3 text-sm">
-                                    {orderGroup.data.length}
-                                  </td>
-                                </>
-                              ) : null}
-                              {orderIndex === 0 ? (
-                                <td
-                                  className="px-2 py-2 text-sm truncate"
-                                  rowSpan={orderGroup.data.length}
-                                >
-                                  <StatusBadge status={order.status} />
-                                </td>
-                              ) : null}
-                              {orderIndex === 0 ? (
-                                <td
-                                  className="px-2 py-2 text-sm"
-                                  rowSpan={orderGroup.data.length}
-                                >
-                                  <button
-                                    onClick={() =>
-                                      handleViewDetailsClick(order)
-                                    }
-                                    className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-1 px-2 rounded"
-                                  >
-                                    View Details
-                                  </button>
-                                </td>
-                              ) : null}
-                            </tr>
-                          ))
-                        )}
+                                ) : null}
+                              </tr>
+                            ))
+                          )}
                       </tbody>
                     </table>
                   )}
@@ -291,7 +303,7 @@ function index({ me }) {
                     <label htmlFor="dropdownMenu" className="pl-4 flex">
                       แถว{" "}
                       <p className="ml-3 opacity-70">
-                        จากทั้งหมด {orderDataDetails.length} ข้อมูล
+                        จากทั้งหมด {filteredOrders.length} ข้อมูล
                       </p>
                     </label>
                   </div>

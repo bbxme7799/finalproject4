@@ -5,6 +5,8 @@ import axios from "axios";
 import Image from "next/image";
 import busdIcon from "../icons/binance-usd-busd-logo.png";
 
+const API_BASE_URL = process.env.BACKEND_URL; // Added API_BASE_URL
+
 const Navbar = ({ me }) => {
   const [usdToThbRate, setUsdToThbRate] = useState(null);
   const [usdBalance, setUsdBalance] = useState(null);
@@ -13,7 +15,7 @@ const Navbar = ({ me }) => {
     // Fetch USD to THB exchange rate from the API
     const fetchUsdToThbRate = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/usd");
+        const response = await axios.get(`${API_BASE_URL}/api/usd`); // Use API_BASE_URL
         setUsdToThbRate(response.data.rate);
       } catch (error) {
         console.error("Error fetching USD to THB exchange rate:", error);

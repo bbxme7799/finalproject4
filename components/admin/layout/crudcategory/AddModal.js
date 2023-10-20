@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
-import { parse } from "dotenv";
 import Swal from "sweetalert2";
 
+const API_BASE_URL = process.env.BACKEND_URL;
 const ModalForm = () => {
   const [categories, setCategories] = useState([]);
 
@@ -13,16 +13,14 @@ const ModalForm = () => {
   const fetchAllCategories = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/categories?per_page=200"
+        `${API_BASE_URL}/api/categories?per_page=200`
       );
       const totalPage = response.data.total_page;
 
       const fetchCategoryPages = [];
       for (let page = 1; page <= totalPage; page++) {
         fetchCategoryPages.push(
-          axios.get(
-            `http://localhost:8000/api/categories?per_page=200&page=${page}`
-          )
+          axios.get(`${API_BASE_URL}/api/categories?per_page=200&page=${page}`)
         );
       }
 
@@ -61,7 +59,7 @@ const ModalForm = () => {
       if (result.isConfirmed) {
         try {
           const response = await axios.post(
-            "http://localhost:8000/api/categories",
+            `${API_BASE_URL}/api/categories`,
             productData,
             {
               withCredentials: true,

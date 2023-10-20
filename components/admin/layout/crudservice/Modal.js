@@ -2,15 +2,17 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const Modal = ({ isOpen, onClose, product }) => {
   const [editedProduct, setEditedProduct] = useState(product);
-  console.log("🚀 ~ file: Modal.js:6 ~ Modal ~ editedProduct:", editedProduct);
+  // console.log("🚀 ~ file: Modal.js:6 ~ Modal ~ editedProduct:", editedProduct);
   const [categories, setCategories] = useState([]); // Store fetched categories
 
   useEffect(() => {
     // Fetch categories from the API
     axios
-      .get("http://localhost:8000/api/categories")
+      .get(`${API_BASE_URL}/api/categories`)
       .then((response) => {
         const fetchedCategories = response.data.data;
         setCategories(fetchedCategories);
@@ -37,7 +39,7 @@ const Modal = ({ isOpen, onClose, product }) => {
 
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/products/${editedProduct.service}`,
+        `${API_BASE_URL}/api/products/${editedProduct.service}`,
         editedProduct,
         {
           withCredentials: true,
@@ -77,7 +79,7 @@ const Modal = ({ isOpen, onClose, product }) => {
 
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `http://localhost:8000/api/products/${editedProduct.service}`
+          `${API_BASE_URL}/api/products/${editedProduct.service}`
         );
 
         console.log("Product deleted:", response.data);

@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import EditModal from "./EditModal";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const UserTable = ({ users }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -30,7 +32,7 @@ const UserTable = ({ users }) => {
   const banUser = async (userId) => {
     try {
       await axios.put(
-        `http://localhost:8000/api/users/banuser`,
+        `${API_BASE_URL}/api/users/banuser`,
         { userId, action: "ban" },
         { withCredentials: true }
       );
@@ -49,7 +51,7 @@ const UserTable = ({ users }) => {
   const unbanUser = async (userId) => {
     try {
       await axios.put(
-        `http://localhost:8000/api/users/unbanuser`,
+        `${API_BASE_URL}/api/users/unbanuser`,
         { userId, action: "unban" },
         { withCredentials: true }
       );
@@ -68,7 +70,7 @@ const UserTable = ({ users }) => {
   const updateBalance = async (userId, newBalance) => {
     try {
       await axios.put(
-        "http://localhost:8000/api/users/editbalance",
+        `${API_BASE_URL}/api/users/editbalance`,
         { userId, newBalance },
         { withCredentials: true }
       );

@@ -4,6 +4,8 @@ import ModalOverlay from "./ModalOverlay";
 import axios from "axios";
 import SearchInput from "./SearchInput";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const CategoryTable = () => {
   const [perPage, setPerPage] = useState(10); // กำหนดค่าเริ่มต้นให้เป็น 10
   const perPageOptions = [10, 20, 30];
@@ -18,7 +20,7 @@ const CategoryTable = () => {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        let apiUrl = `http://localhost:8000/api/categories?per_page=${perPage}&page=${currentPage}`;
+        let apiUrl = `${API_BASE_URL}/api/categories?per_page=${perPage}&page=${currentPage}`;
 
         if (searchQuery) {
           apiUrl += `&keyword=${searchQuery}`;

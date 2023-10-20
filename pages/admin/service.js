@@ -5,9 +5,11 @@ import ProductTable from "@/components/admin/layout/crudservice/ProductTable";
 import CategoryTable from "@/components/admin/layout/crudcategory/CategoryTable";
 import axios from "axios";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })

@@ -3,6 +3,9 @@ import styles from "./main-header.module.css";
 import React, { memo } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
+
+const API_BASE_URL = process.env.BACKEND_URL; // Added API_BASE_URL
+
 const links = [
   {
     id: 1,
@@ -25,15 +28,16 @@ const links = [
     url: "/faq",
   },
 ];
+
 const MainHeader = () => {
   const router = useRouter();
   const handleSignOut = async () => {
     console.log("Clicked");
     try {
       const test = await axios.post(
-        "http://localhost:8000/api/auth/signout",
+        `${API_BASE_URL}/api/auth/signout`, // Use API_BASE_URL
         {
-          headers: { Cookie: document.cookie }, // เปลี่ยน context.req.headers.cookie เป็น document.cookie
+          headers: { Cookie: document.cookie },
         },
         {
           withCredentials: true,
@@ -44,7 +48,6 @@ const MainHeader = () => {
       router.push("/");
     } catch (error) {
       console.error("Sign out failed:", error);
-      // จัดการเมื่อเกิดข้อผิดพลาดในการออกจากระบบ
     }
   };
 

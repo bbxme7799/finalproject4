@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import Link from "next/link";
-import Layout from "@/components/layout/layout";
 import GoogleIcon from "@/components/icons/google-iconlogin.png";
-import MetamaskIcon from "@/components/icons/Metamaskiconlogin.png";
-import Helpdeskicon from "@/components/icons/help-desk.png";
-import Socialicon from "@/components/icons/social-media.png";
 import Image from "next/image";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useRouter } from "next/router";
+
+const API_BASE_URL = process.env.BACKEND_URL;
+const frontendURL = process.env.FRONTEND_URL;
 
 const SignInSection = () => {
   const router = useRouter();
@@ -51,7 +49,7 @@ const SignInSection = () => {
     e.preventDefault();
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/auth/signin",
+        `${API_BASE_URL}/api/auth/signin`,
         {
           email: email,
           password: password,
@@ -81,11 +79,6 @@ const SignInSection = () => {
         }, 1000);
       }
     } catch (error) {
-      // console.log("Server error response:", error.response);
-      // console.log("Response data:", error.response.data.error.message);
-      // console.log("Response status:", error.response.status);
-      // console.log("Response message:", error.response.statusText);
-
       if (error.response.data.error.message === "Invalid credentials") {
         console.log(
           "🚀 ~ file: SignInSection.js:58 ~ handleLogin ~  error.response.data.error.message:",
@@ -142,7 +135,7 @@ const SignInSection = () => {
                   role="button"
                 >
                   <a
-                    href="http://localhost:8000/api/auth/google"
+                    href={`${API_BASE_URL}/api/auth/google`} // Use API_BASE_URL
                     className="flex items-center"
                   >
                     <Image
@@ -153,28 +146,6 @@ const SignInSection = () => {
                     <span className="text-base">เข้าสู่ระบบด้วย Google</span>
                   </a>
                 </div>
-
-                {/* <Link
-                  href="/signup"
-                  title=""
-                  className="
-                  flex items-center justify-center w-full px-6 py-3 mt-8
-                  text-sm font-bold text-gray-900 transition-all duration-200
-                  bg-gray-100 border border-transparent rounded-xl hover:bg-gray-200
-                  focus:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200
-                  font-pj
-  "
-                  role="button"
-                >
-                  <div className="flex items-center">
-                    <Image
-                      className="w-5 h-5 mr-4"
-                      src={MetamaskIcon}
-                      alt="MetamaskIcon"
-                    />
-                    <span className="text-base">เข้าสู่ระบบด้วย Metamask</span>
-                  </div>
-                </Link> */}
 
                 <p className="mt-8 text-sm font-normal text-center text-gray-600">
                   หรือ เข้าสู่ระบบด้วยอีเมล
@@ -262,17 +233,6 @@ const SignInSection = () => {
               >
                 {/* Replace the SVG lines with the original SVG lines */}
               </svg>
-
-              {/* <p className="mt-5 text-base font-normal text-center text-gray-900 font-pj">
-                คุณยังไม่มีบัญชี?{" "}
-                <Link
-                  href="/users/signup"
-                  title=""
-                  className="font-bold rounded hover:underline focus:outline-none focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
-                >
-                  สร้างบัญชีฟรี
-                </Link>
-              </p> */}
             </div>
           </div>
         </div>

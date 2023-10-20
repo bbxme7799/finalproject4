@@ -1,20 +1,22 @@
 import React, { useState } from "react";
-import stylesCategory from "./stylesCategory.module.css";
 import Modal from "./Modal";
 import Swal from "sweetalert2";
 import axios from "axios";
 
-const CategoryList = ({ categorys }) => {
-  const [activeDropdowns, setActiveDropdowns] = useState([]);
+const API_BASE_URL = process.env.BACKEND_URL;
+
+const BlogList = ({ categorys }) => {
+  const [activeDropdowns, setActiveDropdowns] = useState(new Set());
   const [editingProduct, setEditingProduct] = useState(null);
-  const [categoryList, setProductList] = useState(categorys);
 
   const toggleDropdown = (categoryId) => {
-    if (activeDropdowns.includes(categoryId)) {
-      setActiveDropdowns(activeDropdowns.filter((id) => id !== categoryId));
+    const newActiveDropdowns = new Set(activeDropdowns);
+    if (newActiveDropdowns.has(categoryId)) {
+      newActiveDropdowns.delete(categoryId);
     } else {
-      setActiveDropdowns([...activeDropdowns, categoryId]);
+      newActiveDropdowns.add(categoryId);
     }
+    setActiveDropdowns(newActiveDropdowns);
   };
 
   const handleEditProduct = (category) => {
@@ -22,7 +24,6 @@ const CategoryList = ({ categorys }) => {
   };
 
   const handleDeleteProduct = async (categoryId) => {
-    // Show a confirmation dialog using SweetAlert
     const result = await Swal.fire({
       title: "คุณต้องการที่จะลบ?",
       text: "หากตกลงจะทำการลบและไม่สามารถกู้คืนได้",
@@ -34,40 +35,40 @@ const CategoryList = ({ categorys }) => {
       cancelButtonText: "ยกเลิก",
     });
 
-    // If the user confirms the deletion, proceed with the deletion
     if (result.isConfirmed) {
       try {
-        // Make a DELETE request to the API endpoint with the given category ID
         await axios.delete(
-          `http://localhost:8000/api/blog/deletePost/${categoryId}`,
+          `${API_BASE_URL}/api/blog/deletePost/${categoryId}`,
           {
             withCredentials: true,
           }
         );
 
-        // Remove the deleted category from the category list
-        setProductList((prevProductList) =>
-          prevProductList.filter((category) => category.id !== categoryId)
-        );
+        setEditingProduct(null);
 
-        // Show a success message
+        setActiveDropdowns((prevActiveDropdowns) => {
+          const newActiveDropdowns = new Set(prevActiveDropdowns);
+          newActiveDropdowns.delete(categoryId);
+          return newActiveDropdowns;
+        });
+
         Swal.fire("ลบ!", `ไอดีที่ถูกลบ: ${categoryId}`, "success");
       } catch (error) {
         console.error("Error deleting category:", error);
-        // Show an error message using SweetAlert
         Swal.fire(
           "Error",
-          "An error occurred while deleting the category.",
+          error.response?.data?.message ||
+            "An error occurred while deleting the category.",
           "error"
         );
       }
     }
   };
 
-  function formatDate(dateString) {
+  const formatDate = (dateString) => {
     const options = { year: "numeric", month: "short", day: "numeric" };
     return new Date(dateString).toLocaleDateString("th-TH", options);
-  }
+  };
 
   return (
     <>
@@ -154,7 +155,7 @@ const CategoryList = ({ categorys }) => {
                     </svg>
                   </button>
 
-                  {activeDropdowns.includes(category.id) && (
+                  {activeDropdowns.has(category.id) && (
                     <div
                       id={`${category.title
                         .toLowerCase()
@@ -235,4 +236,4 @@ const CategoryList = ({ categorys }) => {
   );
 };
 
-export default CategoryList;
+export default BlogList;

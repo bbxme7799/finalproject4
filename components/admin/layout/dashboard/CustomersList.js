@@ -2,13 +2,15 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const CustomersList = () => {
   const [users, setUsers] = useState([]);
   console.log("🚀 ~ file: usermanage.js:45 ~ UserManagePage ~ users:", users);
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/users/getusers", {
+      .get(`${API_BASE_URL}/api/users/getusers`, {
         withCredentials: true,
       })
       .then((response) => {

@@ -1,16 +1,14 @@
-import { User } from "@nextui-org/react";
 import React, { useEffect, useState } from "react";
-import { useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import Link from "next/link";
 import PageMetadata from "@/components/PageMetadata";
 import axios from "axios";
 import Layout from "@/components/layout/layout";
 import StatusBadge from "@/components/user/credithistory/StatusBadge";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -46,8 +44,7 @@ export const getServerSideProps = async (context) => {
 };
 
 function index({ me }) {
-  const [query, setQuery] = useState("");
-  const [btn, setBtn] = useState("");
+  const [statusQuery, setStatusQuery] = useState(""); // เพิ่ม State สำหรับค้นหา status
   const [currentPage, setCurrentPage] = useState(1);
   const [recordsPerPage, setRecordsPerPage] = useState(10);
 
@@ -56,53 +53,52 @@ function index({ me }) {
   useEffect(() => {
     // Fetch top-up history data from the API with credentials
     axios
-      .get("http://localhost:8000/api/transactoins/", {
+      .get(`${API_BASE_URL}/api/transactoins/`, {
         withCredentials: true, // Include this option to send credentials
       })
       .then((response) => {
-        setTopupHistory(response.data.data); // Assuming the data is in response.data.data
+        setTopupHistory(response.data.data);
       })
       .catch((error) => {
         console.error("Error fetching top-up history:", error);
       });
   }, []);
 
-  console.log("topupHistory =>", topupHistory);
-
-  const router = useRouter();
-
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
-  const filteredRecords = topupHistory.filter((item) => {
-    const service = item.service || ""; // Ensure service is a string or an empty string if undefined
-    const lowercaseService = service.toLowerCase();
-    const lowercaseQuery = query.toLowerCase();
-    const lowercaseBtn = btn.toLowerCase();
 
-    return (
-      lowercaseService.includes(lowercaseQuery) ||
-      lowercaseService.includes(lowercaseBtn)
-    );
+  // แสดงรายการการฝากเงินที่ผ่านการค้นหา
+  const filteredTopupHistory = topupHistory.filter((item) => {
+    const status = item.status || "";
+    const sanitizedStatusQuery = statusQuery
+      .toLowerCase()
+      .replace(/[^\w\s]/g, "");
+    const sanitizedStatus = status.toLowerCase().replace(/[^\w\s]/g, "");
+    return sanitizedStatus.includes(sanitizedStatusQuery);
   });
 
-  const records = filteredRecords.slice(firstIndex, lastIndex);
-  const npage = Math.ceil(filteredRecords.length / recordsPerPage);
+  const records = filteredTopupHistory.slice(
+    (currentPage - 1) * recordsPerPage,
+    currentPage * recordsPerPage
+  );
+
+  const npage = Math.ceil(filteredTopupHistory.length / recordsPerPage);
   const number = [...Array(npage + 1).keys()].slice(1);
 
   const nextPage = () => {
-    if (currentPage !== lastIndex) {
+    if (currentPage < npage) {
       setCurrentPage(currentPage + 1);
     }
   };
 
   const prePage = () => {
-    if (currentPage !== firstIndex) {
+    if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
-  const changeCPage = (id) => {
-    // Implement the logic to change the current page
+  const changeCPage = (page) => {
+    setCurrentPage(page);
   };
 
   const formatThaiDateTime = (utcDateTime) => {
@@ -110,14 +106,14 @@ function index({ me }) {
       year: "numeric",
       month: "long",
       day: "numeric",
-      timeZone: "Asia/Bangkok", // กำหนดให้แสดงเวลาในเขตเวลาท้องถิ่น
+      timeZone: "Asia/Bangkok",
     };
 
     const optionsTime = {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
-      timeZone: "Asia/Bangkok", // กำหนดให้แสดงเวลาในเขตเวลาท้องถิ่น
+      timeZone: "Asia/Bangkok",
     };
 
     const utcDate = new Date(utcDateTime);
@@ -127,7 +123,6 @@ function index({ me }) {
     return `${thaiDate} ${thaiTime}`;
   };
 
-  // console.log(Users.filter(user => user.first_name.toLocaleLowerCase.includes("Em")))
   return (
     <>
       <PageMetadata title="Credit history" />
@@ -142,16 +137,6 @@ function index({ me }) {
         <div className="mx-[50px] my-6 shadow-md h-full">
           <div className="bg-white h-auto rounded-lg px-8 py-8 ">
             <div className="relative">
-              <div className="flex justify-end my-3">
-                <input
-                  type="text"
-                  id="searchInput"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="border-2 rounded-md px-3 py-2 "
-                />
-              </div>
-
               <div className="w-full my-5 mx-5 px-5 py-5">
                 <div className=" ">
                   <table className="w-full mx-auto">
@@ -162,33 +147,40 @@ function index({ me }) {
                         <th className="text-left  ">จำนวน</th>
                         <th className="text-center  ">จำนวนที่ได้รับ</th>
                         <th className="text-center  ">สถานะ</th>
-                        {/* <th className="text-center  ">Status</th> */}
                         <th className="text-center ">วันที่สร้าง</th>
                       </tr>
-                      {topupHistory.map((item) => (
-                        <tr key={item.id} className="border-b-2">
-                          <td className="text-left ">
-                            <p className="mx-2 my-3">{item.id}</p>
-                          </td>
-                          <td className="text-left ">
-                            <p className="my-3 ">Metamask</p>
-                          </td>
-                          <td className="text-left ">
-                            <p className="my-3 ">{item.amount}</p>
-                          </td>
-                          <td className="text-center ">
-                            <p className="my-3">{item.amount}</p>
-                          </td>
-                          <td className="text-center ">
-                            <StatusBadge status={item.status} />
-                          </td>
-                          <td className="text-center ">
-                            <p className="my-3">
-                              {formatThaiDateTime(item.createdAt)}
-                            </p>
+                      {filteredTopupHistory.length === 0 ? (
+                        <tr>
+                          <td colSpan="6" className="text-center">
+                            No data available
                           </td>
                         </tr>
-                      ))}
+                      ) : (
+                        records.map((item) => (
+                          <tr key={item.id} className="border-b-2">
+                            <td className="text-left ">
+                              <p className="mx-2 my-3">{item.id}</p>
+                            </td>
+                            <td className="text-left ">
+                              <p className="my-3 ">Metamask</p>
+                            </td>
+                            <td className="text-left ">
+                              <p className="my-3 ">{item.amount}</p>
+                            </td>
+                            <td className="text-center ">
+                              <p className="my-3">{item.amount}</p>
+                            </td>
+                            <td className="text-center ">
+                              <StatusBadge status={item.status} />
+                            </td>
+                            <td className="text-center ">
+                              <p className="my-3">
+                                {formatThaiDateTime(item.createdAt)}
+                              </p>
+                            </td>
+                          </tr>
+                        ))
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -201,8 +193,11 @@ function index({ me }) {
                     <select
                       id="dropdownMenu"
                       name="dropdownMenu"
-                      className="mt-[0.2rem]  border-2 rounded-md py-2 px-3"
-                      onClick={(e) => setRecordsPerPage(e.target.value)}
+                      className="mt-[0.2rem] border-2 rounded-md py-2 px-3"
+                      value={recordsPerPage}
+                      onChange={(e) =>
+                        setRecordsPerPage(parseInt(e.target.value))
+                      }
                     >
                       <option value="10">10</option>
                       <option value="25">25</option>
@@ -211,7 +206,7 @@ function index({ me }) {
                     <label htmlFor="dropdownMenu" className="pl-4 flex">
                       แถว{" "}
                       <p className="ml-3 opacity-70">
-                        จากทั้งหมด {filteredRecords.length} ข้อมูล
+                        จากทั้งหมด {filteredTopupHistory.length} ข้อมูล
                       </p>
                     </label>
                   </div>
@@ -254,20 +249,6 @@ function index({ me }) {
       </div>
     </>
   );
-
-  // // Style button color
-
-  // function nextPage() {
-  //   if (currentPage !== lastIndex) {
-  //     setcurrentPage(currentPage + 1);
-  //   }
-  // }
-  // function prePage() {
-  //   if (currentPage !== firstIndex) {
-  //     setcurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {}
 }
 
 export default index;

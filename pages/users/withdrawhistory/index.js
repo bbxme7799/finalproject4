@@ -5,9 +5,11 @@ import axios from "axios";
 import Layout from "@/components/layout/layout";
 import StatusBadge from "@/components/user/credithistory/StatusBadge";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -49,33 +51,27 @@ function WithdrawHistoryPage({ me }) {
   const [recordsPerPage, setRecordsPerPage] = useState(10);
   const [showWalletPublicKey, setShowWalletPublicKey] = useState(false);
   const [topupHistory, setTopupHistory] = useState([]);
-  console.log(
-    "🚀 ~ file: index.js:52 ~ WithdrawHistoryPage ~ topupHistory:",
-    topupHistory
-  );
 
   useEffect(() => {
     // Fetch top-up history data from the API with credentials
     axios
-      .get("http://localhost:8000/api/transactoins/request-withdraw", {
+      .get(`${API_BASE_URL}/api/transactoins/request-withdraw`, {
         withCredentials: true, // Include this option to send credentials
       })
       .then((response) => {
-        setTopupHistory(response.data.data); // Assuming the data is in response.data.data
+        setTopupHistory(response.data.data);
       })
       .catch((error) => {
         console.error("Error fetching top-up history:", error);
       });
   }, []);
 
-  console.log("topupHistory =>", topupHistory);
-
   const router = useRouter();
 
   const lastIndex = currentPage * recordsPerPage;
   const firstIndex = lastIndex - recordsPerPage;
   const filteredRecords = topupHistory.filter((item) => {
-    const service = item.service || ""; // Ensure service is a string or an empty string if undefined
+    const service = item.service || "";
     const lowercaseService = service.toLowerCase();
     const lowercaseQuery = query.toLowerCase();
     const lowercaseBtn = btn.toLowerCase();
@@ -91,19 +87,19 @@ function WithdrawHistoryPage({ me }) {
   const number = [...Array(npage + 1).keys()].slice(1);
 
   const nextPage = () => {
-    if (currentPage !== lastIndex) {
+    if (currentPage < npage) {
       setCurrentPage(currentPage + 1);
     }
   };
 
   const prePage = () => {
-    if (currentPage !== firstIndex) {
+    if (currentPage > 1) {
       setCurrentPage(currentPage - 1);
     }
   };
 
-  const changeCPage = (id) => {
-    // Implement the logic to change the current page
+  const changeCPage = (page) => {
+    setCurrentPage(page);
   };
 
   const formatThaiDateTime = (utcDateTime) => {
@@ -111,14 +107,14 @@ function WithdrawHistoryPage({ me }) {
       year: "numeric",
       month: "long",
       day: "numeric",
-      timeZone: "Asia/Bangkok", // กำหนดให้แสดงเวลาในเขตเวลาท้องถิ่น
+      timeZone: "Asia/Bangkok",
     };
 
     const optionsTime = {
       hour: "2-digit",
       minute: "2-digit",
       second: "2-digit",
-      timeZone: "Asia/Bangkok", // กำหนดให้แสดงเวลาในเขตเวลาท้องถิ่น
+      timeZone: "Asia/Bangkok",
     };
 
     const utcDate = new Date(utcDateTime);
@@ -128,7 +124,6 @@ function WithdrawHistoryPage({ me }) {
     return `${thaiDate} ${thaiTime}`;
   };
 
-  // console.log(Users.filter(user => user.first_name.toLocaleLowerCase.includes("Em")))
   return (
     <>
       <PageMetadata title="Credit history" />
@@ -143,16 +138,6 @@ function WithdrawHistoryPage({ me }) {
         <div className="mx-[50px] my-6 shadow-md h-full">
           <div className="bg-white h-auto rounded-lg px-8 py-8 ">
             <div className="relative">
-              <div className="flex justify-end my-3">
-                <input
-                  type="text"
-                  id="searchInput"
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  className="border-2 rounded-md px-3 py-2 "
-                />
-              </div>
-
               <div className="w-full my-5 mx-5 px-5 py-5">
                 <div className=" ">
                   <table className="w-full mx-auto">
@@ -162,41 +147,44 @@ function WithdrawHistoryPage({ me }) {
                         <th className="text-left   ">เลขกระเป๋า</th>
                         <th className="text-left  ">จำนวน</th>
                         <th className="text-center  ">สถานะ</th>
-                        {/* <th className="text-center  ">Status</th> */}
                         <th className="text-center ">วันที่สร้าง</th>
                       </tr>
-                      {topupHistory.map((item) => (
-                        <tr key={item.id} className="border-b-2">
-                          <td className="text-left ">
-                            <p className="mx-2 my-3">{item.id}</p>
-                          </td>
-                          <td className="text-left ">
-                            <p
-                              className="my-3 cursor-pointer"
-                              onClick={() =>
-                                setShowWalletPublicKey(!showWalletPublicKey)
-                              }
-                            >
-                              {showWalletPublicKey
-                                ? item.wallet_public_key // แสดงทั้งหมดเมื่อคลิก
-                                : item.wallet_public_key.slice(-20)}{" "}
-                              {/* แสดงเพียง 20 ตัวอักษรเมื่อไม่คลิก */}
-                            </p>
-                          </td>
-
-                          <td className="text-left ">
-                            <p className="my-3 ">{item.amount}</p>
-                          </td>
-                          <td className="text-center ">
-                            <StatusBadge status={item.status} />
-                          </td>
-                          <td className="text-center ">
-                            <p className="my-3">
-                              {formatThaiDateTime(item.createdAt)}
-                            </p>
-                          </td>
+                      {topupHistory.length > 0 ? (
+                        records.map((item) => (
+                          <tr key={item.id} className="border-b-2">
+                            <td className="text-left ">
+                              <p className="mx-2 my-3">{item.id}</p>
+                            </td>
+                            <td className="text-left ">
+                              <p
+                                className="my-3 cursor-pointer"
+                                onClick={() =>
+                                  setShowWalletPublicKey(!showWalletPublicKey)
+                                }
+                              >
+                                {showWalletPublicKey
+                                  ? item.wallet_public_key
+                                  : item.wallet_public_key.slice(-20)}
+                              </p>
+                            </td>
+                            <td className="text-left ">
+                              <p className="my-3 ">{item.amount}</p>
+                            </td>
+                            <td className="text-center ">
+                              <StatusBadge status={item.status} />
+                            </td>
+                            <td className="text-center ">
+                              <p className="my-3">
+                                {formatThaiDateTime(item.createdAt)}
+                              </p>
+                            </td>
+                          </tr>
+                        ))
+                      ) : (
+                        <tr>
+                          <td colSpan="5">No data available</td>
                         </tr>
-                      ))}
+                      )}
                     </tbody>
                   </table>
                 </div>
@@ -209,8 +197,11 @@ function WithdrawHistoryPage({ me }) {
                     <select
                       id="dropdownMenu"
                       name="dropdownMenu"
-                      className="mt-[0.2rem]  border-2 rounded-md py-2 px-3"
-                      onClick={(e) => setRecordsPerPage(e.target.value)}
+                      className="mt-[0.2rem] border-2 rounded-md py-2 px-3"
+                      value={recordsPerPage}
+                      onChange={(e) =>
+                        setRecordsPerPage(parseInt(e.target.value))
+                      }
                     >
                       <option value="10">10</option>
                       <option value="25">25</option>
@@ -262,20 +253,6 @@ function WithdrawHistoryPage({ me }) {
       </div>
     </>
   );
-
-  // // Style button color
-
-  // function nextPage() {
-  //   if (currentPage !== lastIndex) {
-  //     setcurrentPage(currentPage + 1);
-  //   }
-  // }
-  // function prePage() {
-  //   if (currentPage !== firstIndex) {
-  //     setcurrentPage(currentPage - 1);
-  //   }
-  // }
-  // function changeCPage(id) {}
 }
 
 export default WithdrawHistoryPage;

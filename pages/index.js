@@ -16,9 +16,11 @@ import MainHeader from "@/components/layout/main-header";
 import axios from "axios";
 import SearchInput from "@/components/serviceTable/SearchInput";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   try {
-    const response = await axios.get("http://localhost:8000/api/users/me", {
+    const response = await axios.get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     });
@@ -58,7 +60,7 @@ export const getServerSideProps = async (context) => {
   }
 };
 
-const HomePage = ({ me }) => {
+const HomePage = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [apiData, setApiData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
@@ -68,7 +70,7 @@ const HomePage = ({ me }) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let apiUrl = `http://localhost:8000/api/products?page=${currentPage}&per_page=10`;
+        let apiUrl = `${API_BASE_URL}/api/products?page=${currentPage}&per_page=10`;
 
         if (searchQuery) {
           apiUrl += `&keyword=${encodeURIComponent(searchQuery)}`;
@@ -145,7 +147,7 @@ const HomePage = ({ me }) => {
                     ปั้มซับ ระบบสั่งซื้ออัตโนมัติ ใช้งานง่าย อยู่ที่ไหนก็ทำได้
                     24/7
                   </p>
-                  <Link href="/users/signin" prefetch>
+                  <Link href="/users/signup" prefetch>
                     <button
                       className={`${classes.btnlogin} md:w-40 md:h-10 hover:bg-gray-800 hover:text-white`}
                     >

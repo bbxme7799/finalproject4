@@ -6,18 +6,25 @@ import MainHeader from "@/components/layout/main-header";
 import axios from "axios";
 import { useState, useEffect } from "react";
 import SearchInput from "@/components/serviceTable/SearchInput";
+
+const API_BASE_URL = process.env.BACKEND_URL; // Add this line
+
+const formatDate = (dateString) => {
+  const options = { year: "numeric", month: "short", day: "numeric" };
+  return new Date(dateString).toLocaleDateString("th-TH", options);
+};
+
 export const getServerSideProps = async (context) => {
   try {
-    let me = null;
-
-    const response = await axios.get("http://localhost:8000/api/users/me", {
+    const response = await axios.get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     });
 
     if (response.status === 200) {
-      me = response.data;
+      const me = response.data;
       console.log("user/me info => ", me);
+
       if (me) {
         return {
           redirect: {
@@ -30,13 +37,10 @@ export const getServerSideProps = async (context) => {
 
     return {
       props: {
-        me,
+        me: null,
       },
     };
   } catch (error) {
-    // Handle errors (e.g., network error, server error)
-    // console.error("Error fetching user info: ", error);
-
     return {
       props: {
         me: null,
@@ -49,12 +53,12 @@ export default function SerivceUserPage({ me }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [apiData, setApiData] = useState([]);
   const [totalPages, setTotalPages] = useState(0);
-  const [searchQuery, setSearchQuery] = useState(""); // Add searchQuery state
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        let apiUrl = `http://localhost:8000/api/products?page=${currentPage}&per_page=20`;
+        let apiUrl = `${API_BASE_URL}/api/products?page=${currentPage}&per_page=20`;
 
         if (searchQuery) {
           apiUrl += `&keyword=${encodeURIComponent(searchQuery)}`;
@@ -76,21 +80,17 @@ export default function SerivceUserPage({ me }) {
   }, [currentPage, searchQuery]);
 
   const handleSearch = (query) => {
-    setSearchQuery(query); // Set searchQuery state based on input value
-    setCurrentPage(1); // Reset currentPage when searching
+    setSearchQuery(query);
+    setCurrentPage(1);
   };
   const handlePageChange = (newPage) => {
     setCurrentPage(newPage);
   };
+
   return (
     <>
       <PageMetadata title="Service" />
       <MainHeader />
-
-      {/* <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl xl:text-5xl font-pj">
-        คำถามที่พบบ่อย
-      </h2>
-      <div className="mt-5 w-full md:w-2/3 h-[500px] mx-auto border-[3px] border-gray-50 flex items-center justify-center mb-10"></div> */}
 
       <section className="py-12 mt-6 bg-white sm:py-16 lg:py-20">
         <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
@@ -98,27 +98,24 @@ export default function SerivceUserPage({ me }) {
             <h2 className="text-3xl font-bold text-gray-900 sm:text-4xl xl:text-5xl font-pj">
               บริการในระบบ
             </h2>
-            {/* <p className="max-w-lg mx-auto mt-6 text-base text-gray-600 font-pj">
-              คำถามหรือคำสั่งที่มักถูกนำเสนอและถูกสอบถามอย่างถี่ที่สุดในบริบทหนึ่ง
-            </p> */}
           </div>
 
           <div className="max-w-8xl mx-auto mt-8 sm:mt-14">
             <div className="space-y-4">
-              {apiData && (
+              {apiData.length > 0 ? (
                 <div>
-                  <SearchInput
-                    value={searchQuery}
-                    onSearch={handleSearch} // ต้องแนบ onSearch ฟังก์ชันที่คุณได้นิยามไว้ใน SerivceUserPage
-                  />
+                  <SearchInput value={searchQuery} onSearch={handleSearch} />
                   <Table
                     products={apiData}
                     currentPage={currentPage}
                     totalPages={totalPages}
-                    onPageChange={handlePageChange} // Pass handlePageChange function
+                    onPageChange={handlePageChange}
                   />
-                  {/* Rest of your component */}
                 </div>
+              ) : (
+                <p className="text-center text-gray-500">
+                  No services to display at the moment.
+                </p>
               )}
             </div>
           </div>

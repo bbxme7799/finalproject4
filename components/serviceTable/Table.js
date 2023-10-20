@@ -1,6 +1,3 @@
-import SearchInput from "./SearchInput";
-import TableHeader from "./TableHeader";
-import TableRows from "./TableRows";
 import React, { useState, useEffect, useCallback } from "react";
 import ProductModal from "./ProductModal";
 

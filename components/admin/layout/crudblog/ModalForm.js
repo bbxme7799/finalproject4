@@ -4,6 +4,8 @@ import { parse } from "dotenv";
 import Swal from "sweetalert2";
 import dynamic from "next/dynamic"; // Import dynamic from 'next/dynamic'
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 // Dynamically import ReactQuillEditor only on the client side
 const ReactQuillEditor = dynamic(() => import("./ReactQuillEditor"), {
   ssr: false, // Disable Server-Side Rendering
@@ -27,16 +29,14 @@ const ModalForm = () => {
   const fetchAllCategories = async () => {
     try {
       const response = await axios.get(
-        "http://localhost:8000/api/categories?per_page=200"
+        `${API_BASE_URL}/api/categories?per_page=200`
       );
       const totalPage = response.data.total_page;
 
       const fetchCategoryPages = [];
       for (let page = 1; page <= totalPage; page++) {
         fetchCategoryPages.push(
-          axios.get(
-            `http://localhost:8000/api/categories?per_page=200&page=${page}`
-          )
+          axios.get(`${API_BASE_URL}/api/categories?per_page=200&page=${page}`)
         );
       }
 
@@ -84,7 +84,7 @@ const ModalForm = () => {
       if (result.isConfirmed) {
         try {
           const response = await axios.post(
-            "http://localhost:8000/api/blog/createpost",
+            `${API_BASE_URL}/api/blog/createpost`,
             productData,
             {
               withCredentials: true,

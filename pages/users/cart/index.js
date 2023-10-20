@@ -1,23 +1,37 @@
 import React, { useState, useEffect } from "react";
+import axios from "axios";
+import Swal from "sweetalert2";
 import CartProduct from "../../../components/cart/CartProduct";
 import SubTotal from "../../../components/cart/SubTotal";
 import CheckoutButton from "../../../components/cart/CheckoutButton";
 import Layout from "@/components/layout/layout";
-import axios from "axios";
-import Swal from "sweetalert2";
+
+const API_BASE_URL = process.env.BACKEND_URL;
 
 export const getServerSideProps = async (context) => {
-  const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
-    })
-    .then((response) => response.data)
-    .catch(() => null);
+    });
 
-  console.log("user/me info => ", me);
+    const me = response.data;
 
-  if (!me) {
+    if (me.is_banned) {
+      return {
+        redirect: {
+          destination: "/suspended",
+          permanent: false,
+        },
+      };
+    }
+
+    return {
+      props: {
+        me,
+      },
+    };
+  } catch (error) {
     return {
       redirect: {
         destination: "/users/signin",
@@ -25,43 +39,17 @@ export const getServerSideProps = async (context) => {
       },
     };
   }
-
-  // Check if the user is banned
-  if (me.is_banned) {
-    return {
-      redirect: {
-        destination: "/suspended",
-        permanent: false,
-      },
-    };
-  }
-
-  return {
-    props: {
-      me,
-    },
-  };
 };
 
 const CartPage = ({ me }) => {
-  const [isOpen, setIsOpen] = useState(false);
   const [cartItems, setCartItems] = useState([]);
   const [totalItemCount, setTotalItemCount] = useState(0);
   const [totalSubtotal, setTotalSubtotal] = useState(0);
 
-  const handleCartItemChange = (changedProduct) => {
-    // อัปเดต cartItems ด้วยรายการสินค้าที่เปลี่ยนแปลง
-    setCartItems((prevItems) =>
-      prevItems.map((product) =>
-        product.id === changedProduct.id ? changedProduct : product
-      )
-    );
-  };
-
   useEffect(() => {
-    async function fetchCartItems() {
+    const fetchCartItems = async () => {
       try {
-        const response = await axios.get("http://localhost:8000/api/carts", {
+        const response = await axios.get(`${API_BASE_URL}/api/carts`, {
           headers: { cookie: document.cookie },
           withCredentials: true,
         });
@@ -71,26 +59,32 @@ const CartPage = ({ me }) => {
       } catch (error) {
         console.error("Error fetching cart items:", error);
       }
-    }
+    };
 
     fetchCartItems();
   }, []);
 
-  // ... โค้ดอื่น ๆ ...
-
   useEffect(() => {
-    async function calculateTotalSubtotal() {
+    const calculateTotalSubtotal = () => {
       const newTotalSubtotal = cartItems.reduce((total, product) => {
         const itemSubtotal =
           ((product.product.rate * 1.5) / 1000) * product.quantity;
         return total + itemSubtotal;
       }, 0);
 
-      setTotalSubtotal(newTotalSubtotal); // อัปเดตค่า totalSubtotal
-    }
+      setTotalSubtotal(newTotalSubtotal.toFixed(2));
+    };
 
-    calculateTotalSubtotal(); // เรียกฟังก์ชันคำนวณเมื่อ cartItems เปลี่ยน
-  }, [cartItems]); // เซ็ต dependencies เป็น [cartItems] เพื่อให้ useEffect รันเมื่อมีการเปลี่ยนแปลงใน cartItems
+    calculateTotalSubtotal();
+  }, [cartItems]);
+
+  const handleCartItemChange = (changedProduct) => {
+    setCartItems((prevItems) =>
+      prevItems.map((product) =>
+        product.id === changedProduct.id ? changedProduct : product
+      )
+    );
+  };
 
   const handleCartItemDelete = (deletedProduct) => {
     setCartItems((prevItems) =>
@@ -101,7 +95,6 @@ const CartPage = ({ me }) => {
   const handleCheckout = () => {
     Swal.fire({
       title: "ยืนยันที่จะสั่งซื้อ?",
-      // text: "กรุณาเช็คให้ละเอียดก่อนสั่งซื้อ?",
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#3085d6",
@@ -118,11 +111,11 @@ const CartPage = ({ me }) => {
   const proceedWithCheckout = async () => {
     try {
       const userId = me.id;
-      const apiUrl = `http://localhost:8000/api/orders/${userId}`;
+      const apiUrl = `${API_BASE_URL}/api/orders/${userId}`;
 
       const requestData = {
-        cartItems: cartItems,
-        totalSubtotal: totalSubtotal.toFixed(2),
+        cartItems,
+        totalSubtotal: totalSubtotal,
       };
 
       const response = await axios.post(apiUrl, requestData, {
@@ -171,7 +164,7 @@ const CartPage = ({ me }) => {
                         key={product.id}
                         product={product}
                         onDelete={handleCartItemDelete}
-                        onChange={handleCartItemChange} // ส่ง Callback ไปยัง CartProduct
+                        onChange={handleCartItemChange}
                       />
                     ))}
                   </ul>
@@ -182,7 +175,7 @@ const CartPage = ({ me }) => {
                 <div className="flex items-center justify-between mt-6">
                   <p className="text-lg font-medium text-gray-900">ราคารวม</p>
                   <p className="text-lg font-bold text-gray-900">
-                    {totalSubtotal.toFixed(2)} THB
+                    {totalSubtotal} THB
                   </p>
                 </div>
 

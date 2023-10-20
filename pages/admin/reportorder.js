@@ -2,14 +2,15 @@ import { useEffect, useState } from "react";
 import SidebarAdmin from "../../components/admin/layout/sidebarAdmin";
 import NavbarAdmin from "../../components/admin/layout/navbarAdmin";
 import PageMetadata from "@/components/PageMetadata";
-import UserTable from "@/components/admin/layout/tableuser/UserTable";
 import axios from "axios";
 import OrderDetailsModal from "@/components/admin/layout/reportsorder/OrderDetailsModal"; // Update the path
 import StatusBadge from "@/components/admin/layout/reportsorder/StatusBadge";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -47,7 +48,7 @@ export default function ReportOrderPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const itemsPerPage = 10; // จำนวนรายการต่อหน้า
+  const itemsPerPage = 10;
   const [totalQuantityAllOrders, setTotalQuantityAllOrders] = useState(0);
   const [totalPriceAllOrders, setTotalPriceAllOrders] = useState(0);
 
@@ -68,21 +69,33 @@ export default function ReportOrderPage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/orders/getallorder", {
+      .get(`${API_BASE_URL}/api/orders/getallorder`, {
         withCredentials: true,
       })
       .then((response) => {
-        const fetchedUsers = response.data.data;
-        setOrders(fetchedUsers);
+        const fetchedOrders = response.data.data;
+        const filteredOrders = filterOrders(fetchedOrders);
+        setOrders(filteredOrders);
       })
       .catch((error) => {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching orders:", error);
       });
   }, []);
+
+  const filterOrders = (orders) => {
+    return orders.filter((order) => {
+      return (
+        order.id !== null &&
+        order.user_id !== null &&
+        order.order_items[0]?.service_name !== null
+      );
+    });
+  };
 
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentOrders = orders.slice(indexOfFirstItem, indexOfLastItem);
+
   const handlePageChange = (pageNumber) => {
     setCurrentPage(pageNumber);
   };
@@ -198,71 +211,80 @@ export default function ReportOrderPage() {
                                 </th>
                               </tr>
                             </thead>
-                            <tbody className="bg-white divide-y divide-gray-200  ">
-                              {orders.map((order) => (
-                                <tr key={order.id}>
-                                  <td className="px-4 py-4 text-sm font-medium text-gray-700  whitespace-nowrap">
-                                    <div className="inline-flex items-center gap-x-3">
-                                      <input
-                                        type="checkbox"
-                                        className="text-blue-500 border-gray-300 rounded   "
-                                      />
-
-                                      <span> {order.id}</span>
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm font-medium text-gray-700  whitespace-nowrap">
-                                    <div className="inline-flex items-center gap-x-3">
-                                      <input
-                                        type="checkbox"
-                                        className="text-blue-500 border-gray-300 rounded   "
-                                      />
-
-                                      <span> {order.user_id}</span>
-                                    </div>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap truncate">
-                                    {order.order_items[0].service_name}
-                                  </td>
-                                  <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
-                                    <StatusBadge
-                                      status={order.order_items[0].status}
-                                    />
-                                  </td>
-
-                                  <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                                    <h2 className="text-sm font-medium text-gray-800 ">
-                                      {" "}
-                                      {order.order_items[0].quantity}
-                                    </h2>
-                                  </td>
-
-                                  <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                                    {Number(order.order_items[0].price).toFixed(
-                                      2
-                                    )}
-                                  </td>
-                                  <td className="px-4 py-4 text-sm text-gray-500  whitespace-nowrap">
-                                    <h2 className="text-sm font-medium text-gray-800 ">
-                                      {order.order_items.length}
-                                    </h2>
-                                  </td>
-                                  <td className="px-4 py-4 text-sm whitespace-nowrap">
-                                    <div className="flex items-center gap-x-6">
-                                      {/* <button className="text-gray-500 transition-colors duration-200  hover:text-indigo-500 focus:outline-none">
-                                        Archive
-                                      </button> */}
-
-                                      <button
-                                        className="text-blue-500 transition-colors duration-200 hover:text-indigo-500 focus:outline-none"
-                                        onClick={() => openModal(order)}
-                                      >
-                                        View Details
-                                      </button>
-                                    </div>
+                            <tbody className="bg-white divide-y divide-gray-200">
+                              {orders.length === 0 ? (
+                                <tr>
+                                  <td
+                                    colSpan="8"
+                                    className="text-center text-gray-500"
+                                  >
+                                    No orders available.
                                   </td>
                                 </tr>
-                              ))}
+                              ) : (
+                                orders.map((order) => (
+                                  <tr key={order.id}>
+                                    <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                                      <div className="inline-flex items-center gap-x-3">
+                                        <input
+                                          type="checkbox"
+                                          className="text-blue-500 border-gray-300 rounded"
+                                        />
+                                        <span> {order.id}</span>
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                                      <div className="inline-flex items-center gap-x-3">
+                                        <input
+                                          type="checkbox"
+                                          className="text-blue-500 border-gray-300 rounded"
+                                        />
+                                        <span> {order.user_id}</span>
+                                      </div>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap truncate">
+                                      {order.order_items[0]?.service_name}
+                                    </td>
+                                    <td className="px-4 py-4 text-sm font-medium text-gray-700 whitespace-nowrap">
+                                      <StatusBadge
+                                        status={order.order_items[0]?.status}
+                                      />
+                                    </td>
+
+                                    <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                      <h2 className="text-sm font-medium text-gray-800">
+                                        {" "}
+                                        {order.order_items[0]?.quantity}
+                                      </h2>
+                                    </td>
+
+                                    <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                      {Number(
+                                        order.order_items[0]?.price
+                                      )?.toFixed(2)}
+                                    </td>
+                                    <td className="px-4 py-4 text-sm text-gray-500 whitespace-nowrap">
+                                      <h2 className="text-sm font-medium text-gray-800">
+                                        {order.order_items?.length}
+                                      </h2>
+                                    </td>
+                                    <td className="px-4 py-4 text-sm whitespace-nowrap">
+                                      <div className="flex items-center gap-x-6">
+                                        {/* <button className="text-gray-500 transition-colors duration-200  hover:text-indigo-500 focus:outline-none">
+              Archive
+            </button> */}
+
+                                        <button
+                                          className="text-blue-500 transition-colors duration-200 hover:text-indigo-500 focus:outline-none"
+                                          onClick={() => openModal(order)}
+                                        >
+                                          View Details
+                                        </button>
+                                      </div>
+                                    </td>
+                                  </tr>
+                                ))
+                              )}
                               <tr>
                                 <td
                                   colSpan="4"
@@ -279,7 +301,8 @@ export default function ReportOrderPage() {
                                 <td className="px-4 py-4 text-sm font-medium text-gray-700">
                                   {orders.reduce(
                                     (accumulator, order) =>
-                                      accumulator + order.order_items.length,
+                                      accumulator +
+                                      (order.order_items?.length || 0),
                                     0
                                   )}
                                 </td>

@@ -1,19 +1,20 @@
 import React from "react";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import PageMetadata from "@/components/PageMetadata";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import axios from "axios";
 import Layout from "@/components/layout/layout";
-import Web3 from "web3";
-import CONTRACT_ABI from "../../../contract/busd-abi.json";
 import Image from "next/image";
 import Metamaskiconlogin from "../../../components/icons/Metamaskiconlogin.png";
 
+// Add this line to get the API base URL from environment variables
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
+      // Use API_BASE_URL to construct the URL
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -79,7 +80,7 @@ export default function WithdrawPage({ me }) {
 
       // Send a POST request to the withdrawal API
       const response = await axios.post(
-        "http://localhost:8000/api/transactoins/request-withdraw",
+        `${API_BASE_URL}/api/transactoins/request-withdraw`, // Use API_BASE_URL to construct the URL
         {
           amount: amount,
           walletPublicKey: walletAddress,

@@ -5,9 +5,11 @@ import Swal from "sweetalert2";
 
 import { useRouter } from "next/router";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const ResetPasswordForm = () => {
   const router = useRouter();
-  const { token, email } = router.query; // Get the token and email from the URL query
+  const { token, email } = router.query;
 
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -15,36 +17,42 @@ const ResetPasswordForm = () => {
   const handleResetPassword = async () => {
     try {
       if (newPassword !== confirmPassword) {
-        Swal.fire({
-          icon: "error",
-          title: "Error!",
-          text: "New password and confirm password do not match.",
-        });
+        showError("New password and confirm password do not match.");
         return;
       }
 
       const response = await axios.post(
-        `http://localhost:8000/api/users/reset-password/${token}`,
+        `${API_BASE_URL}/api/users/reset-password/${token}`,
         {
           newPassword: newPassword,
         }
       );
 
       if (response.status === 200) {
-        Swal.fire({
-          icon: "success",
-          title: "Success!",
-          text: "Password reset successfully.",
-        });
+        showSuccess("Password reset successfully.");
       }
     } catch (error) {
       console.error(error);
-      Swal.fire({
-        icon: "error",
-        title: "Error!",
-        text: "Failed to reset password. Please check your input and try again.",
-      });
+      showError(
+        "Failed to reset password. Please check your input and try again."
+      );
     }
+  };
+
+  const showError = (message) => {
+    Swal.fire({
+      icon: "error",
+      title: "Error!",
+      text: message,
+    });
+  };
+
+  const showSuccess = (message) => {
+    Swal.fire({
+      icon: "success",
+      title: "Success!",
+      text: message,
+    });
   };
 
   return (

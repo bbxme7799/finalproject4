@@ -1,14 +1,13 @@
 import React, { useState } from "react";
-import styles from "./style.module.css";
 import Modal from "./Modal";
 import Swal from "sweetalert2";
 import axios from "axios";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const ProductList = ({ products }) => {
   const [activeDropdowns, setActiveDropdowns] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [productList, setProductList] = useState(products);
-
   const toggleDropdown = (productId) => {
     if (activeDropdowns.includes(productId)) {
       setActiveDropdowns(activeDropdowns.filter((id) => id !== productId));
@@ -38,7 +37,7 @@ const ProductList = ({ products }) => {
     if (result.isConfirmed) {
       try {
         // Make a DELETE request to the API endpoint with the given product ID
-        await axios.delete(`http://localhost:8000/api/products/${productId}`, {
+        await axios.delete(`${API_BASE_URL}/api/products/${productId}`, {
           withCredentials: true,
         });
 

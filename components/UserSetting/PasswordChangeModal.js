@@ -3,16 +3,17 @@ import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+const API_BASE_URL = process.env.BACKEND_URL; // เพิ่มบรรทัดนี้
+
 const PasswordChangeModal = ({ isOpen, onClose }) => {
   const [currentPassword, setCurrentPassword] = useState("");
-
   const [newPassword, setNewPassword] = useState("");
 
   const handlePasswordChange = async (event) => {
     event.preventDefault();
     try {
       const response = await axios.put(
-        "http://localhost:8000/api/users/changePassword",
+        `${API_BASE_URL}/api/users/changePassword`, // ใช้ API_BASE_URL ที่เพิ่มขึ้น
         {
           currentPassword: currentPassword,
           newPassword: newPassword,

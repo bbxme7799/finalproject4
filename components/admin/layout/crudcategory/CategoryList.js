@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import stylesCategory from "./stylesCategory.module.css";
 import Modal from "./EditModal";
 import Swal from "sweetalert2";
 import axios from "axios";
@@ -7,8 +6,6 @@ import axios from "axios";
 const CategoryList = ({ categorys }) => {
   const [activeDropdowns, setActiveDropdowns] = useState([]);
   const [editingProduct, setEditingProduct] = useState(null);
-  const [categoryList, setProductList] = useState(categorys);
-
   const toggleDropdown = (categoryId) => {
     if (activeDropdowns.includes(categoryId)) {
       setActiveDropdowns(activeDropdowns.filter((id) => id !== categoryId));
@@ -38,12 +35,9 @@ const CategoryList = ({ categorys }) => {
     if (result.isConfirmed) {
       try {
         // Make a DELETE request to the API endpoint with the given category ID
-        await axios.delete(
-          `http://localhost:8000/api/categories/${categoryId}`,
-          {
-            withCredentials: true,
-          }
-        );
+        await axios.delete(`${API_BASE_URL}/api/categories/${categoryId}`, {
+          withCredentials: true,
+        });
 
         // Remove the deleted category from the category list
         setProductList((prevProductList) =>
