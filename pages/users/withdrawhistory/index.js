@@ -126,7 +126,7 @@ function WithdrawHistoryPage({ me }) {
 
   return (
     <>
-      <PageMetadata title="Credit history" />
+      <PageMetadata title="Credit withdrawal history" />
       <Layout me={me}></Layout>
       <div className="ml-[255px] mt-[65px] h-auto overflow-x-auto">
         <div className="bg-white my-[2px] ">

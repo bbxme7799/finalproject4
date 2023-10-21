@@ -124,7 +124,7 @@ export default function WithdrawPage({ me }) {
 
   return (
     <>
-      <PageMetadata title="Add" />
+      <PageMetadata title="WithDraw" />
       <Layout me={me}></Layout>
       <div className="ml-[255px] mt-[65px] h-auto">
         <div className="bg-white my-[2px] ">
