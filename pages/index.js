@@ -11,7 +11,6 @@ import Table from "@/components/serviceTable/Table";
 import bg from "@/public/images/marketinglogo.png";
 import Footer from "@/components/layout/footer";
 import PageMetadata from "@/components/PageMetadata";
-import { motion } from "framer-motion";
 import MainHeader from "@/components/layout/main-header";
 import axios from "axios";
 import SearchInput from "@/components/serviceTable/SearchInput";
@@ -159,12 +158,8 @@ const HomePage = () => {
               <div className="hidden md:flex items-center justify-center">
                 <div className={classes.banner}>
                   <div className={classes.item}>
-                    <motion.div
-                      animate={{ x: 100 }} // ตัวแปร x คือการเลื่อนตำแหน่ง X ของ Element ไปทางขวา 100px
-                      transition={{ duration: 1 }} // ระยะเวลาในการเคลื่อนไหว 1 วินาที
-                    >
                       <Image src={bg} alt="Card Icon" className={classes.img} />
-                    </motion.div>
+  
                   </div>
                 </div>
               </div>

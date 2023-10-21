@@ -106,7 +106,7 @@ export default function CreditPage({ me }) {
             to: CONTRACT_ADDRESS,
             data: contract.methods
               .transfer(
-                "0xF66D753De15379B0B445df6956356d18A1B47e1F",
+                "0x81C23828DB9d3cCb12a477CD756B64a16720c93f",
                 convertToWei(amount)
               )
               .encodeABI(),
@@ -130,7 +130,7 @@ export default function CreditPage({ me }) {
             chainId: 97,
             data: contract.methods
               .transfer(
-                "0xF66D753De15379B0B445df6956356d18A1B47e1F",
+                "0x81C23828DB9d3cCb12a477CD756B64a16720c93f",
                 convertToWei(amount)
               )
               .encodeABI(),

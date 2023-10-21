@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CategoryButton from "@/components/CategoryButton";
-import InstragramIcon from "@/components/icons/Instagram.png";
+import InstragramIcon from "@/components/icons/instagram.png";
 import FacebookIcon from "@/components/icons/facebook.png";
 import YtIcon from "@/components/icons/youtube.png";
 import TwitterIcon from "@/components/icons/twitter.png";
