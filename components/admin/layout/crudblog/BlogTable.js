@@ -4,6 +4,8 @@ import ModalOverlay from "./ModalOverlay";
 import axios from "axios";
 import SearchInput from "./SearchInput";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const BlogTable = ({ me }) => {
   const [perPage, setPerPage] = useState(10); // กำหนดค่าเริ่มต้นให้เป็น 10
   const perPageOptions = [10, 20, 30];
@@ -18,7 +20,7 @@ const BlogTable = ({ me }) => {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        let apiUrl = `http://localhost:8000/api/blog?page=${currentPage}&perPage=${perPage}`;
+        let apiUrl = `${API_BASE_URL}/api/blog?page=${currentPage}&perPage=${perPage}`;
 
         if (searchQuery) {
           apiUrl += `&keyword=${searchQuery}`;

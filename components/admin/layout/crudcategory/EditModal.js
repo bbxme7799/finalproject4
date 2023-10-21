@@ -2,9 +2,11 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import Swal from "sweetalert2";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -35,7 +37,7 @@ const Modal = ({ isOpen, onClose, category, me }) => {
   useEffect(() => {
     // Fetch categories from the API
     axios
-      .get("http://localhost:8000/api/categories")
+      .get(`${API_BASE_URL}/api/categories`)
       .then((response) => {
         const fetchedCategories = response.data.data;
         setCategories(fetchedCategories);
@@ -62,7 +64,7 @@ const Modal = ({ isOpen, onClose, category, me }) => {
 
     try {
       const response = await axios.put(
-        `http://localhost:8000/api/categories/${editedProduct.id}`,
+        `${API_BASE_URL}/api/categories/${editedProduct.id}`,
         editedProduct,
         {
           withCredentials: true,
@@ -106,7 +108,7 @@ const Modal = ({ isOpen, onClose, category, me }) => {
       });
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `http://localhost:8000/api/categories/${editedProduct.id}`,
+          `${API_BASE_URL}/api/categories/${editedProduct.id}`,
           {
             withCredentials: true,
           }

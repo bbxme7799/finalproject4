@@ -11,9 +11,10 @@ import CONTRACT_ABI from "../../../contract/busd-abi.json";
 import Image from "next/image";
 import Metamaskiconlogin from "../../../components/icons/Metamaskiconlogin.png";
 
+const API_BASE_URL = process.env.BACKEND_URL;
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -142,7 +143,7 @@ export default function CreditPage({ me }) {
 
       // แก้ URL ของ API เป็น URL ของเว็บเซิร์ฟเวอร์ของคุณ
       const response = await axios.post(
-        "http://localhost:8000/api/topup",
+        `${API_BASE_URL}/api/topup`,
         {
           txHash: result,
         },
@@ -178,25 +179,6 @@ export default function CreditPage({ me }) {
         <div className="mx-[200px] my-8  h-full">
           <div className="h-auto rounded-lg px-8 py-8">
             <div className="relative">
-              {/* <form rm onSubmit={handleSubmit} className="my-3">
-                <div className="mb-4">
-                  <input
-                    type="number"
-                    className="border border-gray-300 rounded-lg py-2 px-4 focus:outline-none focus:ring focus:border-blue-300 w-full"
-                    placeholder="Enter credit amount"
-                    value={creditAmount}
-                    onChange={handleCreditChange}
-                  />
-                </div>
-                <div className="flex items-center">
-                  <button
-                    type="submit"
-                    className="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg focus:outline-none focus:ring focus:border-blue-300"
-                  >
-                    Submit
-                  </button>
-                </div>
-              </form> */}
               <div className="flex items-center justify-center px-5 pt-3 pb-10">
                 <div className="w-full mx-auto rounded-lg bg-white shadow-lg p-5 text-gray-700 sm:max-w-md">
                   <div className="w-full pt-1 pb-5">

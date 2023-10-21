@@ -41,6 +41,7 @@ export default function User({ me }) {
   const [quantity, setQuantity] = useState(0); // เพิ่ม state variable สำหรับเก็บปริมาณ
   const [isInputValid, setIsInputValid] = useState(false); // เพิ่ม state variable สำหรับเช็คข้อมูล input
 
+  const API_BASE_URL = process.env.BACKEND_URL;
   const findSimilarCategory = (searchTerm) => {
     if (!searchTerm) return null;
 
@@ -72,9 +73,7 @@ export default function User({ me }) {
   useEffect(() => {
     async function fetchCategories() {
       try {
-        const response = await axios.get(
-          "http://localhost:8000/api/categories"
-        );
+        const response = await axios.get(`${API_BASE_URL}/api/categories`);
         const { data, total_page } = response.data;
         setPerPage(total_page); // Set perPage to total_page for now
 
@@ -82,7 +81,7 @@ export default function User({ me }) {
         const allCategories = [];
         for (let page = 1; page <= total_page; page++) {
           const pageResponse = await axios.get(
-            `http://localhost:8000/api/categories?page=${page}`
+            `${API_BASE_URL}/api/categories?page=${page}`
           );
           const pageData = pageResponse.data.data;
           allCategories.push(...pageData);
@@ -102,14 +101,11 @@ export default function User({ me }) {
     async function fetchProductData() {
       try {
         if (selectedCategory !== "") {
-          const response = await axios.get(
-            `http://localhost:8000/api/products`,
-            {
-              params: {
-                keyword: selectedCategory,
-              },
-            }
-          );
+          const response = await axios.get(`${API_BASE_URL}/api/products`, {
+            params: {
+              keyword: selectedCategory,
+            },
+          });
           const { data } = response.data;
           setProducts(data);
 
@@ -157,7 +153,7 @@ export default function User({ me }) {
 
           // Make the POST request to the API endpoint
           const response = await axios.post(
-            `http://localhost:8000/api/carts/${selectedProduct.service}`,
+            `${API_BASE_URL}/api/carts/${selectedProduct.service}`,
             requestData,
             {
               withCredentials: true,
@@ -194,6 +190,64 @@ export default function User({ me }) {
       }
     } else {
       // Invalid input
+      toast.error("โปรดกรอกข้อมูล input ให้ถูกต้องก่อนที่จะยืนยันคำสั่งซื้อ", {
+        position: "top-right",
+        autoClose: 3000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+      });
+    }
+  };
+
+  const handleBuyNowConfirmation = async () => {
+    if (isInputValid) {
+      if (selectedProduct) {
+        try {
+          // เตรียมข้อมูลที่จะส่งในคำสั่ง POST
+          const requestData = {
+            quantity: parseInt(quantity),
+            url: link,
+          };
+
+          // ส่งคำสั่งซื้อผ่าน API ที่คุณสร้างขึ้น
+          const response = await axios.post(
+            `${API_BASE_URL}/api/orders/buynow/${selectedProduct.service}`,
+            requestData,
+            {
+              withCredentials: true,
+            }
+          );
+
+          if (response.status === 201) {
+            // คำสั่งซื้อสำเร็จ
+            console.log("Order confirmed!");
+            toast.success("คำสั่งซื้อสำเร็จ!", {
+              position: "top-right",
+              autoClose: 3000,
+              hideProgressBar: false,
+              closeOnClick: true,
+              pauseOnHover: true,
+              draggable: true,
+            });
+          }
+        } catch (error) {
+          console.error("Error placing order:", error);
+          toast.error("เกิดข้อผิดพลาดในการสั่งซื้อ โปรดลองอีกครั้ง", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+        }
+      } else {
+        console.error("Selected product is not available.");
+      }
+    } else {
+      // ข้อมูลไม่ถูกต้อง
       toast.error("โปรดกรอกข้อมูล input ให้ถูกต้องก่อนที่จะยืนยันคำสั่งซื้อ", {
         position: "top-right",
         autoClose: 3000,
@@ -247,27 +301,26 @@ export default function User({ me }) {
               </div>
               <div className="border-gray-300 border-[2px] bg-white rounded-md">
                 <div className="flex items-center mx-2 my-2">
-                  {/* <img
-      src="google.png"
-      width={30}
-      height={30}
-      className="mx-3 my-3 "
-    /> */}
                   <select
                     value={selectedCategory}
                     onChange={(e) => setSelectedCategory(e.target.value)}
                   >
-                    {categories
-                      .map((category) => category.name)
-                      .sort()
-                      .map((categoryName) => (
-                        <option key={categoryName} value={categoryName}>
-                          {categoryName}
-                        </option>
-                      ))}
+                    {categories.length > 0 ? (
+                      categories
+                        .map((category) => category.name)
+                        .sort()
+                        .map((categoryName) => (
+                          <option key={categoryName} value={categoryName}>
+                            {categoryName}
+                          </option>
+                        ))
+                    ) : (
+                      <option value="">No categories available</option>
+                    )}
                   </select>
                 </div>
               </div>
+
               {/* Loading state */}
             </div>
             <div>
@@ -280,22 +333,23 @@ export default function User({ me }) {
                     <select
                       onChange={(e) => handleProductChange(e.target.value)}
                     >
-                      {products.map((product) => (
-                        <option
-                          key={product.service}
-                          value={JSON.stringify(product)}
-                        >
-                          {product.name}
-                        </option>
-                      ))}
+                      {products.length > 0 ? (
+                        products.map((product) => (
+                          <option
+                            key={product.service}
+                            value={JSON.stringify(product)}
+                          >
+                            {product.name}
+                          </option>
+                        ))
+                      ) : (
+                        <option value="">No products available</option>
+                      )}
                     </select>
-
-                    {/* {products.map((product) => (
-                      <li key={product.id}>{product.name}</li>
-                    ))} */}
                   </h2>
                 </div>
               </div>
+
               <h2 className="text-sm text-gray-500 my-[2px]">10 คำสั่งซื้อ</h2>
             </div>
             <div>
@@ -304,7 +358,9 @@ export default function User({ me }) {
               </div>
               <div className="border-gray-300 border-[2px] bg-white rounded-md">
                 <pre className="mx-5 my-5 whitespace-pre-wrap break-words overflow-wrap-break text-xs overflow-y-auto max-h-[200px]">
-                  {selectedProduct ? selectedProduct.description : ""}
+                  {selectedProduct
+                    ? selectedProduct.description
+                    : "No product selected"}
                 </pre>
               </div>
             </div>
@@ -347,7 +403,7 @@ export default function User({ me }) {
                 </p>
               </div>
             </div>
-            {selectedProduct && quantity > 0 && (
+            {selectedProduct && quantity > 0 && isInputValid ? (
               <div>
                 <div className="my-3">
                   <h2>ค่าใช้จ่ายทั้งหมด</h2>
@@ -356,14 +412,14 @@ export default function User({ me }) {
                   <div className="flex items-center">
                     <input
                       type="text"
-                      className="w-full py-2 text-base px-2 mr-2" // เพิ่ม mr-2 ใน className เพื่อให้เว้นระยะห่าง
-                      value={(quantity * selectedProduct.rate * 1.5) / 1000} // คำนวณและแสดงผลค่าใช้จ่ายทั้งหมด
+                      className="w-full py-2 text-base px-2 mr-2"
+                      value={(quantity * selectedProduct.rate * 1.5) / 1000}
                       readOnly
                     />
                   </div>
                 </div>
               </div>
-            )}
+            ) : null}
             <div className="flex">
               <div className="bg-blue-500 w-[120px] hover:bg-blue-600 transition duration-300 text-center my-5 py-3 px-3 rounded-lg text-white ml-auto mr-2">
                 <button onClick={handleOrderConfirmation}>
@@ -371,7 +427,7 @@ export default function User({ me }) {
                 </button>
               </div>
               <div className="bg-green-500 w-[120px] hover:bg-green-600 transition duration-300  text-center my-5 py-3 px-3 rounded-lg text-white">
-                <button onClick={handleOrderConfirmation}>สั่งซื้อเลย</button>
+                <button onClick={handleBuyNowConfirmation}>สั่งซื้อเลย</button>
               </div>
             </div>
           </div>
@@ -383,8 +439,9 @@ export default function User({ me }) {
 }
 
 export const getServerSideProps = async (context) => {
+  const API_BASE_URL = process.env.BACKEND_URL;
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })

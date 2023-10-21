@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
+const API_BASE_URL = process.env.BACKEND_URL;
 
 const SidebarItem = ({ icon, text, href }) => {
   return (
@@ -51,15 +52,9 @@ const Sidebar = () => {
   const handleSignOut = async () => {
     console.log("Clicked");
     try {
-      await axios.post(
-        "http://localhost:8000/api/auth/signout",
-        {
-          headers: { Cookie: document.cookie },
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      await axios.post(`${API_BASE_URL}/api/auth/signout`, null, {
+        withCredentials: true,
+      });
       console.log("Sign out successful");
       router.push("/users/signin");
     } catch (error) {

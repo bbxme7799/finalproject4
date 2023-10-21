@@ -3,6 +3,7 @@ import ProductList from "./ProductList";
 import ModalOverlay from "./ModalOverlay";
 import axios from "axios";
 import SearchInput from "./SearchInput";
+const API_BASE_URL = process.env.BACKEND_URL;
 
 const ProductTable = () => {
   const [perPage, setPerPage] = useState(10); // กำหนดค่าเริ่มต้นให้เป็น 10
@@ -20,7 +21,7 @@ const ProductTable = () => {
   useEffect(() => {
     async function fetchProducts() {
       try {
-        let apiUrl = `http://localhost:8000/api/products?per_page=${perPage}&page=${currentPage}`;
+        let apiUrl = `${API_BASE_URL}/api/products?per_page=${perPage}&page=${currentPage}`;
 
         if (searchQuery) {
           apiUrl += `&keyword=${searchQuery}`;

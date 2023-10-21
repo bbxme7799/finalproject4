@@ -1,10 +1,7 @@
 import React, { useState } from "react";
 import Link from "next/link";
-import Layout from "@/components/layout/layout";
 import GoogleIcon from "@/components/icons/google-iconlogin.png";
 import MetamaskIcon from "@/components/icons/Metamaskiconlogin.png";
-import Helpdeskicon from "@/components/icons/help-desk.png";
-import Socialicon from "@/components/icons/social-media.png";
 import Image from "next/image";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
@@ -12,6 +9,10 @@ import "react-toastify/dist/ReactToastify.css";
 import SignInButton from "../../components/signin/SignInButton";
 import Web3 from "web3";
 import { useRouter } from "next/router";
+
+const API_BASE_URL = process.env.BACKEND_URL;
+const frontendUrl = process.env.FRONTEND_URL;
+
 const SignInSection = () => {
   const router = useRouter();
   const [password, setPassword] = useState("");
@@ -50,7 +51,7 @@ const SignInSection = () => {
 
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/auth/signin",
+        `${API_BASE_URL}/api/auth/signin`, // ใช้ API_BASE_URL ที่เพิ่มขึ้น
         {
           email: email,
           password: password,
@@ -93,7 +94,7 @@ const SignInSection = () => {
 
   const getNonce = async () => {
     try {
-      const response = await axios.get("http://localhost:8000/api/auth/nonce");
+      const response = await axios.get(`${API_BASE_URL}/api/auth/nonce`);
       return response.data.nonce;
     } catch (error) {
       console.error("Error fetching nonce:", error);
@@ -113,9 +114,7 @@ const SignInSection = () => {
         const selectedAddress = accounts[0];
 
         // Call your Metamask authentication endpoint with the selectedAddress
-        const nonceResponse = await axios.get(
-          "http://localhost:8000/api/auth/nonce"
-        );
+        const nonceResponse = await axios.get(`${API_BASE_URL}/api/auth/nonce`);
 
         const { nonce } = nonceResponse.data;
 
@@ -128,7 +127,7 @@ const SignInSection = () => {
 
         // Call your Metamask authentication endpoint with the signed message
         const response = await axios.post(
-          "http://localhost:8000/api/auth/metamask",
+          `${API_BASE_URL}/api/auth/metamask`,
           {
             signedMessage,
             message: `Login to YourApp: ${nonce}`,
@@ -191,7 +190,7 @@ const SignInSection = () => {
                 </p>
 
                 <SignInButton
-                  href="http://localhost:8000/api/auth/google"
+                  href={`${API_BASE_URL}/api/auth/google`}
                   iconSrc={GoogleIcon}
                   text="เข้าสู่ระบบด้วย Google"
                 />
@@ -253,7 +252,7 @@ const SignInSection = () => {
                       </label>
 
                       <a
-                        href="http://localhost:3000/users/forgotpassword"
+                        href={`${frontendUrl}/users/forgotpassword`}
                         title=""
                         className="text-base font-medium text-gray-500 rounded font-pj hover:text-gray-900 hover:underline focus:outline-none focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
                       >

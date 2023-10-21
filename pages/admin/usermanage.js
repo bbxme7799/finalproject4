@@ -5,9 +5,11 @@ import PageMetadata from "@/components/PageMetadata";
 import UserTable from "@/components/admin/layout/tableuser/UserTable";
 import axios from "axios";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -46,7 +48,7 @@ export default function UserManagePage() {
 
   useEffect(() => {
     axios
-      .get("http://localhost:8000/api/users/getusers", {
+      .get(`${API_BASE_URL}/api/users/getusers`, {
         withCredentials: true,
       })
       .then((response) => {

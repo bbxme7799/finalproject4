@@ -1,6 +1,8 @@
 import React, { useState, useRef } from "react";
 import axios from "axios";
-import SubTotal from "./SubTotal";
+import Swal from "sweetalert2";
+
+const API_BASE_URL = process.env.BACKEND_URL;
 
 const CartProduct = ({ product, onDelete, onChange }) => {
   const [editedUrl, setEditedUrl] = useState(product.url);
@@ -8,21 +10,21 @@ const CartProduct = ({ product, onDelete, onChange }) => {
   const [isDeleted, setIsDeleted] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
-  const editedUrlRef = useRef(editedUrl); // Using a ref to track the initial editedUrl
-  const quantityRef = useRef(quantity); // Using a ref to track the initial quantity
+  const editedUrlRef = useRef(editedUrl);
+  const quantityRef = useRef(quantity);
 
-  const handleUrlChange = (event) => {
-    setEditedUrl(event.target.value);
+  const handleInputChange = (field, value) => {
+    field === "url" ? setEditedUrl(value) : setQuantity(value);
     setIsEditing(true);
   };
 
   const handleDelete = async () => {
     try {
-      await axios.delete(`http://localhost:8000/api/carts/${product.id}`, {
+      await axios.delete(`${API_BASE_URL}/api/carts/${product.id}`, {
         withCredentials: true,
       });
       setIsDeleted(true);
-      onDelete(product); // Pass the deleted product to the onDelete callback
+      onDelete(product);
     } catch (error) {
       console.error(error);
     }
@@ -34,12 +36,13 @@ const CartProduct = ({ product, onDelete, onChange }) => {
       editedUrl !== editedUrlRef.current
     ) {
       if (quantity % product.product.step !== 0) {
-        alert(`กรุณากรอกจำนวนที่มีค่าในขั้นตอน ${product.product.step}`);
-        return; // หยุดการอัปเดตหากมีเศษในจำนวน
+        const errorMessage = `กรุณากรอกจำนวนที่มีค่าในขั้นตอน ${product.product.step}`;
+        alert(errorMessage);
+        return;
       }
       try {
         await axios.put(
-          `http://localhost:8000/api/carts/${product.id}`,
+          `${API_BASE_URL}/api/carts/${product.id}`,
           {
             quantity: parseInt(quantity),
             url: editedUrl,
@@ -55,8 +58,8 @@ const CartProduct = ({ product, onDelete, onChange }) => {
         };
         onChange(changedProduct);
         setIsEditing(false);
-        editedUrlRef.current = editedUrl; // Update the reference value
-        quantityRef.current = quantity; // Update the reference value
+        editedUrlRef.current = editedUrl;
+        quantityRef.current = quantity;
       } catch (error) {
         console.error(error);
       }
@@ -114,7 +117,7 @@ const CartProduct = ({ product, onDelete, onChange }) => {
               type="text"
               className="mt-1 text-sm text-blue-500 border rounded-md px-2 py-1 w-full overflow-x-auto"
               value={editedUrl}
-              onChange={handleUrlChange}
+              // onChange={handleUrlChange}
               onBlur={handleEdit} // เมื่อมีการเปลี่ยน focus ให้เรียก handleEdit
             />
           </div>

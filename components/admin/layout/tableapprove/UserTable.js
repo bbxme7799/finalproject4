@@ -3,11 +3,14 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import EditModal from "./EditModal";
 import StatusBadge from "./StatusBadge";
+
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const ApproveTable = ({ users }) => {
   const handleRejectWithdraw = async (withdrawId) => {
     try {
       const response = await axios.post(
-        `http://localhost:8000/api/transactoins/request-withdraw/${withdrawId}/reject`,
+        `${API_BASE_URL}/api/transactoins/request-withdraw/${withdrawId}/reject`,
         null,
         {
           withCredentials: true,
@@ -67,6 +70,30 @@ const ApproveTable = ({ users }) => {
     const thaiTime = utcDate.toLocaleTimeString("th-TH", optionsTime);
 
     return `${thaiDate} ${thaiTime}`;
+  };
+
+  const handleApproveWithdraw = async (withdrawId) => {
+    try {
+      const response = await axios.post(
+        `${API_BASE_URL}/api/transactoins/request-withdraw/${withdrawId}/approve`,
+        null,
+        {
+          withCredentials: true,
+        }
+      );
+      if (response.data.message === "success") {
+        Swal.fire(
+          "Success",
+          "Withdrawal request approved successfully",
+          "success"
+        );
+      } else {
+        Swal.fire("Error", "Failed to approve withdrawal request", "error");
+      }
+    } catch (error) {
+      console.error("Error approving withdrawal request:", error);
+      Swal.fire("Error", "Failed to approve withdrawal request", "error");
+    }
   };
 
   return (
@@ -151,10 +178,11 @@ const ApproveTable = ({ users }) => {
                 <div class="flex justify-end gap-4">
                   <button
                     class="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded shadow"
-                    onClick={() => unbanUser(user.id)} // ใช้ฟังก์ชัน confirmUnbanUser ที่เราสร้างไว้
+                    onClick={() => handleApproveWithdraw(user.id)} // เรียกใช้งานฟังก์ชัน handleApproveWithdraw
                   >
                     Approve
                   </button>
+
                   <button
                     class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded shadow"
                     onClick={() => handleRejectWithdraw(user.id)}

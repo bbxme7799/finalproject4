@@ -1,13 +1,14 @@
-import { useEffect, useState } from "react";
 import SidebarAdmin from "../../components/admin/layout/sidebarAdmin";
 import NavbarAdmin from "../../components/admin/layout/navbarAdmin";
 import PageMetadata from "@/components/PageMetadata";
 import UserWithdrawal from "@/components/admin/layout/withdraw-deposit/WithdrawDeposit";
 import axios from "axios";
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 export const getServerSideProps = async (context) => {
   const me = await axios
-    .get("http://localhost:8000/api/users/me", {
+    .get(`${API_BASE_URL}/api/users/me`, {
       headers: { cookie: context.req.headers.cookie },
       withCredentials: true,
     })
@@ -41,27 +42,6 @@ export const getServerSideProps = async (context) => {
 };
 
 export default function WithdrawalPage() {
-  const [users, setUsers] = useState([]);
-  console.log("🚀 ~ file: usermanage.js:45 ~ UserManagePage ~ users:", users);
-
-  useEffect(() => {
-    axios
-      .get("http://localhost:8000/api/transactoins/admin", {
-        withCredentials: true,
-      })
-      .then((response) => {
-        const fetchedUsers = response.data;
-        console.log(
-          "🚀 ~ file: usermanage.js:53 ~ .then ~ fetchedUsers:",
-          fetchedUsers
-        );
-        setUsers(fetchedUsers);
-      })
-      .catch((error) => {
-        console.error("Error fetching users:", error);
-      });
-  }, []);
-
   return (
     <>
       <PageMetadata title="User Management" />
@@ -76,7 +56,7 @@ export default function WithdrawalPage() {
                   รายงานการทำธุรกรรม ฝาก-ถอน Transaction Report: Deposits and
                   Withdrawals
                 </h1>
-                <UserWithdrawal users={users} />
+                <UserWithdrawal />
               </div>
             </div>
           </div>

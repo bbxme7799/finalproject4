@@ -3,25 +3,22 @@ import React, { memo } from "react";
 import axios from "axios";
 import { useRouter } from "next/router";
 import SidebarItem from "./sidebarItem";
+
+const API_BASE_URL = process.env.BACKEND_URL;
+
 const Sidebar = () => {
   const router = useRouter();
+
   const handleSignOut = async () => {
     console.log("Clicked");
     try {
-      await axios.post(
-        "http://localhost:8000/api/auth/signout",
-        {
-          headers: { Cookie: document.cookie }, // เปลี่ยน context.req.headers.cookie เป็น document.cookie
-        },
-        {
-          withCredentials: true,
-        }
-      );
+      await axios.post(`${API_BASE_URL}/api/auth/signout`, null, {
+        withCredentials: true,
+      });
       console.log("Sign out successful");
       router.push("/users/signin");
     } catch (error) {
       console.error("Sign out failed:", error);
-      // จัดการเมื่อเกิดข้อผิดพลาดในการออกจากระบบ
     }
   };
 
@@ -35,38 +32,30 @@ const Sidebar = () => {
         </div>
         <div className="overflow-y-auto overflow-x-hidden flex-grow">
           <ul className="flex flex-col py-4 space-y-1">
+            <SidebarItem icon="home" text="คำสั่งซื้อใหม่" href="/users" />
+            <SidebarItem icon="credit" text="เติมเครดิต" href="/users/credit" />
             <SidebarItem
-              icon="home" // รูปไอคอน
-              text="คำสั่งซื้อใหม่"
-              href="/users"
-            />
-            <SidebarItem
-              icon="credit" // รูปไอคอน
-              text="เติมเครดิต"
-              href="/users/credit"
-            />
-            <SidebarItem
-              icon="withdraw" // รูปไอคอน
+              icon="withdraw"
               text="ถอนเครดิต"
               href="/users/withdraw"
             />
             <SidebarItem
-              icon="order-history" // รูปไอคอน
+              icon="order-history"
               text="ประวัติ ออเดอร์"
               href="/users/history"
             />
             <SidebarItem
-              icon="credit-history" // รูปไอคอน
+              icon="credit-history"
               text="ประวัติฝากเครดิต"
               href="/users/creditHistory"
             />
             <SidebarItem
-              icon="withdraw-history" // รูปไอคอน
+              icon="withdraw-history"
               text="ประวัติถอนเครดิต"
               href="/users/withdrawhistory"
             />
             <SidebarItem
-              icon="settings" // รูปไอคอน
+              icon="settings"
               text="ตั้งค่าข้อมูลส่วนตัว"
               href="/users/settings"
             />
@@ -76,13 +65,13 @@ const Sidebar = () => {
                   xmlns="http://www.w3.org/2000/svg"
                   fill="none"
                   viewBox="0 0 24 24"
-                  stroke-width="1.5"
+                  strokeWidth="1.5"
                   stroke="currentColor"
-                  class="w-6 h-6"
+                  className="w-6 h-6"
                 >
                   <path
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
                     d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75"
                   />
                 </svg>
@@ -97,4 +86,5 @@ const Sidebar = () => {
     </div>
   );
 };
+
 export default memo(Sidebar);

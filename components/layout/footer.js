@@ -1,6 +1,4 @@
 import React from "react";
-import style from "./footer.module.css";
-
 const Footer = () => {
   return (
     <footer className="py-12 bg-gray-900 sm:py-16 lg:py-20">
@@ -66,52 +64,6 @@ const Footer = () => {
         <hr className="mt-12 border-gray-600 md:mt-20" />
 
         <div className="mt-10 lg:flex lg:items-center lg:justify-between md:mt-16">
-          {/* <ul className="flex items-center space-x-6 sm:space-x-12">
-            <li>
-              <a
-                href="#"
-                title=""
-                className="text-lg font-medium text-white transition-all duration-200 font-pj hover:text-gray-300"
-              >
-                {" "}
-                About{" "}
-              </a>
-            </li>
-
-            <li>
-              <a
-                href="#"
-                title=""
-                className="text-lg font-medium text-white transition-all duration-200 font-pj hover:text-gray-300"
-              >
-                {" "}
-                Features{" "}
-              </a>
-            </li>
-
-            <li>
-              <a
-                href="#"
-                title=""
-                className="text-lg font-medium text-white transition-all duration-200 font-pj hover:text-gray-300"
-              >
-                {" "}
-                Works{" "}
-              </a>
-            </li>
-
-            <li>
-              <a
-                href="#"
-                title=""
-                className="text-lg font-medium text-white transition-all duration-200 font-pj hover:text-gray-300"
-              >
-                {" "}
-                Support{" "}
-              </a>
-            </li>
-          </ul> */}
-
           <p className="mt-8 text-lg font-normal text-white lg:mt-0 font-pj">
             © Copyright 2021, All Rights Reserved
           </p>

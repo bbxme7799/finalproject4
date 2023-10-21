@@ -4,9 +4,12 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import GoogleIcon from "@/components/icons/google-iconlogin.png";
 import MetamaskIcon from "@/components/icons/Metamaskiconlogin.png";
-import Image from "next/image";
 import SignupButton from "../../components/signup/SignupButton";
 import { useRouter } from "next/router";
+import Image from "next/image";
+
+const API_BASE_URL = process.env.BACKEND_URL;
+const frontendUrl = process.env.FRONTEND_URL;
 
 const SignInSection = () => {
   const [username, setUsername] = useState("");
@@ -17,7 +20,7 @@ const SignInSection = () => {
   const handleSignup = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/auth/signup",
+        `${API_BASE_URL}/api/auth/signup`, // ใช้ API_BASE_URL ที่เพิ่มขึ้น
         {
           username: username,
           email: email,
@@ -52,6 +55,76 @@ const SignInSection = () => {
           text: "การสมัครสมาชิกไม่สำเร็จ กรุณาตรวจสอบข้อมูลที่กรอก",
         });
       }
+    }
+  };
+
+  const getNonce = async () => {
+    try {
+      const response = await axios.get(`${API_BASE_URL}/api/auth/nonce`);
+      return response.data.nonce;
+    } catch (error) {
+      console.error("Error fetching nonce:", error);
+      throw error;
+    }
+  };
+
+  const handleMetamaskLogin = async () => {
+    if (window.ethereum) {
+      const web3 = new Web3(window.ethereum);
+
+      try {
+        // Request access to accounts
+        await window.ethereum.enable();
+
+        const accounts = await web3.eth.getAccounts();
+        const selectedAddress = accounts[0];
+
+        // Call your Metamask authentication endpoint with the selectedAddress
+        const nonceResponse = await axios.get(`${API_BASE_URL}/api/auth/nonce`);
+
+        const { nonce } = nonceResponse.data;
+
+        // Sign the nonce with Metamask
+        const signedMessage = await web3.eth.personal.sign(
+          `Login to YourApp: ${nonce}`,
+          selectedAddress,
+          ""
+        );
+
+        // Call your Metamask authentication endpoint with the signed message
+        const response = await axios.post(
+          `${API_BASE_URL}/api/auth/metamask`,
+          {
+            signedMessage,
+            message: `Login to YourApp: ${nonce}`,
+            address: selectedAddress,
+          },
+          {
+            withCredentials: true,
+          }
+        );
+
+        // Handle successful Metamask login...
+        // หลังจาก login สำเร็จ ให้ใช้ router.push() เพื่อนำผู้ใช้ไปยังหน้า "/users"
+        if (response.data.message === "success") {
+          console.log("Login successful!");
+          toast.success("Login successful!", {
+            position: "top-right",
+            autoClose: 3000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+          });
+          setTimeout(() => {
+            router.push("/users");
+          }, 1000);
+        }
+      } catch (error) {
+        console.error("Error with Metamask:", error);
+      }
+    } else {
+      console.error("Metamask is not installed.");
     }
   };
 
@@ -91,16 +164,30 @@ const SignInSection = () => {
                 </p> */}
 
                 <SignupButton
-                  href="http://localhost:8000/api/auth/google"
+                  href={`${API_BASE_URL}/api/auth/google`}
                   iconSrc={GoogleIcon}
                   text="สมัครสมาชิก Google"
                 />
 
-                <SignupButton
-                  href="/signup"
-                  iconSrc={MetamaskIcon}
-                  text="สมัครสมาชิก Metamask"
-                />
+                <button
+                  className="
+    flex items-center justify-center w-full px-6 py-3 mt-8
+    text-sm font-bold text-gray-900 transition-all duration-200
+    bg-gray-100 border border-transparent rounded-xl hover:bg-gray-200
+    focus:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-200
+    font-pj"
+                  onClick={handleMetamaskLogin}
+                  role="button"
+                >
+                  <div className="flex items-center">
+                    <Image
+                      className="w-5 h-5 mr-4"
+                      src={MetamaskIcon}
+                      alt="Icon"
+                    />
+                    <span className="text-base">สมัครด้วย Metamask</span>
+                  </div>
+                </button>
 
                 <p className="mt-8 text-sm font-normal text-center text-gray-600">
                   หรือ สมัครสมาชิกด้วยอีเมล
@@ -190,17 +277,6 @@ const SignInSection = () => {
               >
                 {/* Replace the SVG lines with the original SVG lines */}
               </svg>
-
-              {/* <p className="mt-5 text-base font-normal text-center text-gray-900 font-pj">
-                คุณยังไม่มีบัญชี?{" "}
-                <a
-                  href="#"
-                  title=""
-                  className="font-bold rounded hover:underline focus:outline-none focus:ring-1 focus:ring-gray-900 focus:ring-offset-2"
-                >
-                  สร้างบัญชีฟรี
-                </a>
-              </p> */}
             </div>
           </div>
         </div>

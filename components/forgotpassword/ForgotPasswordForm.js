@@ -5,13 +5,16 @@ import Swal from "sweetalert2";
 
 import { useRouter } from "next/router";
 
+const API_BASE_URL = process.env.BACKEND_URL; // Added API_BASE_URL
+
 const ForgotPasswordForm = () => {
   const [email, setEmail] = useState("");
+  const router = useRouter();
 
   const handleResetPassword = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:8000/api/users/forgot-password", // Change this URL to match your API endpoint
+        `${API_BASE_URL}/api/users/forgot-password`, // Use API_BASE_URL
         {
           email: email,
         }
@@ -33,7 +36,6 @@ const ForgotPasswordForm = () => {
       });
     }
   };
-
   return (
     <section
       className="relative py-12 bg-gray-900 sm:py-16 lg:py-20"
@@ -67,7 +69,7 @@ const ForgotPasswordForm = () => {
                 </h1>
 
                 <p className="mt-8 text-sm font-normal text-center text-gray-600">
-                  กรออีเมลที่ต้องการกู้คืน
+                  กรอกอีเมลที่ต้องการกู้คืน
                 </p>
               </div>
               {/* <form action="#" method="POST" className="mt-8"> */}

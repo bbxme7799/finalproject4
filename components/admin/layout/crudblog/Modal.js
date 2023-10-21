@@ -3,6 +3,8 @@ import axios from "axios";
 import Swal from "sweetalert2";
 import dynamic from "next/dynamic"; // Import dynamic from 'next/dynamic'
 
+const API_BASE_URL = process.env.BACKEND_URL;
+
 // Dynamically import ReactQuillEditor only on the client side
 const ReactQuillEditor = dynamic(() => import("./ReactQuillEditor"), {
   ssr: false, // Disable Server-Side Rendering
@@ -38,7 +40,7 @@ const Modal = ({ isOpen, onClose, category, me }) => {
       //   }
       // );
       const response = await axios.put(
-        `http://localhost:8000/api/blog/editPost/${editedProduct.id}`,
+        `${API_BASE_URL}/api/blog/editPost/${editedProduct.id}`,
         {
           title: editedProduct.title,
           content: editedProduct.content,
@@ -86,7 +88,7 @@ const Modal = ({ isOpen, onClose, category, me }) => {
 
       if (result.isConfirmed) {
         const response = await axios.delete(
-          `http://localhost:8000/api/deletePost/${editedProduct.id}`,
+          `${API_BASE_URL}/api/deletePost/${editedProduct.id}`,
           {
             withCredentials: true,
           }
