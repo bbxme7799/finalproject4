@@ -1,5 +1,4 @@
 import React from "react";
-import { useSession } from "next-auth/react";
 import { useState } from "react";
 import PageMetadata from "@/components/PageMetadata";
 import { ToastContainer, toast } from "react-toastify";
@@ -56,11 +55,12 @@ export default function CreditPage({ me }) {
     setCreditAmount(e.target.value);
   };
 
-  const CONTRACT_ADDRESS = "0xeD24FC36d5Ee211Ea25A80239Fb8C4Cfd80f12Ee";
+  const CONTRACT_ADDRESS = process.env.CONTRACT_BUSD_ADDRESS;
+  const recipientAddress = process.env.RECIPIENT_ADDRESS;
 
-  const web3 = new Web3(
-    "https://getblock.io/nodes/bsc/?gclid=CjwKCAjwgsqoBhBNEiwAwe5w04Zf4x0I59mkeYbhHWihBSDRnfwSuxMnWT_OCG2e6GxqC_bv3sXCOhoCeNUQAvD_BwE"
-  );
+  const ethereumNodeUrl = process.env.ETHEREUM_NODE_URL;
+  const web3 = new Web3(ethereumNodeUrl);
+
   const contract = new web3.eth.Contract(CONTRACT_ABI, CONTRACT_ADDRESS);
 
   function convertToWei(price) {
@@ -105,10 +105,7 @@ export default function CreditPage({ me }) {
             from: selectedAddress,
             to: CONTRACT_ADDRESS,
             data: contract.methods
-              .transfer(
-                "0x81C23828DB9d3cCb12a477CD756B64a16720c93f",
-                convertToWei(amount)
-              )
+              .transfer(recipientAddress, convertToWei(amount))
               .encodeABI(),
           },
         ],
@@ -187,13 +184,13 @@ export default function CreditPage({ me }) {
                         xmlns="http://www.w3.org/2000/svg"
                         fill="none"
                         viewBox="0 0 24 24"
-                        stroke-width="1.5"
+                        strokeWidth="1.5"
                         stroke="currentColor"
                         className="w-12 h-12"
                       >
                         <path
-                          stroke-linecap="round"
-                          stroke-linejoin="round"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
                           d="M21 12a2.25 2.25 0 00-2.25-2.25H15a3 3 0 11-6 0H5.25A2.25 2.25 0 003 12m18 0v6a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 18v-6m18 0V9M3 12V9m18 0a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 9m18 0V6a2.25 2.25 0 00-2.25-2.25H5.25A2.25 2.25 0 003 6v3"
                         />
                       </svg>
@@ -215,12 +212,13 @@ export default function CreditPage({ me }) {
                           className="form-radio h-5 w-5 text-indigo-500"
                           name="type"
                           id="type1"
-                          checked
+                          defaultChecked
                         />
+
                         <Image
                           src={Metamaskiconlogin}
+                          alt="Metamask Login Icon"
                           className="w-8 h-8 mr-4"
-                          // alt="Your Alt Text"
                         />
                       </label>
                     </div>

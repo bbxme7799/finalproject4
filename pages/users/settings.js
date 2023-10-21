@@ -121,10 +121,11 @@ export default function SettingPage({ me }) {
                               name="newUsername"
                               id="newUsername"
                               placeholder=""
-                              value={formData.newUsername}
+                              value={formData.newUsername || ""}
                               onChange={handleInputChange}
                               className="border block w-full px-4 py-3 placeholder-gray-500 border-gray-300 rounded-lg focus:ring-indigo-600 focus:border-indigo-600 sm:text-sm caret-indigo-600"
                             />
+
                             <button
                               type="button"
                               className="text-sm font-semibold text-indigo-600 transition-all duration-200 bg-white rounded-md hover:text-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-600 absolute top-1/2 right-4 transform -translate-y-1/2"
